@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
+@import "tailwindcss";
+
+body {
+  background-color: #040C33;
+  overflow-x: hidden;
+  font-size: 16px;
+  color: white;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+button {
+  cursor: pointer;
+}
+
+input {
+  outline: none;
+  
+}
+
+.main-container {
+  max-width: 1440px;
+  width: 100%;
+  margin: auto;
+  padding: 3rem;
+}
+
+@media (max-width: 768px) {
+  .main-container{
+    padding: 1rem;
+  }
+}
