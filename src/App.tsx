@@ -1,44 +1,85 @@
+// App.tsx
 import "./App.css";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Onboard from "./components/onboard";
 import Login from "./components/login";
 import Dashboard from "./components/dahboard";
-import { useState, type ReactNode } from "react";
-import WalletConnect from "./components/wallet-connect";
+import EnokiAuthCallback from "./routes/EnokiAuthCallback";
 
-type ProtectedRouteProps = {
-  children: ReactNode;
-};
+import {
+  createNetworkConfig,
+  SuiClientProvider,
+  WalletProvider,
+  useSuiClientContext,
+  useCurrentAccount,
+} from "@mysten/dapp-kit";
+import { isEnokiNetwork, registerEnokiWallets } from "@mysten/enoki";
+import { getFullnodeUrl } from "@mysten/sui/client";
+import { useEffect, type ReactNode } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React from "react";
 
-function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-    return isAuthenticated ? children : <Navigate to="/login" />;
-  };
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Onboard />} /> //Home Page Route
-        <Route path="/login" element={<Login />} /> //Login Route
-        <Route path="/wallet-connect" element={<WalletConnect isAuthenticated = {isAuthenticated} setIsAuthenticated = {setIsAuthenticated}/>} /> //Wallet
-        Connect Route
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </Router>
-  );
+const { networkConfig } = createNetworkConfig({
+  testnet: { url: getFullnodeUrl("testnet") },
+});
+const queryClient = new QueryClient();
+
+type RouteProps = { children: ReactNode };
+
+function ProtectedRoute({ children }: RouteProps) {
+  const currentAccount = useCurrentAccount();
+
+  // Show a tiny loading state on first paint so autoConnect can finish
+  // This prevents a brief mis-detection and redirect flicker.
+  const [ready, setReady] = React.useState(false);
+  useEffect(() => { const id = setTimeout(() => setReady(true), 0); return () => clearTimeout(id); }, []);
+  if (!ready) return <div className="min-h-screen grid place-items-center text-white">Loading…</div>;
+
+  return currentAccount ? children : <Navigate to="/login" replace />;
 }
 
-export default App;
+function PublicRoute({ children }: RouteProps) {
+  const currentAccount = useCurrentAccount();
+  return !currentAccount ? children : <Navigate to="/dashboard" replace />;
+}
+
+function RegisterEnokiWallets() {
+  const { client, network } = useSuiClientContext();
+
+  useEffect(() => {
+    const apiKey = import.meta.env.VITE_ENOKI_API_KEY;
+    const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    if (!isEnokiNetwork(network) || !apiKey || !googleClientId) return;
+
+    const { unregister } = registerEnokiWallets({
+      apiKey,
+      providers: { google: { clientId: googleClientId } },
+      client,
+      network,
+    });
+    return unregister;
+  }, [network, client]);
+
+  return null;
+}
+
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
+        <RegisterEnokiWallets />
+        <WalletProvider autoConnect={false} storage={null}>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Onboard />} />
+              <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+              <Route path="/auth" element={<EnokiAuthCallback />} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Router>
+        </WalletProvider>
+      </SuiClientProvider>
+    </QueryClientProvider>
+  );
+}

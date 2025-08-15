@@ -10,7 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mysten/dapp-kit": "^0.17.3",
+    "@mysten/enoki": "^0.11.6",
+    "@mysten/sui": "^1.37.1",
     "@tailwindcss/vite": "^4.1.11",
+    "@tanstack/react-query": "^5.85.0",
+    "axios": "^1.11.0",
+    "jwt-decode": "^4.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
