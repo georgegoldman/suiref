@@ -13,13 +13,16 @@ import {
 } from "@mysten/enoki";
 import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import OnboardImage from "../assets/about-our-team (1).svg";
 
 const Login = () => {
   const navigate = useNavigate();
   const currentAccount = useCurrentAccount();
 
-  const { mutateAsync: connectAsync, isPending: isConnecting } = useConnectWallet();
-  const { mutateAsync: disconnectAsync, isPending: isDisconnecting } = useDisconnectWallet();
+  const { mutateAsync: connectAsync, isPending: isConnecting } =
+    useConnectWallet();
+  const { mutateAsync: disconnectAsync, isPending: isDisconnecting } =
+    useDisconnectWallet();
 
   // Enoki wallets (google, facebook, twitch)
   const wallets = useWallets().filter(isEnokiWallet);
@@ -43,7 +46,7 @@ const Login = () => {
   const handleConnect = async (wallet?: EnokiWallet) => {
     if (!wallet) return;
     try {
-      await connectAsync({ wallet });            // opens Enoki popup
+      await connectAsync({ wallet }); // opens Enoki popup
       navigate("/dashboard", { replace: true }); // go forward once connected
     } catch (e) {
       console.error("Google login failed:", e);
@@ -59,8 +62,23 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
-      <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-12 lg:gap-[60px] p-5 sm:p-6 md:p-8 lg:p-[20px] bg-[#FFFFFF14] border border-[#4DA2FD70] rounded-2xl md:rounded-3xl lg:rounded-[30px] w-full max-w-xs sm:max-w-sm md:max-w-lg lg:max-w-[607px] backdrop-blur-sm">
+    <div className="flex items-center justify-between h-screen">
+      <div
+        className="w-full h-full flex justify-center rounded-[20px]"
+        style={{
+          background:
+            "linear-gradient(158.16deg, rgba(119, 114, 243, 0.7) -36.07%, #4DA2FD 119.81%)",
+        }}
+      >
+        <img
+          src={OnboardImage}
+          alt="Onboard Image"
+          width={371}
+          height={371}
+          className="object-contain"
+        />
+      </div>
+      <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-12 lg:gap-[60px] p-5 sm:p-6 md:p-8 lg:p-[20px] bg-[#FFFFFF14] border border-[#4DA2FD70] rounded-2xl md:rounded-3xl lg:rounded-[30px] w-full max-w-xs sm:max-w-sm md:max-w-lg lg:max-w-[607px] backdrop-blur-sm mx-[2rem] ml-[3rem]">
         <>
           <div className="flex flex-col items-center gap-3 sm:gap-4 md:gap-5 lg:gap-[20px] text-center">
             <h3 className="font-bold text-xl sm:text-2xl md:text-3xl lg:text-[40px] text-[#fff] leading-tight">
@@ -120,8 +138,9 @@ const Login = () => {
               </>
             )}
 
-            <p className="font-medium text-xs sm:text-sm md:text-sm lg:text-[14px] text-[#FFFFFFB2] text-center px-2 max-w-sm leading-relaxed">
-              We use ZK login to verify identity without storing your personal data
+            <p className="font-medium text-xs sm:text-sm md:text-sm lg:text-[14px] text-[#FFFFFFB2] text-center px-2 w-full leading-relaxed">
+              We use ZK login to verify identity without storing your personal
+              data
             </p>
           </div>
         </>

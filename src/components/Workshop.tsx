@@ -1,0 +1,47 @@
+import { useState } from "react";
+import WorkshopComponent from "./workshop-component";
+import ModulesComponent from "./modules-component";
+
+type TabType = "workshop" | "modules";
+
+const Workshop = () => {
+  const [activeTab, setActiveTab] = useState<TabType>("workshop");
+
+  return (
+    <div className="flex-1 p-4 sm:p-6">
+      <div className="max-w-6xl mx-auto flex flex-col gap-[50px]">
+        <div className="bg-white/10 rounded-[20px] p-[5px] w-full max-w-[510px]">
+          <div className="flex">
+            <button
+              onClick={() => setActiveTab("workshop")}
+              className={`px-4 sm:px-6 py-3 rounded-[15px] font-medium text-sm transition-all duration-200 flex-1 ${
+                activeTab === "workshop"
+                  ? "bg-[#4DA2FD] rounded text-white"
+                  : "bg-transparent text-white/80"
+              }`}
+            >
+              Workshop
+            </button>
+            <button
+              onClick={() => setActiveTab("modules")}
+              className={`px-4 sm:px-6 py-3 rounded-[15px] font-medium text-sm transition-all duration-200 flex-1 ${
+                activeTab === "modules"
+                  ? "bg-[#4DA2FD] rounded text-white"
+                  : "bg-transparent text-white/80"
+              }`}
+            >
+              Modules
+            </button>
+          </div>
+        </div>
+
+        {activeTab === "workshop" && (
+          <WorkshopComponent setActiveTab={(tab: string) => setActiveTab(tab as TabType)} />
+        )}
+        {activeTab === "modules" && <ModulesComponent />}
+      </div>
+    </div>
+  );
+};
+
+export default Workshop;
