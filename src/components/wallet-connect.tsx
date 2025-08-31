@@ -3,6 +3,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import SuccessIcon from "../assets/icon-success";
 import IconError from "../assets/icon-error";
 import { useNavigate } from "react-router-dom";
+import OnboardImage from "../assets/about-our-team (1).svg";
 
 type WalletConnectProps = {
   isAuthenticated: boolean;
@@ -37,8 +38,23 @@ const WalletConnect = ({
   }, [isSuccess, navigate, setIsAuthenticated]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
-      <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-12 lg:gap-[60px] p-5 sm:p-6 md:p-8 lg:p-[20px] bg-[#FFFFFF14] border border-[#4DA2FD70] rounded-2xl md:rounded-3xl lg:rounded-[30px] w-full max-w-xs sm:max-w-sm md:max-w-lg lg:max-w-[607px] backdrop-blur-sm">
+    <div className="flex items-center justify-between h-screen">
+      <div
+        className="w-full h-full flex justify-center rounded-[20px]"
+        style={{
+          background:
+            "linear-gradient(158.16deg, rgba(119, 114, 243, 0.7) -36.07%, #4DA2FD 119.81%)",
+        }}
+      >
+        <img
+          src={OnboardImage}
+          alt="Onboard Image"
+          width={371}
+          height={371}
+          className="object-contain"
+        />
+      </div>
+      <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-12 lg:gap-[60px] p-5 sm:p-6 md:p-8 lg:p-[20px] bg-[#FFFFFF14] border border-[#4DA2FD70] rounded-2xl md:rounded-3xl lg:rounded-[30px] w-full max-w-xs sm:max-w-sm md:max-w-lg lg:max-w-[607px] backdrop-blur-sm mx-[2rem] ml-[3rem]">
         {isSuccess ? (
           <div className="flex flex-col items-center gap-6 sm:gap-7 md:gap-8 lg:gap-[30px]">
             <div className="scale-75 sm:scale-90 md:scale-100">
