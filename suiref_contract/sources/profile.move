@@ -1,9 +1,11 @@
 module suiref_contract::profile {
 
+    const ERR_DUPLICATE_RECORD: u64 = 000;
 
     public struct ReferralRecord has store, copy, drop {
         referral: address,
-        referree: address
+        referree: address,
+        code: std::string::String
     }
 
     public struct ReferralPool has key, store {
@@ -50,9 +52,13 @@ module suiref_contract::profile {
         object::delete(id);
     }
 
-    entry fun add_referral_to_record(referrer: &UserProfile, referree: &UserProfile, ref_pool: &mut ReferralPool){
-        let newReferralRecord = ReferralRecord { referral: referrer.owner, referree: referree.owner };
-        assert!(!ref_pool.referal_list.contains(&newReferralRecord), 0);
+    entry fun add_referral_to_record(
+        referrer: &UserProfile, 
+        referree: &UserProfile, 
+        ref_pool: &mut ReferralPool, 
+        code: std::string::String){
+        let newReferralRecord = ReferralRecord { referral: referrer.owner, referree: referree.owner, code  };
+        assert!(!ref_pool.referal_list.contains(&newReferralRecord), ERR_DUPLICATE_RECORD);
         ref_pool.referal_list.push_back(newReferralRecord)
     }
 
