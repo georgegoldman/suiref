@@ -1,5 +1,4 @@
 import OnboardImage from "../assets/about-our-team (1).svg";
-import PartyHat from "../assets/party-hat.png";
 const ReferralPage = () => {
   return (
     <div className="flex items-center justify-between h-screen">

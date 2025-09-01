@@ -10,12 +10,11 @@ type WalletConnectProps = {
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
 };
 const WalletConnect = ({
-  isAuthenticated, //Adding it here incase you need for anything else
   setIsAuthenticated,
 }: WalletConnectProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [hasError, setHasError] = useState(false); // Set to true when there is an error to see the error state
+  const [hasError] = useState(false); // Set to true when there is an error to see the error state
   const navigate = useNavigate();
 
   const handleWalletConnect = () => {

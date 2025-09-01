@@ -6,6 +6,7 @@ import SecondBg from "../assets/second-bg.png";
 import ThirdBg from "../assets/third-bg.png";
 import Avatar from "../assets/avatar.jpg";
 import GoldMedalIcon from "../assets/gold-medal-icon";
+import type { Profile } from "../types/profile";
 
 interface LeaderboardContentProps {
   showBackButton?: boolean;
@@ -20,13 +21,13 @@ const LeaderboardContent = ({
 }: LeaderboardContentProps) => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProfile, setSelectedProfile] = useState(null);
+  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
 
   const handleBackClick = () => {
     navigate(-1);
   };
 
-  const handleProfileClick = (profile) => {
+  const handleProfileClick = (profile: Profile) => {
     setSelectedProfile(profile);
     setIsModalOpen(true);
   };
@@ -39,7 +40,7 @@ const LeaderboardContent = ({
   const leaderboardData = [
     {
       id: 1,
-      rank: "1st",
+      rank: 1,
       backgroundImage: FirstBg,
       name: "Emmanuel Rugger",
       invites: 12,
@@ -48,7 +49,7 @@ const LeaderboardContent = ({
     },
     {
       id: 2,
-      rank: "2nd",
+      rank: 2,
       backgroundImage: SecondBg,
       name: "Emmanuel Rugger",
       invites: 12,
@@ -57,7 +58,7 @@ const LeaderboardContent = ({
     },
     {
       id: 3,
-      rank: "3rd",
+      rank: 3,
       backgroundImage: ThirdBg,
       name: "Emmanuel Rugger",
       invites: 12,
@@ -70,14 +71,14 @@ const LeaderboardContent = ({
   const activityData = [
     {
       id: 1,
-      rank: "1",
+      rank: 1,
       won: <GoldMedalIcon />,
       event: "Sui Workshop",
       date: "8/20/2025",
     },
     {
       id: 2,
-      rank: "3",
+      rank: 3,
       won: <GoldMedalIcon />,
       event: "Sui Workshop",
       date: "8/20/2025",
