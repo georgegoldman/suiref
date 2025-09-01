@@ -13,9 +13,9 @@ const Onboard = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row justify-between items-center w-full h-screen py-4 lg:py-0">
+    <div className="flex flex-col lg:flex-row justify-between items-start w-full min-h-screen py-4 lg:py-0">
       <div
-        className="w-full h-full flex justify-center rounded-[20px]"
+        className="w-full h-screen flex justify-center rounded-tr-[20px] rounded-br-[20px] sticky top-0"
         style={{
           background:
             "linear-gradient(158.16deg, rgba(119, 114, 243, 0.7) -36.07%, #4DA2FD 119.81%)",
@@ -30,7 +30,7 @@ const Onboard = () => {
         />
       </div>
 
-      <div className="w-full flex flex-col justify-center gap-[clamp(2rem,5vw,6.25rem)] px-[clamp(1rem,5vw,4rem)]">
+      <div className="w-full flex flex-col justify-center gap-[clamp(2rem,5vw,6.25rem)] px-[clamp(1rem,5vw,4rem)] self-center">
         <div className="flex flex-col items-center lg:items-start gap-[clamp(1rem,2vw,2.5rem)] text-center lg:text-left">
           <h2 className="font-bold text-[clamp(1.5rem,4vw,2.5rem)] leading-snug text-white text-center">
             Earn Onchain Rewards by Growing the Sui Developer Community

@@ -1,6 +1,11 @@
 // App.tsx
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Onboard from "./components/onboard";
 import Login from "./components/login";
 import Dashboard from "./components/dahboard";
@@ -20,6 +25,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import LeaderboardPage from "./components/leaderboard-page";
 import ReferralPage from "./components/referral-page";
+import ReferralLanding from "./components/ReferralLanding";
 
 const { networkConfig } = createNetworkConfig({
   testnet: { url: getFullnodeUrl("testnet") },
@@ -34,8 +40,16 @@ function ProtectedRoute({ children }: RouteProps) {
   // Show a tiny loading state on first paint so autoConnect can finish
   // This prevents a brief mis-detection and redirect flicker.
   const [ready, setReady] = React.useState(false);
-  useEffect(() => { const id = setTimeout(() => setReady(true), 0); return () => clearTimeout(id); }, []);
-  if (!ready) return <div className="min-h-screen grid place-items-center text-white">Loading…</div>;
+  useEffect(() => {
+    const id = setTimeout(() => setReady(true), 0);
+    return () => clearTimeout(id);
+  }, []);
+  if (!ready)
+    return (
+      <div className="min-h-screen grid place-items-center text-white">
+        Loading…
+      </div>
+    );
 
   return currentAccount ? children : <Navigate to="/login" replace />;
 }
@@ -74,11 +88,26 @@ export default function App() {
           <Router>
             <Routes>
               <Route path="/" element={<Onboard />} />
+              <Route path="/onboard" element={<ReferralLanding />} />
               <Route path="/leaderboard" element={<LeaderboardPage />} />
               <Route path="/referral" element={<ReferralPage />} />
-              <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+              <Route
+                path="/login"
+                element={
+                  <PublicRoute>
+                    <Login />
+                  </PublicRoute>
+                }
+              />
               <Route path="/auth" element={<EnokiAuthCallback />} />
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Router>
