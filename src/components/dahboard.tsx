@@ -10,14 +10,27 @@ import Wallets from "./Wallets";
 import Settings from "./Settings";
 import Support from "./Support";
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDisconnectWallet } from "@mysten/dapp-kit";
 
 export default function DashboardMain() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { mutateAsync: disconnectAsync } = useDisconnectWallet();
-  const [activePage, setActivePage] = useState("referral-tools");
+
+  // Get the current page from URL query parameter or default to referral-tools
+  const getCurrentPage = () => {
+    const params = new URLSearchParams(location.search);
+    return params.get("tab") || "dashboard";
+  };
+
+  const [activePage, setActivePage] = useState(getCurrentPage());
+
+  // Update active page when URL changes
+  useEffect(() => {
+    setActivePage(getCurrentPage());
+  }, [location.search]);
 
   const handleLogout = async () => {
     try {
@@ -30,6 +43,7 @@ export default function DashboardMain() {
 
   const handlePageChange = (page: string) => {
     setActivePage(page);
+    navigate(`/dashboard?tab=${page}`, { replace: true });
   };
 
   const renderContent = () => {
@@ -41,7 +55,7 @@ export default function DashboardMain() {
       case "my-referrals":
         return <MyReferrals />;
       case "workshop":
-        return <Workshop />;
+        return <Workshop onPageChange={handlePageChange} />;
       case "rewards":
         return <Rewards />;
       case "leaderboards":

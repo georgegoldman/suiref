@@ -1,4 +1,3 @@
-import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import FirstBg from "../assets/1st-bg.png";
@@ -6,6 +5,7 @@ import SecondBg from "../assets/second-bg.png";
 import ThirdBg from "../assets/third-bg.png";
 import Avatar from "../assets/avatar.jpg";
 import GoldMedalIcon from "../assets/gold-medal-icon";
+import CaretLeft from "../assets/caret-left";
 
 interface LeaderboardContentProps {
   showBackButton?: boolean;
@@ -145,7 +145,7 @@ const LeaderboardContent = ({
             onClick={handleBackClick}
           >
             <div className="bg-[#4DA2FD] w-[45px] flex items-center justify-center h-[45px] rounded-[10px]">
-              <AiOutlineArrowLeft />
+              <CaretLeft />
             </div>
             <p>Back</p>
           </button>

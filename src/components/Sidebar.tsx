@@ -81,13 +81,17 @@ const Sidebar = ({ activePage, onPageChange, onLogout }: SidebarProps) => {
               <button
                 key={item.id}
                 onClick={() => onPageChange(item.id)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-[30px] transition-all duration-200 ${
+                className={`flex items-center ${
+                  isCollapsed ? "justify-center rounded-[8px]" : "gap-2 rounded-[30px]"
+                } px-3 py-2 transition-all duration-200 ${
                   isActive
-                    ? "bg-[#1DA1F2] text-[#040C33]"
+                    ? "bg-[#1DA1F2] text-white"
                     : "text-white/70 hover:bg-white/5"
                 }`}
               >
-                <IconComponent />
+                <div className="w-4 h-4 flex items-center justify-center">
+                  <IconComponent />
+                </div>
                 {!isCollapsed && <span className="text-sm">{item.label}</span>}
               </button>
             );
@@ -110,13 +114,17 @@ const Sidebar = ({ activePage, onPageChange, onLogout }: SidebarProps) => {
               <button
                 key={item.id}
                 onClick={() => onPageChange(item.id)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-[30px] transition-all duration-200 ${
+                className={`flex items-center ${
+                  isCollapsed ? "justify-center rounded-[8px]" : "gap-2 rounded-[30px]"
+                } px-3 py-2 transition-all duration-200 ${
                   isActive
-                    ? "bg-[#1DA1F2] text-[#040C33]"
+                    ? "bg-[#1DA1F2] text-white"
                     : "text-white/70 hover:bg-white/5"
                 }`}
               >
-                <IconComponent />
+                <div className="w-4 h-4 flex items-center justify-center">
+                  <IconComponent />
+                </div>
                 {!isCollapsed && <span className="text-sm">{item.label}</span>}
               </button>
             );
@@ -127,9 +135,13 @@ const Sidebar = ({ activePage, onPageChange, onLogout }: SidebarProps) => {
       {/* Logout Button */}
       <button
         onClick={onLogout}
-        className="flex items-center gap-2 px-3 py-2 text-white hover:bg-white/5 transition-colors"
+        className={`flex items-center ${
+          isCollapsed ? "justify-center" : "gap-2"
+        } px-3 py-2 text-white hover:bg-white/5 transition-colors`}
       >
-        <SidebarLogoutIcon />
+        <div className="w-4 h-4 flex items-center justify-center">
+          <SidebarLogoutIcon />
+        </div>
         {!isCollapsed && <span className="text-xs">Logout</span>}
       </button>
     </div>
