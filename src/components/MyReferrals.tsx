@@ -32,18 +32,18 @@ const MyReferrals = () => {
   ];
   return (
     <div className="flex-1 p-4 sm:p-6">
-      <div className="max-w-6xl mx-auto flex flex-col gap-[50px]">
-        <div className="flex flex-col gap-[10px]">
+      <div className="max-w-6xl mx-auto flex flex-col gap-[3.125rem]">
+        <div className="flex flex-col gap-[0.625rem]">
           <h2 className="text-2xl font-bold">My Referrals</h2>
           <p className="text-white/60 text-xs font-medium">
             Start by sharing your referral link, and your rewards grows
           </p>
         </div>
 
-        <div className="flex flex-col gap-[10px]">
-          <div className="flex flex-col gap-[6px] bg-[#4DA2FD17] rounded-[10px] p-[20px] w-[513px]">
+        <div className="flex flex-col gap-[0.625rem]">
+          <div className="flex flex-col gap-[0.375rem] bg-[#4DA2FD17] rounded-[0.625rem] p-[1.25rem] w-full max-w-[clamp(18rem,85vw,32.0625rem)]">
             <h5 className="text-white/60 text-sm font-bold">Total earnings:</h5>
-            <p className="text-[24px] font-bold">0</p>
+            <p className="text-[1.5rem] font-bold">0</p>
             <div className="flex flex-col">
               <div className="border-b border-white/20 flex items-center justify-between pb-2">
                 <h5 className="text-white/60 text-sm font-bold">
@@ -59,7 +59,7 @@ const MyReferrals = () => {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-[15px]">
+          <div className="flex items-center gap-[0.9375rem]">
             <p className="text-white/70 text-sm font-bold">
               Select a platform to share your link instantly
             </p>
@@ -76,18 +76,19 @@ const MyReferrals = () => {
 
         <ReferralComponent />
 
-        <div className="flex flex-col gap-[20px]">
-          <h4 className="font-bold text-[20px]">Recent Referrals</h4>
-          <table className="w-full">
+        <div className="flex flex-col gap-[1.25rem]">
+          <h4 className="font-bold text-[1.25rem]">Recent Referrals</h4>
+          <div className="w-full overflow-x-auto rounded-[0.625rem] border border-white/10">
+          <table className="w-full min-w-[clamp(20rem,90vw,37.5rem)]">
             <thead>
-              <tr className="bg-white/10 rounded-[10px]">
-                <th className="text-left py-3 px-4 text-white/50 font-bold rounded-l-[10px]">
+              <tr className="bg-white/10 rounded-[0.625rem]">
+                <th className="text-left py-3 px-4 text-white/50 font-bold rounded-l-[0.625rem]">
                   Description
                 </th>
                 <th className="text-left py-3 px-4 text-white/50 font-bold">
                   Date
                 </th>
-                <th className="text-left py-3 px-4 text-white/50 font-bold rounded-r-[10px]">
+                <th className="text-left py-3 px-4 text-white/50 font-bold rounded-r-[0.625rem]">
                   Points
                 </th>
               </tr>
@@ -108,6 +109,7 @@ const MyReferrals = () => {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>

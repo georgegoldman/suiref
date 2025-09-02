@@ -16,13 +16,11 @@ import {
   SuiClientProvider,
   WalletProvider,
   useSuiClientContext,
-  useCurrentAccount,
 } from "@mysten/dapp-kit";
 import { isEnokiNetwork, registerEnokiWallets } from "@mysten/enoki";
 import { getFullnodeUrl } from "@mysten/sui/client";
 import { useEffect, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React from "react";
 import LeaderboardPage from "./components/leaderboard-page";
 import ReferralPage from "./components/referral-page";
 import ReferralLanding from "./components/ReferralLanding";
@@ -35,28 +33,28 @@ const queryClient = new QueryClient();
 type RouteProps = { children: ReactNode };
 
 function ProtectedRoute({ children }: RouteProps) {
-  const currentAccount = useCurrentAccount();
-
-  // Show a tiny loading state on first paint so autoConnect can finish
-  // This prevents a brief mis-detection and redirect flicker.
-  const [ready, setReady] = React.useState(false);
-  useEffect(() => {
-    const id = setTimeout(() => setReady(true), 0);
-    return () => clearTimeout(id);
-  }, []);
-  if (!ready)
-    return (
-      <div className="min-h-screen grid place-items-center text-white">
-        Loading…
-      </div>
-    );
-
-  return currentAccount ? children : <Navigate to="/login" replace />;
+  // const currentAccount = useCurrentAccount();
+  // Temporary: disable auth guard to allow dashboard access without login
+  // const [ready, setReady] = React.useState(false);
+  // useEffect(() => {
+  //   const id = setTimeout(() => setReady(true), 0);
+  //   return () => clearTimeout(id);
+  // }, []);
+  // if (!ready)
+  //   return (
+  //     <div className="min-h-screen grid place-items-center text-white">
+  //       Loading…
+  //     </div>
+  //   );
+  // return currentAccount ? children : <Navigate to="/login" replace />;
+  return children;
 }
 
 function PublicRoute({ children }: RouteProps) {
-  const currentAccount = useCurrentAccount();
-  return !currentAccount ? children : <Navigate to="/dashboard" replace />;
+  // const currentAccount = useCurrentAccount();
+  // Temporary: disable redirect away from login when already logged in
+  // return !currentAccount ? children : <Navigate to="/dashboard" replace />;
+  return children;
 }
 
 function RegisterEnokiWallets() {

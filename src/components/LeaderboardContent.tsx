@@ -134,7 +134,7 @@ const LeaderboardContent = ({
 
   return (
     <div
-      className={`flex flex-col gap-[3rem] ${padding} max-w-7xl ${
+      className={`flex flex-col gap-[2rem] sm:gap-[2.5rem] lg:gap-[3rem] ${padding} max-w-7xl ${
         centerContent ? "mx-auto" : ""
       }`}
     >
@@ -158,12 +158,12 @@ const LeaderboardContent = ({
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-[80px]">
-        <div className="flex gap-[20px]">
+      <div className="flex flex-col items-center gap-[40px] sm:gap-[60px] lg:gap-[80px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[20px] place-items-center w-full">
           {leaderboardData.map((player) => (
             <div
               key={player.id}
-              className="rounded-[15px] w-[234px] bg-[#040C33] relative overflow-hidden pb-2.5"
+              className="rounded-[15px] w-[220px] sm:w-[230px] lg:w-[234px] bg-[#040C33] relative overflow-hidden pb-2.5"
             >
               <div
                 className="h-[58px] relative"
@@ -219,10 +219,11 @@ const LeaderboardContent = ({
           ))}
         </div>
 
-        <table className="w-full">
+        <div className="w-full overflow-x-auto rounded-[10px] border border-white/10">
+        <table className="w-full min-w-[720px]">
           <thead>
             <tr className="bg-white/10">
-              <th className="text-left flex items-center gap-2.5 py-3 px-4 text-white/80 font-medium text-sm rounded-l-[10px]">
+              <th className="text-left py-3 px-4 text-white/80 font-medium text-sm rounded-l-[10px]">
                 <span>#</span>
                 <span>Name</span>
               </th>
@@ -284,12 +285,13 @@ const LeaderboardContent = ({
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Profile Modal */}
       {isModalOpen && selectedProfile && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#040C33] rounded-[20px] w-[754px] max-h-[80vh] overflow-y-auto relative">
+          <div className="bg-[#040C33] rounded-[20px] w-full max-w-[754px] max-h-[80vh] overflow-y-auto relative">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-white/10">
               <h2 className="text-xl font-bold flex-1 flex justify-center">
@@ -322,9 +324,9 @@ const LeaderboardContent = ({
               </div>
             </div>
 
-            <div className="flex flex-col gap-[30px] px-6 pb-6">
+            <div className="flex flex-col gap-[20px] sm:gap-[24px] lg:gap-[30px] px-4 sm:px-6 pb-6">
               {/* Profile Details */}
-              <div className="pt-12 flex items-center justify-between">
+              <div className="pt-12 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
                 <div className="flex flex-col gap-2.5 flex-1">
                   <h3 className="text-xl font-medium">
                     {selectedProfile.name}
@@ -338,8 +340,8 @@ const LeaderboardContent = ({
                 </div>
 
                 {/* Statistics Grid */}
-                <div className="flex flex-col gap-5 flex-1">
-                  <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-5 flex-1 w-full">
+                  <div className="grid grid-cols-2 gap-4 w-full">
                     <div className="flex flex-col gap-2.5">
                       <p className="text-white/50 text-[10px] font-medium flex items-center gap-1">
                         Won{" "}
@@ -359,7 +361,7 @@ const LeaderboardContent = ({
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="grid grid-cols-2 gap-4 w-full">
                     <div className="flex flex-col gap-2.5">
                       <p className="text-white text-sm font-medium flex items-center gap-1">
                         12
@@ -384,7 +386,8 @@ const LeaderboardContent = ({
               {/* Activity Section */}
               <div className="flex flex-col gap-5">
                 <h4 className="text-white font-medium">Activity</h4>
-                <table className="w-full">
+                <div className="w-full overflow-x-auto rounded-[10px] border border-white/10">
+                <table className="w-full min-w-[520px]">
                   <thead>
                     <tr className="bg-white/10">
                       <th className="text-left p-[20px] text-white/80 font-medium text-sm rounded-l-[10px]">
@@ -420,6 +423,7 @@ const LeaderboardContent = ({
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
             </div>
           </div>

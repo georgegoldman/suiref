@@ -38,9 +38,9 @@ const ReferralComponent = () => {
     }
   };
   return (
-    <div className="flex items-start justify-between">
+    <div className="flex flex-col lg:flex-row items-start justify-between gap-6">
       {/* Referral Link Section */}
-      <div className="flex flex-col border border-[#4DA2FD] p-[20px] w-[390px] rounded-[20px] gap-4 sm:gap-6 lg:gap-[15px]">
+      <div className="flex flex-col border border-[#4DA2FD] p-[20px] w-full max-w-[390px] rounded-[20px] gap-4 sm:gap-6 lg:gap-[15px]">
         <h3 className="text-sm font-medium">Referral Link</h3>
         <div className="flex gap-3 sm:gap-4 lg:gap-5 w-full">
           <input
@@ -82,7 +82,7 @@ const ReferralComponent = () => {
       </div>
 
       {/* QR Code Section */}
-      <div className="flex flex-col items-center gap-3 sm:gap-4 lg:gap-[20px] w-[390px] border border-[#4DA2FD] p-[20px] rounded-[20px]">
+      <div className="flex flex-col items-center gap-3 sm:gap-4 lg:gap-[20px] w-full max-w-[390px] border border-[#4DA2FD] p-[20px] rounded-[20px]">
         <h3 className="text-base font-medium">QR Code</h3>
 
         <div className="w-32 sm:w-40 lg:w-auto">

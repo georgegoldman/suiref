@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AiOutlineClose } from "react-icons/ai";
 import SidebarCollapseIcon from "../assets/sidebar-collapse-icon";
 import SidebarDashboardIcon from "../assets/sidebar-dashboard-icon";
 import SidebarReferralToolIcon from "../assets/sidebar-referral-tool-icon";
@@ -15,9 +16,11 @@ interface SidebarProps {
   activePage: string;
   onPageChange: (page: string) => void;
   onLogout: () => void;
+  isMobileOpen?: boolean;
+  onCloseMobile?: () => void;
 }
 
-const Sidebar = ({ activePage, onPageChange, onLogout }: SidebarProps) => {
+const Sidebar = ({ activePage, onPageChange, onLogout, isMobileOpen = false, onCloseMobile }: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const mainMenuItems = [
@@ -47,23 +50,30 @@ const Sidebar = ({ activePage, onPageChange, onLogout }: SidebarProps) => {
     setIsCollapsed(!isCollapsed);
   };
 
-  return (
-    <div
-      className={`flex flex-col gap-[2rem] border-r border-white/10 bg-[#040c33] transition-all duration-300 ${
-        isCollapsed ? "w-16" : "w-64"
-      } min-h-screen p-4`}
-    >
+  const sidebarInner = (
+    <div className="flex flex-col gap-[2rem] h-full">
       {/* Top Section - Logo and Collapse Icon */}
       <div className="flex items-center justify-between mb-6">
         {!isCollapsed && (
           <div className="text-white font-bold text-xl">SuiHub</div>
         )}
-        <button
-          onClick={toggleCollapse}
-          className="text-white/70 hover:text-white transition-colors"
-        >
-          <SidebarCollapseIcon />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleCollapse}
+            className="text-white/70 hover:text-white transition-colors hidden lg:inline-flex"
+          >
+            <SidebarCollapseIcon />
+          </button>
+          {/* Close only on mobile overlay */}
+          {onCloseMobile && (
+            <button
+              onClick={onCloseMobile}
+              className="text-white/70 hover:text-white transition-colors lg:hidden"
+            >
+              <AiOutlineClose size={20} />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Main Menu Section */}
@@ -145,6 +155,32 @@ const Sidebar = ({ activePage, onPageChange, onLogout }: SidebarProps) => {
         {!isCollapsed && <span className="text-xs">Logout</span>}
       </button>
     </div>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <div
+        className={`hidden lg:flex flex-col border-r border-white/10 bg-[#040c33] transition-all duration-300 ${
+          isCollapsed ? "w-16" : "w-64"
+        } min-h-screen p-4`}
+      >
+        {sidebarInner}
+      </div>
+
+      {/* Mobile Overlay Sidebar */}
+      {isMobileOpen && (
+        <div className="fixed inset-0 z-[1000]">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={onCloseMobile}
+          />
+          <div className="absolute left-0 top-0 h-full w-64 max-w-[80%] bg-[#040c33] border-r border-white/10 p-4 shadow-2xl">
+            {sidebarInner}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

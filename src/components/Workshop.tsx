@@ -41,12 +41,12 @@ const Workshop = ({ onPageChange }: WorkshopProps) => {
           onPageChange={onPageChange}
         />
       ) : (
-        <div className="max-w-6xl mx-auto flex flex-col gap-[50px]">
-          <div className="bg-white/10 rounded-[20px] p-[5px] w-full max-w-[510px]">
+        <div className="max-w-6xl mx-auto flex flex-col gap-[3.125rem]">
+          <div className="bg-white/10 rounded-[1.25rem] p-[0.3125rem] w-full max-w-[clamp(18rem,85vw,31.875rem)]">
             <div className="flex">
               <button
                 onClick={() => setActiveTab("workshop")}
-                className={`px-4 sm:px-6 py-3 rounded-[15px] font-medium text-sm transition-all duration-200 flex-1 ${
+                className={`px-4 sm:px-6 py-3 rounded-[0.9375rem] font-medium text-sm transition-all duration-200 flex-1 ${
                   activeTab === "workshop"
                     ? "bg-[#4DA2FD] rounded text-white"
                     : "bg-transparent text-white/80"
@@ -56,7 +56,7 @@ const Workshop = ({ onPageChange }: WorkshopProps) => {
               </button>
               <button
                 onClick={() => setActiveTab("modules")}
-                className={`px-4 sm:px-6 py-3 rounded-[15px] font-medium text-sm transition-all duration-200 flex-1 ${
+                className={`px-4 sm:px-6 py-3 rounded-[0.9375rem] font-medium text-sm transition-all duration-200 flex-1 ${
                   activeTab === "modules"
                     ? "bg-[#4DA2FD] rounded text-white"
                     : "bg-transparent text-white/80"

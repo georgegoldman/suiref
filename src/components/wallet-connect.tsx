@@ -38,9 +38,9 @@ const WalletConnect = ({
   }, [isSuccess, navigate, setIsAuthenticated]);
 
   return (
-    <div className="flex items-center justify-between h-screen">
+    <div className="flex flex-col lg:flex-row justify-between items-start w-full min-h-[100dvh] py-0">
       <div
-        className="w-full h-full flex justify-center rounded-[20px]"
+        className="w-full h-[55dvh] sm:h-[60dvh] lg:h-[100dvh] flex justify-center items-center rounded-b-[20px] lg:rounded-b-none lg:rounded-tr-[20px] lg:rounded-br-[20px]"
         style={{
           background:
             "linear-gradient(158.16deg, rgba(119, 114, 243, 0.7) -36.07%, #4DA2FD 119.81%)",
@@ -48,13 +48,11 @@ const WalletConnect = ({
       >
         <img
           src={OnboardImage}
-          alt="Onboard Image"
-          width={371}
-          height={371}
-          className="object-contain"
+          alt="Onboard illustration"
+          className="object-contain w-full max-w-[420px] h-auto"
         />
       </div>
-      <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-12 lg:gap-[60px] p-5 sm:p-6 md:p-8 lg:p-[20px] bg-[#FFFFFF14] border border-[#4DA2FD70] rounded-2xl md:rounded-3xl lg:rounded-[30px] w-full max-w-xs sm:max-w-sm md:max-w-lg lg:max-w-[607px] backdrop-blur-sm mx-[2rem] ml-[3rem]">
+      <div className="flex flex-col items-center justify-center self-center gap-6 sm:gap-8 md:gap-12 lg:gap-[60px] p-5 sm:p-6 md:p-8 lg:p-[20px] bg-[#FFFFFF14] border border-[#4DA2FD70] rounded-2xl md:rounded-3xl lg:rounded-[30px] w-full max-w-xs sm:max-w-sm md:max-w-lg lg:max-w-[607px] backdrop-blur-sm mx-4 sm:mx-6 lg:mx-[3rem] mt-6 lg:mt-0">
         {isSuccess ? (
           <div className="flex flex-col items-center gap-6 sm:gap-7 md:gap-8 lg:gap-[30px]">
             <div className="scale-75 sm:scale-90 md:scale-100">

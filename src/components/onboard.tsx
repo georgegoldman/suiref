@@ -13,9 +13,9 @@ const Onboard = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row justify-between items-start w-full min-h-screen py-4 lg:py-0">
+    <div className="flex flex-col lg:flex-row justify-between items-start w-full min-h-[100dvh] py-0 lg:py-0">
       <div
-        className="w-full h-screen flex justify-center rounded-tr-[20px] rounded-br-[20px] sticky top-0"
+        className="w-full h-[55dvh] sm:h-[60dvh] lg:h-[100dvh] flex justify-center items-center rounded-b-[20px] lg:rounded-b-none lg:rounded-tr-[20px] lg:rounded-br-[20px] lg:sticky lg:top-0"
         style={{
           background:
             "linear-gradient(158.16deg, rgba(119, 114, 243, 0.7) -36.07%, #4DA2FD 119.81%)",
@@ -23,14 +23,12 @@ const Onboard = () => {
       >
         <img
           src={OnboardImage}
-          alt="Onboard Image"
-          width={371}
-          height={371}
-          className="object-contain"
+          alt="Onboard illustration"
+          className="object-contain w-full max-w-[420px] h-auto"
         />
       </div>
 
-      <div className="w-full flex flex-col justify-center gap-[clamp(2rem,5vw,6.25rem)] px-[clamp(1rem,5vw,4rem)] self-center">
+      <div className="w-full flex flex-col justify-center gap-[clamp(2rem,5vw,6.25rem)] px-[clamp(1rem,5vw,4rem)] self-center mt-6 lg:mt-0">
         <div className="flex flex-col items-center lg:items-start gap-[clamp(1rem,2vw,2.5rem)] text-center lg:text-left">
           <h2 className="font-bold text-[clamp(1.5rem,4vw,2.5rem)] leading-snug text-white text-center">
             Earn Onchain Rewards by Growing the Sui Developer Community
@@ -42,14 +40,14 @@ const Onboard = () => {
         </div>
 
         <div className="flex flex-col gap-[clamp(1rem,2vw,1.5rem)]">
-          <div className="flex gap-[clamp(1rem,2vw,1.5rem)] w-full max-w-md lg:max-w-none mx-auto lg:mx-0">
+          <div className="flex flex-col sm:flex-row gap-[clamp(1rem,2vw,1.5rem)] w-full max-w-md lg:max-w-none mx-auto lg:mx-0">
             <button
               onClick={handleGetStarted}
-              className="bg-[#4DA2FD] hover:bg-[#3d8ae6] py-[clamp(0.75rem,1.5vw,1.25rem)] rounded-[clamp(0.75rem,2vw,1.25rem)] text-[clamp(0.875rem,2vw,1.125rem)] font-bold w-full text-white transition-colors duration-200 shadow-lg hover:shadow-xl"
+              className="bg-[#4DA2FD] hover:bg-[#3d8ae6] py-[clamp(0.75rem,1.5vw,1.25rem)] rounded-[clamp(0.75rem,2vw,1.25rem)] text-[clamp(0.875rem,2vw,1.125rem)] font-bold flex-1 text-white transition-colors duration-200 shadow-lg hover:shadow-xl"
             >
               Get Started
             </button>
-            <button className="bg-[#1F5793B2] hover:bg-[#1F5793CC] border border-[#1F579350] py-[clamp(0.75rem,1.5vw,1.25rem)] rounded-[clamp(0.75rem,2vw,1.25rem)] text-[clamp(0.875rem,2vw,1.125rem)] font-bold w-full text-white transition-colors duration-200">
+            <button className="bg-[#1F5793B2] hover:bg-[#1F5793CC] border border-[#1F579350] py-[clamp(0.75rem,1.5vw,1.25rem)] rounded-[clamp(0.75rem,2vw,1.25rem)] text-[clamp(0.875rem,2vw,1.125rem)] font-bold flex-1 text-white transition-colors duration-200">
               Learn More
             </button>
           </div>

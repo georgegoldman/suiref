@@ -84,11 +84,11 @@ const ModuleContent = ({
 
   return (
     <div className="flex-1 p-4 sm:p-6">
-      <div className="max-w-6xl mx-auto flex flex-col gap-[50px]">
+      <div className="max-w-6xl mx-auto flex flex-col gap-[3.125rem]">
         {/* Header with Back Button */}
-        <div className="flex items-center gap-[8px]">
+        <div className="flex items-center gap-[0.5rem]">
           <button
-            className="bg-[#4DA2FD] w-[45px] flex items-center justify-center h-[45px] rounded-[10px]"
+            className="bg-[#4DA2FD] w-[clamp(2rem,6vw,2.8125rem)] flex items-center justify-center h-[clamp(2rem,6vw,2.8125rem)] rounded-[0.625rem]"
             onClick={onBack}
           >
             <CaretLeft />
@@ -97,7 +97,7 @@ const ModuleContent = ({
         </div>
 
         <button
-          className={`text-white text-sm font-medium p-[10px] rounded-[10px] border w-[183px] h-[40px] flex items-center gap-[10px] ${
+          className={`text-white text-sm font-medium p-[0.625rem] rounded-[0.625rem] border w-full sm:w-[clamp(9rem,28vw,11.4375rem)] h-[clamp(2.25rem,6vh,2.5rem)] flex items-center justify-center gap-[0.625rem] ${
             isCompleted
               ? "bg-[#4DA2FD] border-[#4DA2FD]"
               : "bg-[#4DA2FD1A] border-white/20"
@@ -109,15 +109,15 @@ const ModuleContent = ({
           {isCompleted ? "Completed" : "Mark as Complete"}
         </button>
 
-        <div className="flex flex-col gap-[50px] w-[779px]">
-          <div className="flex flex-col gap-[10px]">
-            <h1 className="text-[32px] font-bold">{moduleTitle}</h1>
+        <div className="flex flex-col gap-[2rem] sm:gap-[2.5rem] lg:gap-[3.125rem] w-full max-w-[clamp(20rem,90vw,48.6875rem)]">
+          <div className="flex flex-col gap-[0.625rem]">
+            <h1 className="text-[1.5rem] sm:text-[1.75rem] lg:text-[2rem] font-bold">{moduleTitle}</h1>
             <p className="text-white/60 font-bold text-sm">Video</p>
           </div>
-          <div className="flex flex-col gap-[20px]">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-[10px]">
-                <div className="relative w-[40px] h-[40px] flex items-center justify-center">
+          <div className="flex flex-col gap-[1.25rem]">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 items-start sm:items-center justify-between">
+              <div className="flex items-center gap-[0.625rem]">
+                <div className="relative w-[clamp(2rem,8vw,2.5rem)] h-[clamp(2rem,8vw,2.5rem)] flex items-center justify-center">
                   {/* Background circle */}
                   <svg className="absolute inset-0 w-full h-full transform -rotate-90">
                     <circle
@@ -162,7 +162,7 @@ const ModuleContent = ({
                 </p>
               </div>
               <button
-                className={`text-white text-sm font-medium p-[10px] rounded-[10px] border w-[183px] h-[40px] flex items-center gap-[10px] ${
+                className={`text-white text-sm font-medium p-[0.625rem] rounded-[0.625rem] border w-full sm:w-[clamp(9rem,28vw,11.4375rem)] h-[clamp(2.25rem,6vh,2.5rem)] flex items-center justify-center gap-[0.625rem] ${
                   isCompleted
                     ? "bg-[#4DA2FD] border-[#4DA2FD]"
                     : "bg-[#4DA2FD1A] border-white/20"
@@ -175,7 +175,7 @@ const ModuleContent = ({
               </button>
             </div>
             <iframe
-              className="w-full h-[306px] rounded-[10px]"
+              className="w-full h-[clamp(13.75rem,45vh,19.125rem)] rounded-[0.625rem]"
               src={`https://www.youtube.com/embed/${currentVideoId}?si=ybdnk0W7pWTinNxO`}
               title="YouTube video player"
               frameBorder="0"
@@ -185,9 +185,9 @@ const ModuleContent = ({
             ></iframe>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             <button
-              className={`p-[10px] rounded-[10px] text-white text-sm font-medium w-[141px] h-[40px] ${
+              className={`p-[0.625rem] rounded-[0.625rem] text-white text-sm font-medium w-full sm:w-[clamp(8rem,25vw,8.8125rem)] h-[clamp(2.25rem,6vh,2.5rem)] ${
                 isFirstModule
                   ? "bg-white/10 text-white/40 cursor-not-allowed"
                   : "bg-white/30 hover:bg-white/40"
@@ -198,7 +198,7 @@ const ModuleContent = ({
               Back
             </button>
             <button
-              className={`p-[10px] rounded-[10px] text-white text-sm font-medium w-[141px] h-[40px] ${
+              className={`p-[0.625rem] rounded-[0.625rem] text-white text-sm font-medium w-full sm:w-[clamp(8rem,25vw,8.8125rem)] h-[clamp(2.25rem,6vh,2.5rem)] ${
                 isLastModule
                   ? "bg-white/10 text-white/40 cursor-not-allowed"
                   : "bg-white/30 hover:bg-white/40"

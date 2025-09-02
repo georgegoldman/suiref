@@ -18,6 +18,7 @@ export default function DashboardMain() {
   const navigate = useNavigate();
   const location = useLocation();
   const { mutateAsync: disconnectAsync } = useDisconnectWallet();
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Get the current page from URL query parameter or default to referral-tools
   const getCurrentPage = () => {
@@ -32,6 +33,13 @@ export default function DashboardMain() {
     setActivePage(getCurrentPage());
   }, [location.search]);
 
+  // Redirect to standalone leaderboard route if leaderboards tab is selected via URL
+  useEffect(() => {
+    if (activePage === "leaderboards") {
+      navigate("/leaderboard");
+    }
+  }, [activePage, navigate]);
+
   const handleLogout = async () => {
     try {
       await disconnectAsync();
@@ -42,6 +50,10 @@ export default function DashboardMain() {
   };
 
   const handlePageChange = (page: string) => {
+    if (page === "leaderboards") {
+      navigate("/leaderboard");
+      return;
+    }
     setActivePage(page);
     navigate(`/dashboard?tab=${page}`, { replace: true });
   };
@@ -73,14 +85,20 @@ export default function DashboardMain() {
 
   return (
     <div className="flex min-h-screen bg-[#040c33] text-white">
+      {/* Sidebar: desktop persistent, mobile overlay handled via props */}
       <Sidebar
         activePage={activePage}
-        onPageChange={handlePageChange}
+        onPageChange={(page) => {
+          handlePageChange(page);
+          setIsMobileSidebarOpen(false);
+        }}
         onLogout={handleLogout}
+        isMobileOpen={isMobileSidebarOpen}
+        onCloseMobile={() => setIsMobileSidebarOpen(false)}
       />
 
       <div className="flex-1 flex flex-col">
-        <Navbar />
+        <Navbar onOpenSidebar={() => setIsMobileSidebarOpen(true)} />
 
         {renderContent()}
       </div>

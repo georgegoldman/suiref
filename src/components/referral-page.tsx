@@ -41,9 +41,9 @@ const ReferralPage = () => {
     }
   };
   return (
-    <div className="flex items-start justify-between min-h-screen">
+    <div className="flex flex-col lg:flex-row justify-between items-start w-full min-h-[100dvh] py-0">
       <div
-        className="w-full h-screen flex justify-center rounded-tr-[20px] rounded-br-[20px] sticky top-0"
+        className="w-full h-[55dvh] sm:h-[60dvh] lg:h-[100dvh] flex justify-center items-center rounded-b-[20px] lg:rounded-b-none lg:rounded-tr-[20px] lg:rounded-br-[20px] lg:sticky lg:top-0"
         style={{
           background:
             "linear-gradient(158.16deg, rgba(119, 114, 243, 0.7) -36.07%, #4DA2FD 119.81%)",
@@ -51,28 +51,26 @@ const ReferralPage = () => {
       >
         <img
           src={OnboardImage}
-          alt="Onboard Image"
-          width={371}
-          height={371}
-          className="object-contain"
+          alt="Onboard illustration"
+          className="object-contain w-full max-w-[420px] h-auto"
         />
       </div>
 
-      <div className="flex flex-col gap-16 items-center mx-[2rem] ml-[3rem] py-8 self-center">
-        <div className="flex flex-col gap-[10px] items-center">
+      <div className="flex flex-col items-center justify-center gap-[clamp(2rem,5vw,6.25rem)] px-4 sm:px-6 lg:px-16 self-center mt-6 lg:mt-0 w-full">
+        <div className="flex flex-col gap-[clamp(0.5rem,2vw,1rem)] items-center text-center">
           <div className="flex items-start gap-[5px]">
-            <h2 className="text-[40px] font-bold text-center">
+            <h2 className="text-[clamp(1.5rem,4vw,2.5rem)] font-bold text-center">
               You’re all set, let the referral begins!
             </h2>
           </div>
-          <p className="text-white/60 text-[20px] font-medium text-center">
+          <p className="text-white/60 text-[clamp(0.875rem,2.5vw,1.25rem)] font-medium text-center">
             Invite your friends to join SuiHub, attend workshop and join
             complete onboardings module. Earn points and unlock NFT rewards
           </p>
         </div>
         {isLinkGenerated ? (
           <div className="flex flex-col items-center">
-            <div className="flex flex-col p-[20px] w-[390px] rounded-[20px] gap-4 sm:gap-6 lg:gap-[15px]">
+            <div className="flex flex-col p-[20px] w-full max-w-[390px] rounded-[20px] gap-4 sm:gap-6 lg:gap-[15px]">
               <h3 className="text-sm font-medium">Referral Link</h3>
               <div className="flex gap-3 sm:gap-4 lg:gap-5 w-full">
                 <input
@@ -107,7 +105,7 @@ const ReferralPage = () => {
 
             <p className="text-[#FFFFFF] font-bold text-[20px]">Or</p>
 
-            <div className="flex flex-col items-center gap-3 sm:gap-4 lg:gap-[20px] w-[390px] p-[20px] rounded-[20px]">
+            <div className="flex flex-col items-center gap-3 sm:gap-4 lg:gap-[20px] w-full max-w-[390px] p-[20px] rounded-[20px]">
               <h3 className="text-base font-medium">QR Code</h3>
 
               <p className="text-sm text-[#FFFFFFB2] font-medium text-center">
@@ -132,7 +130,7 @@ const ReferralPage = () => {
         ) : (
           <button
             onClick={() => setIsLinkGenerated(true)}
-            className="bg-[#E8E8E8] py-[10px] px-[20px] rounded-[10px] text-sm font-medium text-[#040C33] w-[356px] h-[54px]"
+            className="bg-[#E8E8E8] py-[10px] px-[20px] rounded-[10px] text-sm font-medium text-[#040C33] w-full max-w-[356px] h-[54px]"
           >
             Generate Link
           </button>
