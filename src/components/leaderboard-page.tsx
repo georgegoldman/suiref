@@ -1,11 +1,12 @@
+import React from "react";
 import LeaderboardContent from "./LeaderboardContent";
 
-const LeaderboardPage = () => {
+const LeaderboardPage: React.FC = () => {
   return (
     <LeaderboardContent
-      showBackButton={true}
+      showBackButton
       padding="px-16 py-10"
-      centerContent={true}
+      centerContent
     />
   );
 };

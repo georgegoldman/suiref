@@ -1,104 +1,212 @@
+// src/session-data.tsx
 /* eslint-disable react-refresh/only-export-components */
-import { useCurrentAccount } from "@mysten/dapp-kit";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 import { fetchSharedObject } from "./lib/api";
 
-type Profile  = {
-    username: string | null;
-    avatar: string | null;   // dicebear URL you stored in Move
-    ranking: number;
-    address: string | null;
-    hasProfile: boolean;
-}
+export type Profile = {
+  username: string | null;
+  avatar: string | null;   // dicebear URL stored on-chain
+  ranking: number;
+  address: string | null;
+  hasProfile: boolean;
+};
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+export type LeaderEntry = {
+  username: string;
+  score: number;             // ranking or referral count
+  avatar: string | null;
+  address: string | null;
+};
+
 type SessionData = {
-    [x: string]: any;
-    sharedObject?: any;
-    loading: boolean;
-    error?: string;
-    refresh: () => Promise<void>;
+  loading: boolean;
+  error?: string;
+  refresh: () => Promise<void>;
+
+  // raw objects (optional to use directly)
+  profileObject?: any;       // ProfilePool move object
+  referralObject?: any;      // ReferralPool move object
+
+  // derived
+  profile: Profile;          // current user (if logged in)
+  leaderboard: LeaderEntry[];// all users sorted by score desc
+  top3: LeaderEntry[];       // first, second, third
 };
 
 const SessionDataCtx = React.createContext<SessionData | undefined>(undefined);
 
-export const SessionDataProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-    const account = useCurrentAccount();
-    const [sharedObject, setSharedObject] = React.useState<any>();
-    const [loading, setLoading] = React.useState(false);
-    const [error, setError] = React.useState<string>();
-    const objectId = import.meta.env.VITE_SHARED_OBJECT_ID as string;
+const PROFILE_POOL_ID =
+  (import.meta.env.VITE_PROFILE_POOL_ID as string | undefined) ??
+  (import.meta.env.VITE_SHARED_OBJECT_ID as string | undefined);
+const REFERRAL_POOL_ID = import.meta.env.VITE_REFERRAL_POOL_ID as
+  | string
+  | undefined;
 
-    const load = React.useCallback(async () => {
-        if (!account?.address || !objectId) return;
-        setLoading(true);
-        setError(undefined);
-        try {
-            const obj = await fetchSharedObject(objectId);
-            setSharedObject(obj);
-        } catch (e:any) {
-            setError(e?.message ?? "Failed to fetch shared object");
-        } finally {
-            setLoading(false);
-        }
-    }, [account?.address, objectId]);
+function getMoveFields(obj: any) {
+  const content = obj?.data?.content;
+  if (!content || content.dataType !== "moveObject") return undefined;
+  return content.fields;
+}
 
-    // Fetch when user logs in / account changes; clear on logout.
-    React.useEffect(() => {
-        if (account?.address) void load();
-        else {
-            setSharedObject(undefined);
-            setError(undefined);
-            setLoading(false);
-        }
-    }, [account?.address, load]);
+export const SessionDataProvider: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
+  const account = useCurrentAccount();
 
-      // ---- Compute myProfile from sharedObject + account ----
-        const poolList: any[] = React.useMemo(() => {
-            const content = (sharedObject as any)?.data?.content;
-            if (!content || content.dataType !== "moveObject") return [];
-            const list = content.fields?.pool_list;
-            return Array.isArray(list) ? list : [];
-        }, [sharedObject]);
+  const [profileObject, setProfileObject] = React.useState<any>();
+  const [referralObject, setReferralObject] = React.useState<any>();
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string>();
 
-        const myProfile: any | null = React.useMemo(() => {
-            const addr = account?.address?.toLowerCase();
-            if (!addr) return null;
-            return (
-            poolList.find(
-                (it: any) =>
-                typeof it?.fields?.owner === "string" &&
-                it.fields.owner.toLowerCase() === addr
-            ) ?? null
-            );
-        }, [poolList, account?.address]);
+  const load = React.useCallback(async () => {
+    if (!PROFILE_POOL_ID) {
+      setError("Missing VITE_PROFILE_POOL_ID (or VITE_SHARED_OBJECT_ID)");
+      return;
+    }
+    setLoading(true);
+    setError(undefined);
+    try {
+      const [profileObj, referralObj] = await Promise.all([
+        fetchSharedObject(PROFILE_POOL_ID),
+        REFERRAL_POOL_ID ? fetchSharedObject(REFERRAL_POOL_ID) : Promise.resolve(undefined),
+      ]);
+      setProfileObject(profileObj);
+      setReferralObject(referralObj);
+    } catch (e: any) {
+      setError(e?.message ?? "Failed to fetch on-chain objects");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-        const profile: Profile = React.useMemo(
-            () => ({
-            username: myProfile?.fields?.username ?? null,
-            avatar: myProfile?.fields?.url ?? null,
-            ranking: Number(myProfile?.fields?.ranking ?? 0),
-            address: account?.address ?? null,
-            hasProfile: !!myProfile,
-            }),
-            [myProfile, account?.address]
-        );
+  // Fetch on mount and whenever IDs change
+  React.useEffect(() => {
+    void load();
+  }, [load]);
 
-    const value: SessionData = React.useMemo(
-        () => ({ sharedObject, loading, error, refresh: load, profile }),
-        [sharedObject, loading, error, load, profile]
+  // ---------- derive pool lists ----------
+  const profilePoolList: any[] = React.useMemo(() => {
+    const fields = getMoveFields(profileObject);
+    const list = fields?.pool_list;
+    return Array.isArray(list) ? list : [];
+  }, [profileObject]);
+
+  const referralList: any[] = React.useMemo(() => {
+    const fields = getMoveFields(referralObject);
+    const list = fields?.referal_list; // NOTE: contract uses "referal_list" (one 'r')
+    return Array.isArray(list) ? list : [];
+  }, [referralObject]);
+
+  // ---------- current user's profile ----------
+  const myProfileRaw: any | null = React.useMemo(() => {
+    const addr = account?.address?.toLowerCase();
+    if (!addr) return null;
+    return (
+      profilePoolList.find(
+        (it: any) =>
+          typeof it?.fields?.owner === "string" &&
+          it.fields.owner.toLowerCase() === addr
+      ) ?? null
     );
+  }, [profilePoolList, account?.address]);
 
-    return <SessionDataCtx.Provider value={value}>{children}</SessionDataCtx.Provider>;
+  const profile: Profile = React.useMemo(
+    () => ({
+      username: myProfileRaw?.fields?.username ?? null,
+      avatar: myProfileRaw?.fields?.url ?? null,
+      ranking: Number(myProfileRaw?.fields?.ranking ?? 0),
+      address: account?.address ?? null,
+      hasProfile: !!myProfileRaw,
+    }),
+    [myProfileRaw, account?.address]
+  );
+
+  // ---------- leaderboard from profiles (preferred) ----------
+  const leaderboardFromProfiles: LeaderEntry[] = React.useMemo(() => {
+    const rows: LeaderEntry[] = profilePoolList.map((it: any) => ({
+      username: String(it?.fields?.username ?? ""),
+      score: Number(it?.fields?.ranking ?? 0),
+      avatar: (it?.fields?.url as string) ?? null,
+      address: (it?.fields?.owner as string) ?? null,
+    }));
+    return rows
+      .filter((r) => r.username) // keep named users
+      .sort((a, b) => b.score - a.score);
+  }, [profilePoolList]);
+
+  // ---------- leaderboard from referrals (fallback) ----------
+  const leaderboardFromReferrals: LeaderEntry[] = React.useMemo(() => {
+    if (!referralList.length) return [];
+    const counts = new Map<string, number>();
+    for (const it of referralList) {
+      const referrer = String(it?.fields?.referrer ?? "");
+      if (!referrer) continue;
+      counts.set(referrer, (counts.get(referrer) ?? 0) + 1);
+    }
+    // join with profile list to get avatar/address where possible
+    const byUser = new Map<string, any>();
+    for (const p of profilePoolList) {
+      const u = String(p?.fields?.username ?? "");
+      if (!u) continue;
+      byUser.set(u, p);
+    }
+    const rows: LeaderEntry[] = Array.from(counts.entries()).map(
+      ([username, score]) => {
+        const p = byUser.get(username);
+        return {
+          username,
+          score,
+          avatar: p?.fields?.url ?? null,
+          address: p?.fields?.owner ?? null,
+        };
+      }
+    );
+    return rows.sort((a, b) => b.score - a.score);
+  }, [referralList, profilePoolList]);
+
+  // ---------- choose source (prefer on-chain ranking) ----------
+  const leaderboard: LeaderEntry[] =
+    leaderboardFromProfiles.length > 0
+      ? leaderboardFromProfiles
+      : leaderboardFromReferrals;
+
+  const top3: LeaderEntry[] = React.useMemo(
+    () => leaderboard.slice(0, 3),
+    [leaderboard]
+  );
+
+  const value: SessionData = React.useMemo(
+    () => ({
+      loading,
+      error,
+      refresh: load,
+
+      profileObject: profileObject,
+      referralObject: referralObject,
+
+      profile,
+      leaderboard,
+      top3,
+    }),
+    [loading, error, load, profileObject, referralObject, profile, leaderboard, top3]
+  );
+
+  return (
+    <SessionDataCtx.Provider value={value}>
+      {children}
+    </SessionDataCtx.Provider>
+  );
 };
 
 export const useSessionData = () => {
-    const ctx = React.useContext(SessionDataCtx);
-    if (!ctx) throw new Error("useSessionData must be used within <SessionDataProvider>");
-    return ctx;
-}
-
-// Convenience hook for just the user profile
-export const useUser = () => {
-  return useSessionData().profile;
+  const ctx = React.useContext(SessionDataCtx);
+  if (!ctx) throw new Error("useSessionData must be used within <SessionDataProvider>");
+  return ctx;
 };
+
+// Convenience hooks
+export const useUser = () => useSessionData().profile;
+export const useLeaderboard = () => useSessionData().leaderboard;
+export const useTop3 = () => useSessionData().top3;
