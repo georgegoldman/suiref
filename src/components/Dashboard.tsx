@@ -156,7 +156,7 @@ const Dashboard: React.FC = () => {
 
         {/* Recent Referrals — from ReferralPool (your entries as referrer) */}
         <div className="flex flex-col gap-[20px]">
-          <h4 className="font-bold text-[20px]">Recent Referrals</h4>
+          <h4 className="font-bold lg:text-[20px] text-base">Recent Referrals</h4>
 
           {!hasProfile && (
             <div className="text-white/60 text-sm">
@@ -169,12 +169,12 @@ const Dashboard: React.FC = () => {
               <table className="w-full">
                 <thead>
                   <tr className="bg-white/10 rounded-[10px]">
-                    <th className="text-left py-3 px-4 text-white/50 font-bold rounded-l-[10px]">
-                      Description
+                    <th className="text-left py-3 px-4 text-white/50 text-xs lg:text-sm font-bold rounded-l-[10px]">
+                      Username
                     </th>
                     {/* No timestamp stored in Referral struct; show placeholder */}
-                    <th className="text-left py-3 px-4 text-white/50 font-bold">Date</th>
-                    <th className="text-left py-3 px-4 text-white/50 font-bold rounded-r-[10px]">
+                    <th className="text-left py-3 px-4 text-white/50 text-xs lg:text-sm font-bold">Date</th>
+                    <th className="text-left py-3 px-4 text-white/50 text-xs lg:text-sm font-bold rounded-r-[10px]">
                       Points
                     </th>
                   </tr>
