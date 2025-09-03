@@ -165,7 +165,7 @@ export default function Rewards() {
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         {/* ---- Add Referral (Claim) Form ---- */}
         <div className="bg-white/5 rounded-2xl p-4 sm:p-5 border border-white/10">
-          <h2 className="text-white text-lg font-semibold mb-3">Add Referral</h2>
+          <h2 className="text-white text-lg font-semibold mb-3">Who referred you?</h2>
 
           {missingEnv && (
             <div className="mb-3 rounded-lg bg-red-500/10 border border-red-500/30 p-3 text-red-300 text-sm">
