@@ -3,8 +3,17 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import React from "react";
 import { fetchSharedObject } from "./lib/api";
 
+type Profile  = {
+    username: string | null;
+    avatar: string | null;   // dicebear URL you stored in Move
+    ranking: number;
+    address: string | null;
+    hasProfile: boolean;
+}
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type SessionData = {
+    [x: string]: any;
     sharedObject?: any;
     loading: boolean;
     error?: string;
@@ -44,9 +53,40 @@ export const SessionDataProvider: React.FC<React.PropsWithChildren> = ({ childre
         }
     }, [account?.address, load]);
 
+      // ---- Compute myProfile from sharedObject + account ----
+        const poolList: any[] = React.useMemo(() => {
+            const content = (sharedObject as any)?.data?.content;
+            if (!content || content.dataType !== "moveObject") return [];
+            const list = content.fields?.pool_list;
+            return Array.isArray(list) ? list : [];
+        }, [sharedObject]);
+
+        const myProfile: any | null = React.useMemo(() => {
+            const addr = account?.address?.toLowerCase();
+            if (!addr) return null;
+            return (
+            poolList.find(
+                (it: any) =>
+                typeof it?.fields?.owner === "string" &&
+                it.fields.owner.toLowerCase() === addr
+            ) ?? null
+            );
+        }, [poolList, account?.address]);
+
+        const profile: Profile = React.useMemo(
+            () => ({
+            username: myProfile?.fields?.username ?? null,
+            avatar: myProfile?.fields?.url ?? null,
+            ranking: Number(myProfile?.fields?.ranking ?? 0),
+            address: account?.address ?? null,
+            hasProfile: !!myProfile,
+            }),
+            [myProfile, account?.address]
+        );
+
     const value: SessionData = React.useMemo(
-        () => ({ sharedObject, loading, error, refresh: load }),
-        [sharedObject, loading, error, load]
+        () => ({ sharedObject, loading, error, refresh: load, profile }),
+        [sharedObject, loading, error, load, profile]
     );
 
     return <SessionDataCtx.Provider value={value}>{children}</SessionDataCtx.Provider>;
@@ -57,3 +97,8 @@ export const useSessionData = () => {
     if (!ctx) throw new Error("useSessionData must be used within <SessionDataProvider>");
     return ctx;
 }
+
+// Convenience hook for just the user profile
+export const useUser = () => {
+  return useSessionData().profile;
+};

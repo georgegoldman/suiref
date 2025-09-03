@@ -17,7 +17,7 @@ import { useDisconnectWallet } from "@mysten/dapp-kit";
 export default function DashboardMain() {
   const navigate = useNavigate();
   const { mutateAsync: disconnectAsync } = useDisconnectWallet();
-  const [activePage, setActivePage] = useState("referral-tools");
+  const [activePage, setActivePage] = useState("dashboard");
 
   const handleLogout = async () => {
     try {

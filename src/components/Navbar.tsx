@@ -1,25 +1,32 @@
-// import { useCurrentAccount } from "@mysten/dapp-kit";
 import DashboardSearchIcon from "../assets/dashboard-search-icon";
-import DashboardNotificationIcon from "../assets/dashboard-notification-icon";
-import DashboardDropdownIcon from "../assets/dashboard-dropdown-icon";
-import { useCurrentAccount } from "@mysten/dapp-kit";
+// import DashboardNotificationIcon from "../assets/dashboard-notification-icon";
+// import DashboardDropdownIcon from "../assets/dashboard-dropdown-icon";
+import { useUser } from "../session-data";
+import { CopyButton } from "./CopyButton";
+
+function shortAddr(addr?: string | null) {
+  return addr ? `${addr.slice(0, 6)}…${addr.slice(-4)}` : "";
+}
 
 const Navbar = () => {
-  // const account = useCurrentAccount();
-  const currentAccount = useCurrentAccount();
+  const { username, avatar, address, hasProfile } = useUser();
 
-  const userName = "Michael";
+  const displayName = username ?? shortAddr(address);
+  const initial = (username ?? address ?? "?").slice(0, 1).toUpperCase();
 
   return (
     <div className="flex justify-between items-center py-5 px-8 bg-[#040c33] border-b border-white/10">
       <div className="flex flex-col">
-        <div className="flex items-center">
-          <span className="text-white/70 text-xs font-medium">
-            Welcome back,
-          </span>
-          <span className="">👋</span>
+        <div className="flex items-center gap-2">
+          <span className="text-white/70 text-xs font-medium">Hey!</span>
+          <span>👋</span>
         </div>
-        <span className="text-white text-[24px] font-bold">{currentAccount?.address}</span>
+
+        <div className="flex items-center gap-2">
+          <span className="text-white text-[24px] font-bold">{displayName}</span>
+          {/* Copy full address regardless of username being shown */}
+          <CopyButton value={address} />
+        </div>
       </div>
 
       <div className="flex-1 max-w-md mx-8">
@@ -35,24 +42,25 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Third Section - Notifications and Profile */}
+      {/* Right side */}
       <div className="flex items-center gap-2.5">
-        {/* Notification Icon */}
-        <div className="bg-white/10 rounded-full w-[50px] h-[50px] flex items-center justify-center cursor-pointer hover:bg-white/20 transition-colors">
-          <DashboardNotificationIcon />
-        </div>
-
-        {/* Profile Section */}
-        <div className="bg-white/10 rounded-full px-2 py-1 flex items-center gap-2 cursor-pointer hover:bg-white/20 transition-colors">
-          {/* Profile Picture */}
+        {hasProfile && avatar ? (
+          <img
+            src={avatar}
+            alt="avatar"
+            className="w-[40px] h-[40px] rounded-full object-cover"
+            onError={(e) => {
+              const el = e.currentTarget as HTMLImageElement;
+              if (el.src.includes("/svg")) el.src = el.src.replace("/svg", "/png");
+            }}
+            decoding="async"
+            loading="lazy"
+          />
+        ) : (
           <div className="w-[40px] h-[40px] rounded-full bg-gradient-to-r from-[#1DA1F2] to-[#1DA1F2]/80 flex items-center justify-center">
-            <span className="text-white font-semibold text-lg">
-              {userName.charAt(0).toUpperCase()}
-            </span>
+            <span className="text-white font-semibold text-lg">{initial}</span>
           </div>
-
-          <DashboardDropdownIcon />
-        </div>
+        )}
       </div>
     </div>
   );

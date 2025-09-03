@@ -37,7 +37,7 @@ const Dashboard: React.FC = () => {
   // --- Derived, safe values used throughout the UI ---
   const username = myProfile?.fields?.username ?? "";
   const ranking = Number(myProfile?.fields?.ranking ?? 0);
-  const avatar = myProfile?.fields?.url ?? "";
+  // const avatar = myProfile?.fields?.url ?? "";
 
   // --- Debug (optional) ---
   React.useEffect(() => {
@@ -131,7 +131,7 @@ const Dashboard: React.FC = () => {
           )}
 
           {/* Profile summary when user has a profile */}
-          {myProfile && (
+          {/* {myProfile && (
             <div className="mt-4 text-white/90 flex items-center gap-4">
               <img
                 src={avatar}
@@ -151,7 +151,7 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
           <p className="text-white/60 font-medium text-xs">
             Start by sharing your SUIREF username, and your rewards grows

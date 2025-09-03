@@ -1,13 +1,13 @@
 import { useState } from "react";
 import SidebarCollapseIcon from "../assets/sidebar-collapse-icon";
 import SidebarDashboardIcon from "../assets/sidebar-dashboard-icon";
-import SidebarReferralToolIcon from "../assets/sidebar-referral-tool-icon";
-import SidebarMyReferralIcon from "../assets/sidebar-my-referral-icon";
-import SidebarWorkshopIcon from "../assets/sidebar-workshop";
+// import SidebarReferralToolIcon from "../assets/sidebar-referral-tool-icon";
+// import SidebarMyReferralIcon from "../assets/sidebar-my-referral-icon";
+// import SidebarWorkshopIcon from "../assets/sidebar-workshop";
 import SidebarRewardsIcon from "../assets/sidebar-rewards-icon";
 import SidebarLeaderboardsIcon from "../assets/sidebar-leaderboards-icon";
 import SidebarWalletIcon from "../assets/sidebar-wallet-icon";
-import SidebarSettingsIcon from "../assets/sidebar-settings-icon";
+// import SidebarSettingsIcon from "../assets/sidebar-settings-icon";
 import SidebarSupportIcon from "../assets/sidebar-support-icon";
 import SidebarLogoutIcon from "../assets/sidebar-logout-icon";
 
@@ -22,13 +22,13 @@ const Sidebar = ({ activePage, onPageChange, onLogout }: SidebarProps) => {
 
   const mainMenuItems = [
     { id: "dashboard", label: "Dashboard", icon: SidebarDashboardIcon },
-    {
-      id: "referral-tools",
-      label: "Referral Tools",
-      icon: SidebarReferralToolIcon,
-    },
-    { id: "my-referrals", label: "My Referrals", icon: SidebarMyReferralIcon },
-    { id: "workshop", label: "Workshop", icon: SidebarWorkshopIcon },
+    // {
+    //   id: "referral-tools",
+    //   label: "Referral Tools",
+    //   icon: SidebarReferralToolIcon,
+    // },
+    // { id: "my-referrals", label: "My Referrals", icon: SidebarMyReferralIcon },
+    // { id: "workshop", label: "Workshop", icon: SidebarWorkshopIcon },
     { id: "rewards", label: "Rewards", icon: SidebarRewardsIcon },
     {
       id: "leaderboards",
@@ -39,7 +39,7 @@ const Sidebar = ({ activePage, onPageChange, onLogout }: SidebarProps) => {
   ];
 
   const otherMenuItems = [
-    { id: "settings", label: "Settings", icon: SidebarSettingsIcon },
+    // { id: "settings", label: "Settings", icon: SidebarSettingsIcon },
     { id: "support", label: "Support", icon: SidebarSupportIcon },
   ];
 
