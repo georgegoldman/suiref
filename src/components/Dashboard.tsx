@@ -6,12 +6,7 @@ import { useCreateProfile } from "../mutations/useCreateProfile";
 import { AvatarPicker } from "./AvatarPicker";
 
 import DashboardReferralIcon from "../assets/dashboard-referral-icon";
-import DashboardWorkshopAttendeesIcon from "../assets/dashboard-workshop-attendees-icon";
-import DashboardModuleCompleterIcon from "../assets/dashboard-module-completer-icon";
 import DashboardPointEarned from "../assets/dashboard-point-earned";
-import DashboardCancelIcon from "../assets/dashboard-cancel-icon";
-import CuteCoin from "../assets/mingcute_coin-3-fill.svg";
-import ReferralComponent from "./referral-component";
 
 const Dashboard: React.FC = () => {
   const { sharedObject, loading, error } = useSessionData();
@@ -113,7 +108,6 @@ const Dashboard: React.FC = () => {
                 <AvatarPicker
                   value={avatarUrl}
                   onChange={setAvatarUrl}
-                  initialStyle="adventurer"
                   format="svg"
                   size={96}
                 />
