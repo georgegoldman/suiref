@@ -1,5 +1,4 @@
 // src/components/Leaderboards.tsx
-import React from "react";
 import { useSessionData } from "../session-data";
 import LeaderboardTable from "./LeaderboardTable";
 
