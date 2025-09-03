@@ -64,7 +64,7 @@ const Login = () => {
   return (
     <div className="flex items-center justify-between h-screen">
       <div
-        className="w-full h-full flex justify-center rounded-[20px]"
+        className="w-full h-full flex justify-center "
         style={{
           background:
             "linear-gradient(158.16deg, rgba(119, 114, 243, 0.7) -36.07%, #4DA2FD 119.81%)",

@@ -68,22 +68,6 @@ const LeaderboardContent = ({
   ];
 
   // Activity data for the modal
-  const activityData = [
-    {
-      id: 1,
-      rank: 1,
-      won: <GoldMedalIcon />,
-      event: "Sui Workshop",
-      date: "8/20/2025",
-    },
-    {
-      id: 2,
-      rank: 3,
-      won: <GoldMedalIcon />,
-      event: "Sui Workshop",
-      date: "8/20/2025",
-    },
-  ];
 
   const tableData = [
     {
@@ -383,10 +367,10 @@ const LeaderboardContent = ({
               </div>
 
               {/* Activity Section */}
-              <div className="flex flex-col gap-5">
+              {/* <div className="flex flex-col gap-5">
                 <h4 className="text-white font-medium">Activity</h4>
                 <table className="w-full">
-                  <thead>
+                  {/* <thead>
                     <tr className="bg-white/10">
                       <th className="text-left p-[20px] text-white/80 font-medium text-sm rounded-l-[10px]">
                         Rank
@@ -401,8 +385,8 @@ const LeaderboardContent = ({
                         Date
                       </th>
                     </tr>
-                  </thead>
-                  <tbody>
+                  </thead> */}
+                  {/* <tbody>
                     {activityData.map((activity) => (
                       <tr key={activity.id} className="">
                         <td className="py-3 px-4 text-white/80 text-sm font-medium">
@@ -419,9 +403,9 @@ const LeaderboardContent = ({
                         </td>
                       </tr>
                     ))}
-                  </tbody>
+                  </tbody> }
                 </table>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

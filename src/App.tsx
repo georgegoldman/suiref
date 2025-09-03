@@ -21,6 +21,7 @@ import React from "react";
 import LeaderboardPage from "./components/leaderboard-page";
 import ReferralPage from "./components/referral-page";
 import { SessionDataProvider } from "./session-data";
+import { ProfileModalProvider } from "./ui/ProfileModalProvider";
 
 const { networkConfig } = createNetworkConfig({
   testnet: { url: getFullnodeUrl("testnet") },
@@ -73,17 +74,19 @@ export default function App() {
         <RegisterEnokiWallets />
         <WalletProvider autoConnect={false} storage={null}>
           <SessionDataProvider>
-            <Router>
-              <Routes>
-                <Route path="/" element={<Onboard />} />
-                <Route path="/leaderboard" element={<LeaderboardPage />} />
-                <Route path="/referral" element={<ReferralPage />} />
-                <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-                <Route path="/auth" element={<EnokiAuthCallback />} />
-                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Router>
+            <ProfileModalProvider>
+              <Router>
+                <Routes>
+                  <Route path="/" element={<Onboard />} />
+                  <Route path="/leaderboard" element={<LeaderboardPage />} />
+                  <Route path="/referral" element={<ReferralPage />} />
+                  <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+                  <Route path="/auth" element={<EnokiAuthCallback />} />
+                  <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </Router>
+            </ProfileModalProvider>
           </SessionDataProvider>
         </WalletProvider>
       </SuiClientProvider>
