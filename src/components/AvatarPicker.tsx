@@ -41,10 +41,9 @@ export function AvatarPicker({
   format?: Format;
   size?: number;
 }) {
-  const [seeds, setSeeds] = React.useState<string[]>(() => makeSeeds());
+  const [seeds] = React.useState<string[]>(() => makeSeeds());
   const urls = React.useMemo(() => seeds.map((s) => avatarUrl(s, format, size)), [seeds, format, size]);
 
-  const regenerate = () => setSeeds(makeSeeds()); // new batch
 
   return (
     <div className="space-y-3">

@@ -1,3 +1,4 @@
+/* eslint-disable no-control-regex */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { useSessionData } from "../session-data";
@@ -39,7 +40,7 @@ export function useCreateProfile() {
         const res = await signAndExecute({
             transaction: tx,
             chain: "sui:testnet",
-            options: {showEffects: true, showEvents: true}
+            // options: {showEffects: true, showEvents: true}
         });
 
         // Update local cache/UI
