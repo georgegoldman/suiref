@@ -1,50 +1,34 @@
-/* eslint-disable no-control-regex */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// src/mutations/useCreateProfile.ts
+import { Transaction } from "@mysten/sui/transactions";
 import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { useSessionData } from "../session-data";
-import { Transaction } from "@mysten/sui/transactions";
+
+// ENV: VITE_PACKAGE_ID = your package; VITE_SHARED_OBJECT_ID = ProfilePool object ID
+const PACKAGE_ID = import.meta.env.VITE_PACKAGE_ID as string;
+const PROFILE_POOL_ID = import.meta.env.VITE_SHARED_OBJECT_ID as string;
 
 export function useCreateProfile() {
-    const { sharedObject, refresh }  = useSessionData();
-    const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
+  const { refresh } = useSessionData();
+  const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
 
-    return async function createProfile(username: string, url: string) {
-        const poolId = sharedObject?.data?.objectId as string | undefined;
-        const initVer = (sharedObject?.data?.owner as any)?.Shared?.initial_shared_version;
-
-        if (!poolId || initVer === undefined) {
-            throw new Error("Profile pool is not loaded yet. Try again in a moment.");
-        }
-
-        // ASCII-only check for the `std::ascii::String` param
-        if (!/^[\x00-\x7F]*$/.test(url)) {
-            throw new Error("URL must be ASCII (no unicode characters).");
-        }
-
-        const tx = new Transaction();
-        const poolRef = tx.sharedObjectRef({
-            objectId: poolId,
-            initialSharedVersion: Number(initVer),
-            mutable: true,
-        });
-
-        tx.moveCall({
-            target: `${import.meta.env.VITE_PACKAGE_ID}::suiref::create_profile`,
-      arguments: [
-        tx.pure.string(url),       // std::ascii::String (OK to pass as string)
-        tx.pure.string(username),  // std::string::String
-        poolRef,
-      ],
-        });
-
-        const res = await signAndExecute({
-            transaction: tx,
-            chain: "sui:testnet",
-            // options: {showEffects: true, showEvents: true}
-        });
-
-        // Update local cache/UI
-        await refresh();
-        return res;
+  return async (username: string, avatarUrl: string) => {
+    if (!PACKAGE_ID || !PROFILE_POOL_ID) {
+      throw new Error("Missing env: VITE_PACKAGE_ID / VITE_SHARED_OBJECT_ID");
     }
+
+    const tx = new Transaction();
+    // entry fun create_profile(url: std::ascii::String, username: std::string::String, profile_pool: &mut ProfilePool, ctx: &mut TxContext)
+    tx.moveCall({
+      target: `${PACKAGE_ID}::suiref::create_profile`,
+      arguments: [
+        tx.pure.string(avatarUrl), // ascii URL
+        tx.pure.string(username),
+        tx.object(PROFILE_POOL_ID),
+      ],
+    });
+
+    const res = await signAndExecute({ transaction: tx });
+    await refresh(); // re-fetch objects so UI updates
+    return res;
+  };
 }

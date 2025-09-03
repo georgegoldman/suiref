@@ -6,7 +6,7 @@ import SidebarDashboardIcon from "../assets/sidebar-dashboard-icon";
 // import SidebarWorkshopIcon from "../assets/sidebar-workshop";
 import SidebarRewardsIcon from "../assets/sidebar-rewards-icon";
 import SidebarLeaderboardsIcon from "../assets/sidebar-leaderboards-icon";
-import SidebarWalletIcon from "../assets/sidebar-wallet-icon";
+// import SidebarWalletIcon from "../assets/sidebar-wallet-icon";
 // import SidebarSettingsIcon from "../assets/sidebar-settings-icon";
 import SidebarSupportIcon from "../assets/sidebar-support-icon";
 import SidebarLogoutIcon from "../assets/sidebar-logout-icon";
@@ -35,7 +35,7 @@ const Sidebar = ({ activePage, onPageChange, onLogout }: SidebarProps) => {
       label: "Leaderboards",
       icon: SidebarLeaderboardsIcon,
     },
-    { id: "wallets", label: "Wallets", icon: SidebarWalletIcon },
+    // { id: "wallets", label: "Wallets", icon: SidebarWalletIcon },
   ];
 
   const otherMenuItems = [

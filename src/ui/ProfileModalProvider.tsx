@@ -1,5 +1,7 @@
+// src/ui/ProfileModalProvider.tsx
 /* eslint-disable react-refresh/only-export-components */
 import React from "react";
+import { createPortal } from "react-dom";
 
 type SelectedProfile = {
   name: string;
@@ -27,6 +29,7 @@ export const useProfileModal = () => {
 export const ProfileModalProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [isOpen, setOpen] = React.useState(false);
   const [selectedProfile, setSelected] = React.useState<SelectedProfile | null>(null);
+  const [mounted, setMounted] = React.useState(false);
 
   const open = React.useCallback((p: SelectedProfile) => {
     setSelected(p);
@@ -34,6 +37,10 @@ export const ProfileModalProvider: React.FC<React.PropsWithChildren> = ({ childr
   }, []);
   const close = React.useCallback(() => setOpen(false), []);
 
+  // mount flag for portal
+  React.useEffect(() => setMounted(true), []);
+
+  // Close on ESC
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     window.addEventListener("keydown", onKey);
@@ -43,7 +50,7 @@ export const ProfileModalProvider: React.FC<React.PropsWithChildren> = ({ childr
   return (
     <ProfileModalCtx.Provider value={{ isOpen, selectedProfile, open, close }}>
       {children}
-      <ProfileModal />
+      {mounted && createPortal(<ProfileModal />, document.body)}
     </ProfileModalCtx.Provider>
   );
 };
@@ -54,22 +61,30 @@ const ProfileModal: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 z-[9999] bg-black/60 flex items-center justify-center p-4"
       onClick={close}
+      role="dialog"
+      aria-modal="true"
     >
       <div
-        className="bg-[#040C33] rounded-[20px] w-full max-w-[960px] h-[620px] max-h-[80vh] overflow-hidden relative flex flex-col"
+        className="bg-[#040C33] rounded-2xl w-[820px] max-w-[95vw] max-h-[85vh] overflow-hidden shadow-xl border border-white/10"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header (fixed) */}
-        <div className="flex items-center justify-between h-[72px] px-8 border-b border-white/10">
-          <h2 className="text-2xl font-bold flex-1 flex justify-center">Profile</h2>
-          <button onClick={close} className="text-white hover:text-gray-300 transition-colors">✕</button>
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+          <h2 className="text-xl font-bold">Profile</h2>
+          <button
+            onClick={close}
+            className="text-white/80 hover:text-white focus:outline-none"
+            aria-label="Close"
+          >
+            ✕
+          </button>
         </div>
 
-        {/* Banner (fixed) */}
+        {/* Banner */}
         <div
-          className="h-[128px] shrink-0"
+          className="h-[140px] relative"
           style={{
             backgroundImage: `url(${selectedProfile.backgroundImage ?? ""})`,
             backgroundSize: "cover",
@@ -77,11 +92,11 @@ const ProfileModal: React.FC = () => {
           }}
         />
 
-        {/* Top Row (fills remaining height) */}
-        <div className="flex-1 px-8 pt-0 pb-0 overflow-hidden">
-          <div className="-mt-12 h-full flex items-center overflow-hidden">
-            {/* Avatar — slight space before details */}
-            <div className="w-[128px] h-[128px] rounded-[24px] border-2 border-white overflow-hidden shrink-0 bg-white/5 mr-6">
+        {/* Top Row: avatar | details | stats */}
+        <div className="px-6 pb-6">
+          <div className="-mt-12 flex items-center gap-4">
+            {/* Avatar */}
+            <div className="w-[96px] h-[96px] rounded-full border-2 border-white overflow-hidden shrink-0 bg-white/5">
               <img
                 src={selectedProfile.avatar}
                 alt={selectedProfile.name}
@@ -93,46 +108,42 @@ const ProfileModal: React.FC = () => {
               />
             </div>
 
-            {/* Details — very small space before stats */}
-            <div className="flex-1 min-w-0 mr-2">
-              <h3 className="text-2xl font-medium truncate">{selectedProfile.name}</h3>
-              <div className="mt-3 flex flex-col gap-2">
-                <p className="text-white/50 text-[11px] font-medium">Workshop Attended</p>
-                <p className="text-white/80 text-base font-medium">—</p>
+            {/* Details */}
+            <div className="flex-1 min-w-0">
+              <h3 className="text-xl font-medium truncate">{selectedProfile.name}</h3>
+              <div className="mt-2.5 flex gap-6 text-sm">
+                <div>
+                  <p className="text-white/50 text-[10px] font-medium">Workshop Attended</p>
+                  <p className="text-white/80">—</p>
+                </div>
+                <div>
+                  <p className="text-white/50 text-[10px] font-medium">Won</p>
+                  <p className="text-white/80">🥇 —</p>
+                </div>
+                <div>
+                  <p className="text-white/50 text-[10px] font-medium">State</p>
+                  <p className="text-white/80">—</p>
+                </div>
               </div>
             </div>
 
             {/* Stats */}
-            <div className="flex-1 min-w-0">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <p className="text-white/50 text-[11px] font-medium flex items-center gap-1">
-                    Won <span>🥇</span>
-                  </p>
-                  <p className="text-white/80 text-base font-medium">—</p>
+            <div className="flex-1">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                <div>
+                  <p className="text-white text-sm font-medium">{selectedProfile.ranking ?? 0}</p>
+                  <p className="text-white/50 text-[10px] font-medium">Invites</p>
                 </div>
-
-                <div className="flex flex-col gap-2">
-                  <p className="text-white/50 text-[11px] font-medium">State</p>
-                  <p className="text-white/80 text-base font-medium">—</p>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <p className="text-white text-base font-medium flex items-center gap-1">
-                    {selectedProfile.ranking ?? 0}
-                  </p>
-                  <p className="text-white/50 text-[11px] font-medium">Invites</p>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <p className="text-white text-base font-medium">—</p>
-                  <p className="text-white/50 text-[11px] font-medium">Referral Counts</p>
+                <div>
+                  <p className="text-white text-sm font-medium">—</p>
+                  <p className="text-white/50 text-[10px] font-medium">Referral Counts</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
+        {/* (Optional) extra sections… */}
       </div>
     </div>
   );
