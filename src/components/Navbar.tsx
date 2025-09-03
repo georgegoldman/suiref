@@ -2,9 +2,11 @@
 import DashboardSearchIcon from "../assets/dashboard-search-icon";
 import DashboardNotificationIcon from "../assets/dashboard-notification-icon";
 import DashboardDropdownIcon from "../assets/dashboard-dropdown-icon";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 const Navbar = () => {
   // const account = useCurrentAccount();
+  const currentAccount = useCurrentAccount();
 
   const userName = "Michael";
 
@@ -17,7 +19,7 @@ const Navbar = () => {
           </span>
           <span className="">👋</span>
         </div>
-        <span className="text-white text-[24px] font-bold">{userName}!</span>
+        <span className="text-white text-[24px] font-bold">{currentAccount?.address}</span>
       </div>
 
       <div className="flex-1 max-w-md mx-8">

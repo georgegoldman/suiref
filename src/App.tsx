@@ -20,6 +20,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import LeaderboardPage from "./components/leaderboard-page";
 import ReferralPage from "./components/referral-page";
+import { SessionDataProvider } from "./session-data";
 
 const { networkConfig } = createNetworkConfig({
   testnet: { url: getFullnodeUrl("testnet") },
@@ -71,17 +72,19 @@ export default function App() {
       <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
         <RegisterEnokiWallets />
         <WalletProvider autoConnect={false} storage={null}>
-          <Router>
-            <Routes>
-              <Route path="/" element={<Onboard />} />
-              <Route path="/leaderboard" element={<LeaderboardPage />} />
-              <Route path="/referral" element={<ReferralPage />} />
-              <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-              <Route path="/auth" element={<EnokiAuthCallback />} />
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Router>
+          <SessionDataProvider>
+            <Router>
+              <Routes>
+                <Route path="/" element={<Onboard />} />
+                <Route path="/leaderboard" element={<LeaderboardPage />} />
+                <Route path="/referral" element={<ReferralPage />} />
+                <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+                <Route path="/auth" element={<EnokiAuthCallback />} />
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Router>
+          </SessionDataProvider>
         </WalletProvider>
       </SuiClientProvider>
     </QueryClientProvider>
