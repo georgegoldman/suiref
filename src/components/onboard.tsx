@@ -15,7 +15,7 @@ const Onboard = () => {
   return (
     <div className="flex flex-col lg:flex-row justify-between items-center w-full h-screen py-4 lg:py-0">
       <div
-        className="w-full h-full flex justify-center rounded-[20px]"
+        className="w-full h-full flex justify-center"
         style={{
           background:
             "linear-gradient(158.16deg, rgba(119, 114, 243, 0.7) -36.07%, #4DA2FD 119.81%)",
