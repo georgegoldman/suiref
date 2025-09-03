@@ -13,9 +13,9 @@ const Onboard = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row justify-between items-center w-full h-screen py-4 lg:py-0">
+    <div className="flex flex-col lg:flex-row justify-between items-start w-full min-h-screen lg:h-screen gap-6 lg:gap-0 pb-4 lg:py-0">
       <div
-        className="w-full h-full flex justify-center"
+        className="w-full h-full flex justify-center items-center px-4 py-8 sm:py-10 lg:rounded-tr-[20px] lg:rounded-bl-[0px] rounded-bl-[20px] rounded-br-[20px]"
         style={{
           background:
             "linear-gradient(158.16deg, rgba(119, 114, 243, 0.7) -36.07%, #4DA2FD 119.81%)",
@@ -26,11 +26,11 @@ const Onboard = () => {
           alt="Onboard Image"
           width={371}
           height={371}
-          className="object-contain"
+          className="object-contain w-full max-w-[320px] sm:max-w-[380px] h-auto"
         />
       </div>
 
-      <div className="w-full flex flex-col justify-center gap-[clamp(2rem,5vw,6.25rem)] px-[clamp(1rem,5vw,4rem)]">
+      <div className="w-full flex flex-col justify-center gap-[clamp(2rem,5vw,6.25rem)] px-[clamp(1rem,5vw,4rem)] self-center">
         <div className="flex flex-col items-center lg:items-start gap-[clamp(1rem,2vw,2.5rem)] text-center lg:text-left">
           <h2 className="font-bold text-[clamp(1.5rem,4vw,2.5rem)] leading-snug text-white text-center">
             Earn Onchain Rewards by Growing the Sui Developer Community

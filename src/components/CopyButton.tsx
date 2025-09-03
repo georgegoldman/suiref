@@ -49,7 +49,7 @@ export function CopyButton({
       disabled={!canCopy}
       title={canCopy ? "Copy to clipboard" : "Nothing to copy"}
       className={
-        "inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs " +
+        "inline-flex items-center gap-1 rounded-full w-fit lg:px-2 lg:py-1 p-2 text-xs " +
         "bg-white/10 text-white hover:bg-white/20 disabled:opacity-50 " +
         className
       }

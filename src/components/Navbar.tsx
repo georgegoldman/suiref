@@ -1,13 +1,18 @@
+import { HiMenu } from "react-icons/hi";
 import DashboardSearchIcon from "../assets/dashboard-search-icon";
 import { useUser } from "../session-data";
 import { CopyButton } from "./CopyButton";
 import { useProfileModal } from "../ui/ProfileModalProvider";
 
+interface NavbarProps {
+  onMobileMenuOpen: () => void;
+}
+
 function shortAddr(addr?: string | null) {
   return addr ? `${addr.slice(0, 6)}…${addr.slice(-4)}` : "";
 }
 
-const Navbar = () => {
+const Navbar = ({ onMobileMenuOpen }: NavbarProps) => {
   const { username, avatar, address, hasProfile, ranking } = useUser(); // add ranking to useUser in session-data if not present
   const { open } = useProfileModal();
 
@@ -19,7 +24,12 @@ const Navbar = () => {
   const onOpenProfile = () => {
     open({
       name: displayName,
-      avatar: hasProfile && avatar ? avatar : `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(initial)}&size=128&radius=50`,
+      avatar:
+        hasProfile && avatar
+          ? avatar
+          : `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(
+              initial
+            )}&size=128&radius=50`,
       backgroundImage: banner,
       username: username ?? undefined,
       ranking: ranking ?? 0,
@@ -27,21 +37,36 @@ const Navbar = () => {
   };
 
   return (
-    <div className="flex justify-between items-center py-5 px-8 bg-[#040c33] border-b border-white/10">
-      <div className="flex flex-col">
-        <div className="flex items-center gap-2">
-          <span className="text-white/70 text-xs font-medium">Hey!</span>
-          <span>👋</span>
-        </div>
+    <div className="flex justify-between items-center py-5 px-4 sm:px-6 lg:px-8 bg-[#040c33] border-b border-white/10">
+      {/* Left side - Mobile Menu Button and User Info */}
+      <div className="flex items-center gap-4">
+        {/* Mobile Menu Button - Only visible on mobile */}
+        <button
+          onClick={onMobileMenuOpen}
+          className="lg:hidden text-white/70 hover:text-white transition-colors p-2"
+        >
+          <HiMenu size={24} />
+        </button>
 
-        <div className="flex items-center gap-2">
-          <span className="text-white text-[24px] font-bold">{displayName}</span>
-          <CopyButton value={address} />
+        {/* Desktop User Info - Hidden on mobile */}
+        <div className="hidden lg:flex flex-col">
+          <div className="hidden lg:flex items-center gap-2">
+            <span className="text-white/70 text-xs font-medium">Hey!</span>
+            <span>👋</span>
+          </div>
+
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2">
+            <span className="text-white text-[18px] lg:text-[24px] font-bold">
+              {displayName}
+            </span>
+            <CopyButton value={address} />
+          </div>
         </div>
       </div>
 
-      <div className="flex-1 max-w-md mx-8">
-        <div className="relative">
+      {/* Center - Search Bar - Hidden on mobile */}
+      <div className="hidden lg:flex flex-1 max-w-md w-full mx-8">
+        <div className="relative w-full">
           <input
             type="text"
             placeholder="Search"
@@ -55,6 +80,12 @@ const Navbar = () => {
 
       {/* Right side */}
       <div className="flex items-center gap-2.5">
+        {/* Mobile: Hey! and waving hand beside avatar */}
+        <div className="lg:hidden flex items-center gap-[0rem]">
+          <span className="text-white/70 text-xs font-medium">Hey!</span>
+          <span>👋</span>
+        </div>
+
         {hasProfile && avatar ? (
           <button onClick={onOpenProfile} className="rounded-full">
             <img
@@ -63,14 +94,18 @@ const Navbar = () => {
               className="w-[40px] h-[40px] rounded-full object-cover"
               onError={(e) => {
                 const el = e.currentTarget as HTMLImageElement;
-                if (el.src.includes("/svg")) el.src = el.src.replace("/svg", "/png");
+                if (el.src.includes("/svg"))
+                  el.src = el.src.replace("/svg", "/png");
               }}
               decoding="async"
               loading="lazy"
             />
           </button>
         ) : (
-          <button onClick={onOpenProfile} className="w-[40px] h-[40px] rounded-full bg-gradient-to-r from-[#1DA1F2] to-[#1DA1F2]/80 flex items-center justify-center">
+          <button
+            onClick={onOpenProfile}
+            className="w-[40px] h-[40px] rounded-full bg-gradient-to-r from-[#1DA1F2] to-[#1DA1F2]/80 flex items-center justify-center"
+          >
             <span className="text-white font-semibold text-lg">{initial}</span>
           </button>
         )}

@@ -6,8 +6,9 @@ import {
   useCurrentAccount,
   useSignAndExecuteTransaction,
 } from "@mysten/dapp-kit";
-import { useLeaderboard, useSessionData } from "../session-data";
+import { useSessionData } from "../session-data";
 import { useGeofence, distanceMeters } from "../hooks/useGeofence"; // ⬅ geo-fence hook
+import LeaderboardTable from "./LeaderboardTable";
 
 // --- ENV ---
 // e.g. in .env: VITE_PACKAGE_ID=0x471e...  VITE_PROFILE_POOL_ID=0x...  VITE_REFERRAL_POOL_ID=0x...
@@ -22,27 +23,16 @@ const RADIUS_M = 250; // how close they must be to "claim" (edit as you like)
 const km = (m?: number | null) =>
   typeof m === "number" ? (m / 1000).toFixed(2) : undefined;
 
-// helpers
-function shortAddr(addr?: string | null) {
-  return addr ? `${addr.slice(0, 6)}…${addr.slice(-4)}` : "";
-}
-function medal(rank: number) {
-  if (rank === 1) return "🥇";
-  if (rank === 2) return "🥈";
-  if (rank === 3) return "🥉";
-  return null;
-}
-
 export default function Rewards() {
   const account = useCurrentAccount();
-  const { loading, error, refresh } = useSessionData();
-  const leaderboard = useLeaderboard();
-  const { mutateAsync: signAndExecute, isPending } = useSignAndExecuteTransaction();
+  const { refresh } = useSessionData();
+  const { mutateAsync: signAndExecute, isPending } =
+    useSignAndExecuteTransaction();
 
   // 🔒 Geo-fence: only allow claiming while physically near the venue
   const {
-    inside,       // true when inside radius
-    checking,     // true while checking GPS
+    inside, // true when inside radius
+    checking, // true while checking GPS
     error: geoErr,
     distance,
     accuracy,
@@ -56,18 +46,18 @@ export default function Rewards() {
 
   const missingEnv = !PACKAGE_ID || !PROFILE_POOL_ID || !REFERRAL_POOL_ID;
 
-    // Promise wrapper for an immediate fresh fix (ignores cached positions)
+  // Promise wrapper for an immediate fresh fix (ignores cached positions)
   const getCurrentPositionOnce = React.useCallback(() => {
     return new Promise<GeolocationPosition>((resolve, reject) => {
       if (!("geolocation" in navigator)) {
         reject(new Error("Geolocation not supported."));
         return;
       }
-      navigator.geolocation.getCurrentPosition(
-        resolve,
-        reject,
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-      );
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0,
+      });
     });
   }, []);
 
@@ -81,7 +71,9 @@ export default function Rewards() {
       return;
     }
     if (missingEnv) {
-      setSubmitErr("Missing env: VITE_PACKAGE_ID / VITE_PROFILE_POOL_ID / VITE_REFERRAL_POOL_ID");
+      setSubmitErr(
+        "Missing env: VITE_PACKAGE_ID / VITE_PROFILE_POOL_ID / VITE_REFERRAL_POOL_ID"
+      );
       return;
     }
 
@@ -90,14 +82,16 @@ export default function Rewards() {
       return;
     }
 
-    
-
-        try {
+    try {
       const pos = await getCurrentPositionOnce();
       const here = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       const d = distanceMeters(here, TARGET);
       if (d > RADIUS_M) {
-        setSubmitErr(`You must be at the venue to acknwoledge the referral. Distance ≈ ${km(d)} km`);
+        setSubmitErr(
+          `You must be at the venue to acknwoledge the referral. Distance ≈ ${km(
+            d
+          )} km`
+        );
         return;
       }
     } catch (geoErr: any) {
@@ -137,7 +131,9 @@ export default function Rewards() {
         // 0000 -> ERR_DUPLICATE_RECORD
         // 0002 -> ERR_REFERRER_NOT_FOUND
         if (msg.includes("code: 2")) {
-          setSubmitErr("You must create your profile before adding a referral.");
+          setSubmitErr(
+            "You must create your profile before adding a referral."
+          );
         } else if (msg.includes("code: 0")) {
           setSubmitErr("This referral already exists.");
         } else {
@@ -165,11 +161,15 @@ export default function Rewards() {
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         {/* ---- Add Referral (Claim) Form ---- */}
         <div className="bg-white/5 rounded-2xl p-4 sm:p-5 border border-white/10">
-          <h2 className="text-white text-lg font-semibold mb-3">Who referred you?</h2>
+          <h2 className="text-white text-lg font-semibold mb-3">
+            Who referred you?
+          </h2>
 
           {missingEnv && (
             <div className="mb-3 rounded-lg bg-red-500/10 border border-red-500/30 p-3 text-red-300 text-sm">
-              Missing env: <code>VITE_PACKAGE_ID</code>, <code>VITE_PROFILE_POOL_ID</code>, <code>VITE_REFERRAL_POOL_ID</code>
+              Missing env: <code>VITE_PACKAGE_ID</code>,{" "}
+              <code>VITE_PROFILE_POOL_ID</code>,{" "}
+              <code>VITE_REFERRAL_POOL_ID</code>
             </div>
           )}
 
@@ -182,17 +182,25 @@ export default function Rewards() {
           {/* Geo-fence status */}
           <div className="mb-3 text-xs text-white/70">
             <div>
-              Venue: <span className="text-white/90">371 Borno Way, Alagomeji-Yaba</span> (within {RADIUS_M} m)
+              Venue:{" "}
+              <span className="text-white/90">
+                371 Borno Way, Alagomeji-Yaba
+              </span>{" "}
+              (within {RADIUS_M} m)
             </div>
             {checking && <div>Checking your location…</div>}
             {!checking && inside === false && (
               <div className="mt-1">
-                <span className="text-amber-300">You’re outside the venue radius — claiming is locked.</span>
+                <span className="text-amber-300">
+                  You’re outside the venue radius — claiming is locked.
+                </span>
                 {typeof distance === "number" && (
                   <span>
                     {" "}
                     Distance: {km(distance)} km
-                    {typeof accuracy === "number" ? ` (±${km(accuracy)} km)` : ""}
+                    {typeof accuracy === "number"
+                      ? ` (±${km(accuracy)} km)`
+                      : ""}
                   </span>
                 )}
                 {geoErr && <span className="text-red-400"> • {geoErr}</span>}
@@ -219,12 +227,14 @@ export default function Rewards() {
                 minLength={3}
                 maxLength={40}
                 required
-                disabled={inputDisabled}  // ⬅ frozen unless at venue
+                disabled={inputDisabled} // ⬅ frozen unless at venue
                 title={!inside ? "You must be at the venue to claim." : ""}
               />
             </label>
 
-            {submitErr && <div className="text-red-400 text-sm">{submitErr}</div>}
+            {submitErr && (
+              <div className="text-red-400 text-sm">{submitErr}</div>
+            )}
             {ok && <div className="text-green-400 text-sm">{ok}</div>}
 
             <button
@@ -237,83 +247,16 @@ export default function Rewards() {
           </form>
 
           <p className="text-white/50 text-xs mt-3">
-            Tip: You’ll need location permission (HTTPS or localhost) and a profile; the contract checks duplicates and bumps the referrer’s ranking.
+            Tip: You’ll need location permission (HTTPS or localhost) and a
+            profile; the contract checks duplicates and bumps the referrer’s
+            ranking.
           </p>
         </div>
 
         {/* ---- Leaderboard Table ---- */}
         <div className="bg-white/5 rounded-2xl p-4 sm:p-5 border border-white/10">
           <h2 className="text-white text-lg font-semibold mb-3">Leaderboard</h2>
-
-          {loading && <div className="text-white/80">Loading leaderboard…</div>}
-          {error && <div className="text-red-400">Error: {error}</div>}
-
-          {!loading && !error && (
-            <div className="w-full overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-white/10">
-                    <th className="text-left py-3 px-4 text-white/80 font-medium text-sm rounded-l-[10px]">#</th>
-                    <th className="text-left py-3 px-4 text-white/80 font-medium text-sm">User</th>
-                    <th className="text-left py-3 px-4 text-white/80 font-medium text-sm">Score</th>
-                    <th className="text-left py-3 px-4 text-white/80 font-medium text-sm rounded-r-[10px] hidden sm:table-cell">Address</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {leaderboard.map((row, idx) => {
-                    const rank = idx + 1;
-                    const name = row.username || shortAddr(row.address);
-                    const avatar =
-                      row.avatar ||
-                      `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(
-                        row.username || row.address || `user-${idx}`
-                      )}&size=40&radius=50`;
-                    const key = `${row.username ?? ""}-${row.address ?? idx}`;
-                    return (
-                      <tr key={key} className="border-b border-white/5">
-                        <td className="py-3 px-4 text-white/90 font-semibold">
-                          <span className="inline-block w-6 text-center">
-                            {medal(rank) ?? rank}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-3">
-                            <img
-                              src={avatar}
-                              alt={name}
-                              className="w-8 h-8 rounded-full object-cover"
-                              onError={(e) => {
-                                const el = e.currentTarget as HTMLImageElement;
-                                if (el.src.includes("/svg")) el.src = el.src.replace("/svg", "/png");
-                              }}
-                              loading="lazy"
-                              decoding="async"
-                            />
-                            <div className="flex flex-col">
-                              <span className="text-white/90 font-medium">{name}</span>
-                              {row.username && row.address && (
-                                <span className="text-white/50 text-xs">
-                                  {shortAddr(row.address)}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4 text-white/90 font-semibold">{row.score}</td>
-                        <td className="py-3 px-4 text-white/70 text-sm hidden sm:table-cell">
-                          {shortAddr(row.address)}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-
-              {!leaderboard.length && (
-                <div className="text-white/60 text-sm mt-4">No referrals yet.</div>
-              )}
-            </div>
-          )}
+          <LeaderboardTable showModal={false} />
         </div>
       </div>
     </div>
