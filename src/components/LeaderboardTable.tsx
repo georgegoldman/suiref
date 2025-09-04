@@ -1,6 +1,11 @@
 // src/components/LeaderboardTable.tsx
 import React from "react";
-import { useLeaderboard, useSessionData } from "../session-data";
+import { HiX } from "react-icons/hi";
+import {
+  useLeaderboard,
+  useSessionData,
+  type LeaderEntry,
+} from "../session-data";
 
 function shortAddr(addr?: string | null) {
   return addr ? `${addr.slice(0, 6)}…${addr.slice(-4)}` : "";
@@ -55,7 +60,7 @@ export default function LeaderboardTable({
   if (loading) return <div className="text-white/80">Loading leaderboard…</div>;
   if (error) return <div className="text-red-400">Error: {error}</div>;
 
-  const handleRowClick = (row: any, idx: number) => {
+  const handleRowClick = (row: LeaderEntry, idx: number) => {
     if (!showModal) return;
 
     const name = row.username || shortAddr(row.address);
@@ -183,7 +188,14 @@ export default function LeaderboardTable({
       {/* Profile Modal */}
       {showModal && selected && mounted && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-900 rounded-2xl p-6 max-w-md w-full">
+          <div className="bg-gray-900 rounded-2xl p-6 max-w-md w-full relative">
+            <button
+              onClick={() => setSelected(null)}
+              className="absolute top-3 right-3 text-white/70 hover:text-white"
+              aria-label="Close"
+            >
+              <HiX size={20} />
+            </button>
             <div className="flex items-center gap-4 mb-4">
               <img
                 src={selected.avatar}
@@ -209,11 +221,8 @@ export default function LeaderboardTable({
                 </span>
               </div>
             </div>
-            <button
-              onClick={() => setSelected(null)}
-              className="mt-6 w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Close
+            <button className="mt-6 w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+              View on Chain
             </button>
           </div>
         </div>
