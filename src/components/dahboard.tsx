@@ -18,6 +18,7 @@ export default function DashboardMain() {
   const navigate = useNavigate();
   const { mutateAsync: disconnectAsync } = useDisconnectWallet();
   const [activePage, setActivePage] = useState("dashboard");
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -30,6 +31,14 @@ export default function DashboardMain() {
 
   const handlePageChange = (page: string) => {
     setActivePage(page);
+  };
+
+  const handleMobileMenuOpen = () => {
+    setIsMobileSidebarOpen(true);
+  };
+
+  const handleMobileSidebarClose = () => {
+    setIsMobileSidebarOpen(false);
   };
 
   const renderContent = () => {
@@ -63,10 +72,12 @@ export default function DashboardMain() {
         activePage={activePage}
         onPageChange={handlePageChange}
         onLogout={handleLogout}
+        isMobileOpen={isMobileSidebarOpen}
+        onMobileClose={handleMobileSidebarClose}
       />
 
       <div className="flex-1 flex flex-col">
-        <Navbar />
+        <Navbar onMobileMenuOpen={handleMobileMenuOpen} />
 
         {renderContent()}
       </div>

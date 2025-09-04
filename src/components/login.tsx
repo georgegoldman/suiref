@@ -62,9 +62,9 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-between h-screen">
+    <div className="flex flex-col lg:flex-row items-center justify-between min-h-screen lg:h-screen">
       <div
-        className="w-full h-full flex justify-center "
+        className="w-full lg:w-1/2 h-64 sm:h-80 md:h-96 lg:h-full flex justify-center items-center px-4 py-8 lg:py-0 lg:rounded-tr-[20px] lg:rounded-br-[20px]"
         style={{
           background:
             "linear-gradient(158.16deg, rgba(119, 114, 243, 0.7) -36.07%, #4DA2FD 119.81%)",
@@ -75,10 +75,10 @@ const Login = () => {
           alt="Onboard Image"
           width={371}
           height={371}
-          className="object-contain"
+          className="object-contain w-full max-w-[280px] sm:max-w-[320px] md:max-w-[350px] lg:max-w-[371px] h-auto"
         />
       </div>
-      <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-12 lg:gap-[60px] p-5 sm:p-6 md:p-8 lg:p-[20px] bg-[#FFFFFF14] border border-[#4DA2FD70] rounded-2xl md:rounded-3xl lg:rounded-[30px] w-full max-w-xs sm:max-w-sm md:max-w-lg lg:max-w-[607px] backdrop-blur-sm mx-[2rem] ml-[3rem]">
+      <div className="flex flex-col items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-[60px] p-4 sm:p-6 md:p-8 lg:p-[20px] bg-[#FFFFFF14] border border-[#4DA2FD70] rounded-2xl md:rounded-3xl lg:rounded-[30px] lg:w-1/2 backdrop-blur-sm mx-4 sm:mx-6 md:mx-8 lg:mx-[2rem] lg:ml-[3rem] my-6 lg:my-0">
         <>
           <div className="flex flex-col items-center gap-3 sm:gap-4 md:gap-5 lg:gap-[20px] text-center">
             <h3 className="font-bold text-xl sm:text-2xl md:text-3xl lg:text-[40px] text-[#fff] leading-tight">

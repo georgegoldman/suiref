@@ -22,13 +22,20 @@ const ProfileModalCtx = React.createContext<ModalState | undefined>(undefined);
 
 export const useProfileModal = () => {
   const ctx = React.useContext(ProfileModalCtx);
-  if (!ctx) throw new Error("useProfileModal must be used within <ProfileModalProvider>");
+  if (!ctx)
+    throw new Error(
+      "useProfileModal must be used within <ProfileModalProvider>"
+    );
   return ctx;
 };
 
-export const ProfileModalProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
+export const ProfileModalProvider: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
   const [isOpen, setOpen] = React.useState(false);
-  const [selectedProfile, setSelected] = React.useState<SelectedProfile | null>(null);
+  const [selectedProfile, setSelected] = React.useState<SelectedProfile | null>(
+    null
+  );
   const [mounted, setMounted] = React.useState(false);
 
   const open = React.useCallback((p: SelectedProfile) => {
@@ -61,21 +68,21 @@ const ProfileModal: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] bg-black/60 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-black/60 flex items-center justify-center p-2 sm:p-4"
       onClick={close}
       role="dialog"
       aria-modal="true"
     >
       <div
-        className="bg-[#040C33] rounded-2xl w-[820px] max-w-[95vw] max-h-[85vh] overflow-hidden shadow-xl border border-white/10"
+        className="bg-[#040C33] rounded-2xl w-full max-w-[820px] max-h-[90vh] sm:max-h-[85vh] overflow-hidden shadow-xl border border-white/10"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-          <h2 className="text-xl font-bold">Profile</h2>
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-white/10">
+          <h2 className="text-lg sm:text-xl font-bold">Profile</h2>
           <button
             onClick={close}
-            className="text-white/80 hover:text-white focus:outline-none"
+            className="text-white/80 hover:text-white focus:outline-none p-1"
             aria-label="Close"
           >
             ✕
@@ -84,7 +91,7 @@ const ProfileModal: React.FC = () => {
 
         {/* Banner */}
         <div
-          className="h-[140px] relative"
+          className="h-[100px] sm:h-[140px] relative"
           style={{
             backgroundImage: `url(${selectedProfile.backgroundImage ?? ""})`,
             backgroundSize: "cover",
@@ -93,33 +100,42 @@ const ProfileModal: React.FC = () => {
         />
 
         {/* Top Row: avatar | details | stats */}
-        <div className="px-6 pb-6">
-          <div className="-mt-12 flex items-center gap-4">
+        <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+          <div className="-mt-8 sm:-mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-4">
             {/* Avatar */}
-            <div className="w-[96px] h-[96px] rounded-full border-2 border-white overflow-hidden shrink-0 bg-white/5">
+            <div className="w-[80px] h-[80px] sm:w-[96px] sm:h-[96px] rounded-full border-2 border-white overflow-hidden shrink-0 bg-white/5 mx-auto sm:mx-0">
               <img
                 src={selectedProfile.avatar}
                 alt={selectedProfile.name}
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   const el = e.currentTarget as HTMLImageElement;
-                  if (el.src.includes("/svg")) el.src = el.src.replace("/svg", "/png");
+                  if (el.src.includes("/svg"))
+                    el.src = el.src.replace("/svg", "/png");
                 }}
               />
             </div>
 
             {/* Details */}
-            <div className="flex-1 min-w-0">
-              <h3 className="text-xl font-medium truncate">{selectedProfile.name}</h3>
-              <div className="mt-2.5 flex gap-6 text-sm">
-                <div>
-                  <p className="text-white/50 text-[10px] font-medium">Workshop Attended</p>
-                  <p className="text-white/80">—</p>
+            <div className="flex-1 min-w-0 text-center mx-auto sm:text-left">
+              <h3 className="text-lg sm:text-xl font-medium truncate">
+                {selectedProfile.name}
+              </h3>
+              <div className="mt-2 sm:mt-2.5 flex flex-col gap-2 sm:gap-6 text-sm">
+                {/* Mobile: Workshop Attended and Won on same line */}
+                <div className="flex flex-row sm:flex-col gap-4 sm:gap-0">
+                  <div>
+                    <p className="text-white/50 text-[10px] font-medium">
+                      Workshop Attended
+                    </p>
+                    <p className="text-white/80">—</p>
+                  </div>
+                  <div>
+                    <p className="text-white/50 text-[10px] font-medium">Won</p>
+                    <p className="text-white/80">🥇 —</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-white/50 text-[10px] font-medium">Won</p>
-                  <p className="text-white/80">🥇 —</p>
-                </div>
+                {/* State below Workshop Attended and Won on mobile */}
                 <div>
                   <p className="text-white/50 text-[10px] font-medium">State</p>
                   <p className="text-white/80">—</p>
@@ -128,15 +144,21 @@ const ProfileModal: React.FC = () => {
             </div>
 
             {/* Stats */}
-            <div className="flex-1">
-              <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+            <div className="flex-1 w-full sm:w-auto">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-center sm:text-left">
                 <div>
-                  <p className="text-white text-sm font-medium">{selectedProfile.ranking ?? 0}</p>
-                  <p className="text-white/50 text-[10px] font-medium">Invites</p>
+                  <p className="text-white text-sm font-medium">
+                    {selectedProfile.ranking ?? 0}
+                  </p>
+                  <p className="text-white/50 text-[10px] font-medium">
+                    Invites
+                  </p>
                 </div>
                 <div>
                   <p className="text-white text-sm font-medium">—</p>
-                  <p className="text-white/50 text-[10px] font-medium">Referral Counts</p>
+                  <p className="text-white/50 text-[10px] font-medium">
+                    Referral Counts
+                  </p>
                 </div>
               </div>
             </div>

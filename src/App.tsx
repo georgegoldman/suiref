@@ -19,7 +19,7 @@ import { useEffect, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import LeaderboardPage from "./components/leaderboard-page";
-import ReferralPage from "./components/referral-page";
+// import ReferralPage from "./components/referral-page";
 import { SessionDataProvider } from "./session-data";
 import { ProfileModalProvider } from "./ui/ProfileModalProvider";
 
@@ -79,7 +79,7 @@ export default function App() {
                 <Routes>
                   <Route path="/" element={<Onboard />} />
                   <Route path="/leaderboard" element={<LeaderboardPage />} />
-                  <Route path="/referral" element={<ReferralPage />} />
+                  {/* <Route path="/referral" element={<ReferralPage />} /> */}
                   <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
                   <Route path="/auth" element={<EnokiAuthCallback />} />
                   <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
