@@ -17,8 +17,15 @@ const PROFILE_POOL_ID = import.meta.env.VITE_SHARED_OBJECT_ID as string;
 const REFERRAL_POOL_ID = import.meta.env.VITE_REFERRAL_POOL_ID as string;
 
 // Venue coordinates: 371 Borno Way, Alagomeji-Yaba, Lagos (approx)
-const TARGET = { lat: 6.50837, lng: 3.384247 };
-const RADIUS_M = 250; // how close they must be to "claim" (edit as you like)
+  // You can override via env: VITE_VENUE_LAT, VITE_VENUE_LNG, VITE_VENUE_RADIUS_M
+const ENV_LAT = Number(import.meta.env.VITE_VENUE_LAT);
+const ENV_LNG = Number(import.meta.env.VITE_VENUE_LNG);
+const ENV_RADIUS = Number(import.meta.env.VITE_VENUE_RADIUS_M);
+const TARGET = {
+  lat: Number.isFinite(ENV_LAT) ? ENV_LAT : 6.50837,
+  lng: Number.isFinite(ENV_LNG) ? ENV_LNG : 3.384247,
+};
+const RADIUS_M = Number.isFinite(ENV_RADIUS) ? ENV_RADIUS : 250; // default
 
 const km = (m?: number | null) =>
   typeof m === "number" ? (m / 1000).toFixed(2) : undefined;
@@ -43,6 +50,46 @@ export default function Rewards() {
   const [referrerUsername, setReferrerUsername] = React.useState("");
   const [submitErr, setSubmitErr] = React.useState<string | null>(null);
   const [ok, setOk] = React.useState<string | null>(null);
+
+  // --- Script-based range check (app.js integration) ---
+  const [scriptInside, setScriptInside] = React.useState<boolean | null>(null);
+  const [scriptChecking, setScriptChecking] = React.useState(false);
+  const [scriptError, setScriptError] = React.useState<string | undefined>();
+
+  const checkRange = React.useCallback(async () => {
+    if (!("geolocation" in navigator)) {
+      setScriptInside(false);
+      setScriptError("Geolocation not supported.");
+      return;
+    }
+    setScriptChecking(true);
+    setScriptError(undefined);
+    try {
+      const pos: GeolocationPosition = await new Promise((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0,
+        })
+      );
+      const here = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      const d = distanceMeters(here, TARGET);
+      // mirror improved logic: account for accuracy but default threshold 150 if env radius not set
+      const acc = Math.max(0, Number(pos.coords.accuracy) || 0);
+      const effective = Math.max(0, d - acc);
+      const threshold = RADIUS_M || 150;
+      setScriptInside(effective <= threshold);
+    } catch (e: any) {
+      setScriptInside(false);
+      setScriptError(e?.message || String(e));
+    } finally {
+      setScriptChecking(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    void checkRange();
+  }, [checkRange]);
 
   const missingEnv = !PACKAGE_ID || !PROFILE_POOL_ID || !REFERRAL_POOL_ID;
 
@@ -148,8 +195,15 @@ export default function Rewards() {
     }
   };
 
+  // Input disabled if any blocking state OR both detectors say outside/unknown
+  const isInsideAny = inside || scriptInside === true;
   const inputDisabled =
-    !account?.address || isPending || missingEnv || checking || !inside;
+    !account?.address ||
+    isPending ||
+    missingEnv ||
+    checking ||
+    scriptChecking ||
+    !isInsideAny;
   const submitDisabled = inputDisabled;
 
   return (
@@ -190,8 +244,8 @@ export default function Rewards() {
               </span>{" "}
               (within {RADIUS_M} m)
             </div>
-            {checking && <div>Checking your location…</div>}
-            {!checking && inside === false && (
+            {(checking || scriptChecking) && <div>Checking your location…</div>}
+            {!checking && !scriptChecking && isInsideAny === false && (
               <div className="mt-1">
                 <span className="text-amber-300">
                   You’re outside the venue radius — claiming is locked.
@@ -205,10 +259,18 @@ export default function Rewards() {
                       : ""}
                   </span>
                 )}
-                {geoErr && <span className="text-red-400"> • {geoErr}</span>}
+                {(geoErr || scriptError) && (
+                  <span className="text-red-400">
+                    {" "}
+                    • {geoErr || scriptError}
+                  </span>
+                )}
                 <button
                   type="button"
-                  onClick={recheckLocation}
+                  onClick={() => {
+                    recheckLocation();
+                    void checkRange();
+                  }}
                   className="ml-2 px-2 py-1 rounded bg-white/10 hover:bg-white/20"
                 >
                   Recheck
