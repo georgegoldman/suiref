@@ -253,7 +253,6 @@ export default function Rewards() {
           </p>
         </div>
 
-        {/* ---- Leaderboard Table ---- */}
         <div className="bg-white/5 rounded-2xl p-4 sm:p-5 border border-white/10">
           <h2 className="text-white text-lg font-semibold mb-3">Leaderboard</h2>
           <LeaderboardTable showModal={false} />
