@@ -86,7 +86,9 @@ export default function Rewards() {
       const pos = await getCurrentPositionOnce();
       const here = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       const d = distanceMeters(here, TARGET);
-      if (d > RADIUS_M) {
+      const acc = Math.max(0, Number(pos.coords.accuracy) || 0);
+      const effectiveDistance = Math.max(0, d - acc);
+      if (effectiveDistance > RADIUS_M) {
         setSubmitErr(
           `You must be at the venue to acknwoledge the referral. Distance ≈ ${km(
             d
