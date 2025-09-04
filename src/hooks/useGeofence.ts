@@ -1,13 +1,13 @@
 // src/hooks/useGeofence.ts
 export type GeofenceResult = {
-  inside: boolean | null;         // null until we know
+  inside: boolean | null; // null until we know
   checking: boolean;
   error?: string;
-  distance?: number;              // meters to target
-  accuracy?: number;              // reported GPS accuracy in meters
+  distance?: number; // meters to target
+  accuracy?: number; // reported GPS accuracy in meters
   lastFix?: GeolocationPosition;
-  refresh: () => void;            // re-check once
-  watchStop: () => void;          // stop background watch
+  refresh: () => void; // re-check once
+  watchStop: () => void; // stop background watch
 };
 
 export type LatLng = { lat: number; lng: number };
@@ -37,7 +37,10 @@ export function useGeofence(
   const [lastFix, setLastFix] = useState<GeolocationPosition | undefined>();
   const watchIdRef = useRef<number | null>(null);
 
-  const haversine = (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => {
+  const haversine = (
+    a: { lat: number; lng: number },
+    b: { lat: number; lng: number }
+  ) => {
     const toRad = (v: number) => (v * Math.PI) / 180;
     const R = 6371000; // meters
     const dLat = toRad(b.lat - a.lat);
@@ -55,8 +58,11 @@ export function useGeofence(
     const cur = { lat: pos.coords.latitude, lng: pos.coords.longitude };
     const d = haversine(cur, target);
     setDistance(d);
-    setAccuracy(pos.coords.accuracy);
-    setInside(d <= radiusMeters);
+    const acc = Math.max(0, Number(pos.coords.accuracy) || 0);
+    setAccuracy(acc);
+    // Consider GPS accuracy: treat as inside if distance minus accuracy is within radius
+    const effectiveDistance = Math.max(0, d - acc);
+    setInside(effectiveDistance <= radiusMeters);
     setChecking(false);
     setError(undefined);
   };
@@ -84,11 +90,11 @@ export function useGeofence(
       return;
     }
     setChecking(true);
-    navigator.geolocation.getCurrentPosition(
-      evalFix,
-      fail,
-      { enableHighAccuracy: true, maximumAge: 10_000, timeout: 15_000 }
-    );
+    navigator.geolocation.getCurrentPosition(evalFix, fail, {
+      enableHighAccuracy: true,
+      maximumAge: 10_000,
+      timeout: 15_000,
+    });
   }, [target.lat, target.lng, radiusMeters]);
 
   // Start a background watch (updates if user moves closer)
@@ -96,7 +102,9 @@ export function useGeofence(
     if (!("geolocation" in navigator)) return;
     watchIdRef.current = navigator.geolocation.watchPosition(
       evalFix,
-      () => { /* ignore watch errors; refresh covers it */ },
+      () => {
+        /* ignore watch errors; refresh covers it */
+      },
       { enableHighAccuracy: true, maximumAge: 30_000, timeout: 20_000 }
     );
     // initial check
@@ -116,7 +124,16 @@ export function useGeofence(
     }
   }, []);
 
-  return { inside, checking, error, distance, accuracy, lastFix, refresh, watchStop };
+  return {
+    inside,
+    checking,
+    error,
+    distance,
+    accuracy,
+    lastFix,
+    refresh,
+    watchStop,
+  };
 }
 
 import { useCallback, useEffect, useRef, useState } from "react";

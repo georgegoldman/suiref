@@ -5,7 +5,6 @@ import ReferralTools from "./ReferralTools";
 import MyReferrals from "./MyReferrals";
 import Workshop from "./Workshop";
 import Rewards from "./Rewards";
-import Leaderboards from "./Leaderboards";
 import Wallets from "./Wallets";
 import Settings from "./Settings";
 import Support from "./Support";
@@ -13,6 +12,7 @@ import Support from "./Support";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDisconnectWallet } from "@mysten/dapp-kit";
+import DashboardLeaderboard from "./dashboard-leaderboard";
 
 export default function DashboardMain() {
   const navigate = useNavigate();
@@ -54,7 +54,7 @@ export default function DashboardMain() {
       case "rewards":
         return <Rewards />;
       case "leaderboards":
-        return <Leaderboards />;
+        return <DashboardLeaderboard />;
       case "wallets":
         return <Wallets />;
       case "settings":

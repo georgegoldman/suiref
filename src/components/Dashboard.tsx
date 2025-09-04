@@ -136,7 +136,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[30px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px]">
           <div className="bg-[#4DA2FD17] p-[20px] rounded-[10px] flex flex-col gap-[6px]">
             <div className="flex items-center gap-[6px]">
               <DashboardReferralIcon />

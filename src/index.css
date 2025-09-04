@@ -7,6 +7,10 @@
   --font-inter: "Inter", sans-serif;
   --font-space-grotesk: "Space Grotesk", sans-serif;
   --font-rubik: "Rubik", sans-serif;
+
+  --breakpoint-xxxs: 320px;
+  --breakpoint-xxs: 375px;
+  --breakpoint-xs: 425px;
 }
 
 /* Custom scrollbar-hide utility */

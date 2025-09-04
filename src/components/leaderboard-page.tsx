@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import LeaderboardTable from "./Leaderboards";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import LeaderboardTable from "./LeaderboardTable";
 
 const LeaderboardPage: React.FC = () => {
   const navigate = useNavigate();
