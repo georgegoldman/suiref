@@ -72,7 +72,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
         <RegisterEnokiWallets />
-        <WalletProvider autoConnect={false} storage={null}>
+        <WalletProvider autoConnect={true}>
           <SessionDataProvider>
             <ProfileModalProvider>
               <Router>
