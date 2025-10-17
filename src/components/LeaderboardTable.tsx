@@ -109,7 +109,9 @@ export default function LeaderboardTable({
                 row.avatar ||
                 dicebear(row.username || row.address || `user-${idx}`, 40);
               const key = `${row.username ?? ""}-${row.address ?? idx}`;
-
+              const sortedLeaderBoard : LeaderEntry[] = leaderboard.sort((x1, x2) => (x2.score - x1.score));
+              console.log("printing the sorted list base on score",sortedLeaderBoard);
+              
               return (
                 <tr
                   key={key}
@@ -139,7 +141,7 @@ export default function LeaderboardTable({
                 >
                   <td className="py-3 px-4 text-white/90 font-semibold w-16">
                     <span className="inline-block w-6 text-center">
-                      {medal(rank) ?? rank}
+                      { row.score === 0 ? ("") : (medal(rank) ?? rank)}
                     </span>
                   </td>
                   <td className="py-3 px-4 min-w-[150px] sm:min-w-[200px]">
@@ -160,11 +162,11 @@ export default function LeaderboardTable({
                         <span className="text-white/90 font-medium truncate">
                           {name}
                         </span>
-                        {row.username && row.address && (
+                        {/* {row.username && row.address && (
                           <span className="text-white/50 text-xs truncate">
                             {shortAddr(row.address)}
                           </span>
-                        )}
+                        )} */}
                       </div>
                     </div>
                   </td>
@@ -172,7 +174,7 @@ export default function LeaderboardTable({
                     {row.score}
                   </td>
                   <td className="py-3 px-4 text-white/70 text-sm min-w-[120px]">
-                    {shortAddr(row.address)}
+                    <button onClick={()=> navigator.clipboard.writeText(row.address || "")} >{shortAddr(row.address)}</button>
                   </td>
                 </tr>
               );
