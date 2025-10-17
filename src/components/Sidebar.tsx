@@ -7,13 +7,13 @@ import SidebarDashboardIcon from "../assets/sidebar-dashboard-icon";
 // import SidebarWorkshopIcon from "../assets/sidebar-workshop";
 import SidebarRewardsIcon from "../assets/sidebar-rewards-icon";
 import SidebarLeaderboardsIcon from "../assets/sidebar-leaderboards-icon";
-// import SidebarWalletIcon from "../assets/sidebar-wallet-icon";
+import SidebarWalletIcon from "../assets/sidebar-wallet-icon";
 // import SidebarSettingsIcon from "../assets/sidebar-settings-icon";
 import SidebarSupportIcon from "../assets/sidebar-support-icon";
 import SidebarLogoutIcon from "../assets/sidebar-logout-icon";
 import { CopyButton } from "./CopyButton";
 import { useUser } from "../session-data";
-import Logo from '../assets/suiref-logo.png'
+import Logo from "../assets/suiref-logo.png";
 
 interface SidebarProps {
   activePage: string;
@@ -52,7 +52,7 @@ const Sidebar = ({
       label: "Leaderboards",
       icon: SidebarLeaderboardsIcon,
     },
-    // { id: "wallets", label: "Wallets", icon: SidebarWalletIcon },
+    { id: "wallets", label: "Wallets", icon: SidebarWalletIcon },
   ];
 
   const otherMenuItems = [

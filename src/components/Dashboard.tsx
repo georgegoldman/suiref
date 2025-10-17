@@ -69,7 +69,7 @@ const Dashboard: React.FC = () => {
   };
 
   if (loading) return <div className="text-white">Loading…</div>;
-  if (error)   return <div className="text-red-400">Error: {error}</div>;
+  if (error) return <div className="text-red-400">Error: {error}</div>;
 
   return (
     <div className="flex-1 p-4 sm:p-6">
@@ -97,10 +97,17 @@ const Dashboard: React.FC = () => {
 
               <div className="space-y-2">
                 <div className="text-white/80 text-sm">Choose an avatar</div>
-                <AvatarPicker value={avatarUrl} onChange={setAvatarUrl} format="svg" size={96} />
+                <AvatarPicker
+                  value={avatarUrl}
+                  onChange={setAvatarUrl}
+                  format="svg"
+                  size={96}
+                />
               </div>
 
-              {submitError && <div className="text-red-400 text-sm">{submitError}</div>}
+              {submitError && (
+                <div className="text-red-400 text-sm">{submitError}</div>
+              )}
 
               <button
                 type="submit"
@@ -140,7 +147,9 @@ const Dashboard: React.FC = () => {
           <div className="bg-[#4DA2FD17] p-[20px] rounded-[10px] flex flex-col gap-[6px]">
             <div className="flex items-center gap-[6px]">
               <DashboardReferralIcon />
-              <h3 className="text-white/60 text-sm font-bold">Total Referral:</h3>
+              <h3 className="text-white/60 text-sm font-bold">
+                Total Referral:
+              </h3>
             </div>
             <p className="text-white text-2xl font-bold">{ranking}</p>
           </div>
@@ -148,7 +157,9 @@ const Dashboard: React.FC = () => {
           <div className="bg-[#4DA2FD17] p-[20px] rounded-[10px] flex flex-col gap-[6px]">
             <div className="flex items-center gap-[6px]">
               <DashboardPointEarned />
-              <h3 className="text-white/60 text-sm font-bold">Points Earned:</h3>
+              <h3 className="text-white/60 text-sm font-bold">
+                Points Earned:
+              </h3>
             </div>
             <p className="text-white text-2xl font-bold">0</p>
           </div>
@@ -156,7 +167,9 @@ const Dashboard: React.FC = () => {
 
         {/* Recent Referrals — from ReferralPool (your entries as referrer) */}
         <div className="flex flex-col gap-[20px]">
-          <h4 className="font-bold lg:text-[20px] text-base">Recent Referrals</h4>
+          <h4 className="font-bold lg:text-[20px] text-base">
+            Recent Referrals
+          </h4>
 
           {!hasProfile && (
             <div className="text-white/60 text-sm">
@@ -173,7 +186,9 @@ const Dashboard: React.FC = () => {
                       Username
                     </th>
                     {/* No timestamp stored in Referral struct; show placeholder */}
-                    <th className="text-left py-3 px-4 text-white/50 text-xs lg:text-sm font-bold">Date</th>
+                    <th className="text-left py-3 px-4 text-white/50 text-xs lg:text-sm font-bold">
+                      Date
+                    </th>
                     <th className="text-left py-3 px-4 text-white/50 text-xs lg:text-sm font-bold rounded-r-[10px]">
                       Points
                     </th>
@@ -183,7 +198,8 @@ const Dashboard: React.FC = () => {
                   {myRecentReferrals.map((r, idx) => (
                     <tr key={`${r.referrer}-${r.referree}-${idx}`}>
                       <td className="py-3 px-4 text-white/90 font-bold">
-                        You referred <span className="text-white/80">@{r.referree}</span>
+                        You referred{" "}
+                        <span className="text-white/80">@{r.referree}</span>
                       </td>
                       <td className="py-3 px-4 text-white/70 font-medium">
                         —{/* No per-referral timestamp available */}
@@ -194,7 +210,10 @@ const Dashboard: React.FC = () => {
 
                   {!myRecentReferrals.length && (
                     <tr>
-                      <td className="py-4 px-4 text-white/60 text-sm" colSpan={3}>
+                      <td
+                        className="py-4 px-4 text-white/60 text-sm"
+                        colSpan={3}
+                      >
                         No referrals yet.
                       </td>
                     </tr>
@@ -202,7 +221,8 @@ const Dashboard: React.FC = () => {
                 </tbody>
               </table>
               <div className="text-white/40 text-xs mt-2">
-                Tip: To show dates, emit an event in your Move function or store a timestamp per referral.
+                Tip: To show dates, emit an event in your Move function or store
+                a timestamp per referral.
               </div>
             </div>
           )}
