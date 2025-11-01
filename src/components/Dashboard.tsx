@@ -329,29 +329,6 @@ const Dashboard: React.FC = () => {
                         No referrals yet.
                       </td>
                     </tr>
-                    {/* Example dummy rows */}
-                    <tr className="bg-[#0A133A]">
-                      <td className="py-3 px-4 text-white font-medium">
-                        DevJohn Attended Workshop
-                      </td>
-                      <td className="py-3 px-4 text-white/80 text-sm">
-                        10/6/2025
-                      </td>
-                      <td className="py-3 px-4 text-white font-bold text-right pr-4">
-                        +1
-                      </td>
-                    </tr>
-                    <tr className="bg-[#0A133A]">
-                      <td className="py-3 px-4 text-white font-medium">
-                        CodeQueen Completed all modules
-                      </td>
-                      <td className="py-3 px-4 text-white/80 text-sm">
-                        10/6/2025
-                      </td>
-                      <td className="py-3 px-4 text-white font-bold text-right pr-4">
-                        +5
-                      </td>
-                    </tr>
                   </>
                 )}
               </tbody>
