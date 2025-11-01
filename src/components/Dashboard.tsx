@@ -1,5 +1,4 @@
 // src/components/Dashboard.tsx
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useSessionData, useUser } from "../session-data";
@@ -14,51 +13,163 @@ function getMoveFields(obj: any) {
   return content.fields;
 }
 
+const EventFilterDropdown: React.FC<{
+  value: string;
+  onChange: (v: string) => void;
+}> = ({ value, onChange }) => {
+  const [open, setOpen] = React.useState(false);
+  const items = ["All Events", "Upcoming", "Past"];
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="
+          h-10 px-4 rounded-full
+          bg-white/5 hover:bg-white/10 ring-1 ring-white/10
+          text-white/90 text-sm inline-flex items-center gap-2
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40
+        "
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        <span className="truncate">{value}</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M6 9l6 6 6-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.8}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+
+      {open && (
+        <ul
+          role="listbox"
+          className="
+            absolute right-0 mt-2 w-44 overflow-hidden
+            rounded-xl bg-[#0A133A] ring-1 ring-white/10 shadow-xl z-10
+          "
+        >
+          {items.map((it) => (
+            <li key={it}>
+              <button
+                type="button"
+                onClick={() => {
+                  onChange(it);
+                  setOpen(false);
+                }}
+                className="
+                  w-full text-left px-4 py-2 text-sm
+                  text-white/90 hover:bg-white/10
+                "
+                role="option"
+                aria-selected={it === value}
+              >
+                {it}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+const CreateReferralButton: React.FC<{
+  username?: string | null;
+  address?: string | null;
+}> = ({ username, address }) => {
+  const [copied, setCopied] = React.useState(false);
+  const id = username || address || "";
+  const url = id ? `${window.location.origin}/r/${id}` : "";
+
+  const handleClick = async () => {
+    if (!id) {
+      alert("Create a profile or connect your wallet to get a referral link.");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      window.prompt("Copy your referral link:", url);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      className="
+        h-10 px-5 rounded-full
+        bg-[#4DA2FD] hover:bg-[#63AEFF]
+        text-[#031335] font-semibold text-sm
+        inline-flex items-center gap-2
+        shadow-[0_6px_20px_rgba(77,162,253,0.35)]
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40
+      "
+      title={url || "Referral link"}
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M12 5v14M5 12h14"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+        />
+      </svg>
+      {copied ? "Copied!" : "Create referral link"}
+    </button>
+  );
+};
+
+
 const Dashboard: React.FC = () => {
   const { loading, error, refresh, referralObject } = useSessionData();
   const { username, ranking, hasProfile } = useUser();
   const currentAccount = useCurrentAccount();
   const createProfile = useCreateProfile();
+  const [eventFilter, setEventFilter] = React.useState("All Events");
 
-  // ---------- Build "My Recent Referrals" from ReferralPool ----------
-  // Referral struct in Move: { referrer: string, referree: string }
+
   const referralList: any[] = React.useMemo(() => {
     const fields = getMoveFields(referralObject);
-    const list = fields?.referal_list; // NOTE: contract uses 'referal_list'
+    const list = fields?.referal_list;
     return Array.isArray(list) ? list : [];
   }, [referralObject]);
 
   const myRecentReferrals = React.useMemo(() => {
     if (!username) return [];
-    // vector.push_back appends; assume list order is chronological → newest at end
     const mine = referralList
       .filter((it: any) => it?.fields?.referrer === username)
       .map((it: any) => ({
         referrer: String(it.fields.referrer),
         referree: String(it.fields.referree),
       }))
-      .reverse(); // show newest first
-    // limit to last 10 for UI
+      .reverse();
     return mine.slice(0, 10);
   }, [referralList, username]);
 
-  // ---------- Create Profile form ----------
   const [usernameInput, setUsernameInput] = React.useState("");
-  const [avatarUrl, setAvatarUrl] = React.useState(""); // DiceBear URL
+  const [avatarUrl, setAvatarUrl] = React.useState("");
   const [submitting, setSubmitting] = React.useState(false);
   const [submitError, setSubmitError] = React.useState<string>();
 
   const onCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!avatarUrl) {
-      setSubmitError("Please select an avatar.");
-      return;
-    }
+    if (!avatarUrl) return setSubmitError("Please select an avatar.");
     setSubmitting(true);
     setSubmitError(undefined);
     try {
       await createProfile(usernameInput.trim(), avatarUrl.trim());
-      await refresh(); // pull fresh profile + pools
+      await refresh();
       setUsernameInput("");
       setAvatarUrl("");
     } catch (err: any) {
@@ -73,159 +184,179 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="flex-1 p-4 sm:p-6">
-      <div className="max-w-6xl mx-auto flex flex-col gap-[31px]">
+      <div className="max-w-6xl mx-auto flex flex-col gap-10">
         {/* Header */}
-        <div className="flex flex-col gap-2.5">
-          <h1 className="text-white text-[24px] font-bold">
-            Welcome{username ? `, ${username}` : ""} to SuiHub dashboard
-          </h1>
+        {/* Header + Top-right controls */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-white text-[24px] font-bold">Welcome to SuiHub dashboard</h1>
+            <p className="text-white/60 text-sm">
+              Start by sharing your referral link, and your rewards grows
+            </p>
+          </div>
 
-          {!hasProfile && (
-            <form onSubmit={onCreate} className="mt-4 max-w-md space-y-3">
-              <label className="block">
-                <span className="text-white/80 text-sm">Username</span>
-                <input
-                  className="w-full rounded px-3 py-2 bg-white/10 text-white"
-                  value={usernameInput}
-                  onChange={(e) => setUsernameInput(e.target.value)}
-                  required
-                  minLength={3}
-                  maxLength={24}
-                  disabled={!currentAccount?.address || submitting}
-                />
-              </label>
-
-              <div className="space-y-2">
-                <div className="text-white/80 text-sm">Choose an avatar</div>
-                <AvatarPicker
-                  value={avatarUrl}
-                  onChange={setAvatarUrl}
-                  format="svg"
-                  size={96}
-                />
-              </div>
-
-              {submitError && (
-                <div className="text-red-400 text-sm">{submitError}</div>
-              )}
-
-              <button
-                type="submit"
-                disabled={!currentAccount?.address || submitting}
-                className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-60"
-              >
-                {submitting ? "Creating…" : "Create Profile"}
-              </button>
-            </form>
-          )}
-
-          {/* {hasProfile && (
-            <div className="mt-4 text-white/90 flex items-center gap-4">
-              <img
-                src={avatar ?? ""}
-                alt="avatar"
-                className="w-20 h-20 rounded-xl"
-                onError={(e) => {
-                  const el = e.currentTarget as HTMLImageElement;
-                  if (el.src.includes("/svg")) el.src = el.src.replace("/svg", "/png");
-                }}
-              />
-              <div>
-                <div><b>Username:</b> {username || "—"}</div>
-                <div><b>Ranking:</b> {ranking}</div>
-              </div>
-            </div>
-          )} */}
-
-          <p className="text-white/60 font-medium text-xs">
-            Start by sharing your SUIREF username, and your rewards grow.
-          </p>
+          <div className="flex items-center gap-3">
+            <EventFilterDropdown value={eventFilter} onChange={setEventFilter} />
+            <CreateReferralButton
+              username={username}
+              address={currentAccount?.address ?? null}
+            />
+          </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px]">
-          <div className="bg-[#4DA2FD17] p-[20px] rounded-[10px] flex flex-col gap-[6px]">
-            <div className="flex items-center gap-[6px]">
+
+        {/* Stats row */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="bg-[#13214D] p-4 rounded-xl flex flex-col justify-between">
+            <div className="flex items-center gap-2">
               <DashboardReferralIcon />
-              <h3 className="text-white/60 text-sm font-bold">
+              <span className="text-white/70 font-semibold text-sm">
                 Total Referral:
-              </h3>
+              </span>
             </div>
-            <p className="text-white text-2xl font-bold">{ranking}</p>
+            <p className="text-white text-3xl font-bold mt-2">{ranking ?? 0}</p>
           </div>
 
-          <div className="bg-[#4DA2FD17] p-[20px] rounded-[10px] flex flex-col gap-[6px]">
-            <div className="flex items-center gap-[6px]">
-              <DashboardPointEarned />
-              <h3 className="text-white/60 text-sm font-bold">
-                Points Earned:
-              </h3>
+          <div className="bg-[#13214D] p-4 rounded-xl flex flex-col justify-between">
+            <div className="flex items-center gap-2">
+              <DashboardReferralIcon />
+              <span className="text-white/70 font-semibold text-sm">
+                Workshop Attendees:
+              </span>
             </div>
-            <p className="text-white text-2xl font-bold">0</p>
+            <p className="text-white text-3xl font-bold mt-2">0</p>
+          </div>
+
+          <div className="bg-[#13214D] p-4 rounded-xl flex flex-col justify-between">
+            <div className="flex items-center gap-2">
+              <DashboardPointEarned />
+              <span className="text-white/70 font-semibold text-sm">
+                Points Earned:
+              </span>
+            </div>
+            <p className="text-white text-3xl font-bold mt-2">0</p>
           </div>
         </div>
 
-        {/* Recent Referrals — from ReferralPool (your entries as referrer) */}
-        <div className="flex flex-col gap-[20px]">
-          <h4 className="font-bold lg:text-[20px] text-base">
-            Recent Referrals
-          </h4>
+        {/* Ongoing Events */}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <h4 className="text-white font-bold text-lg">Ongoing Events</h4>
+            <button className="text-white/70 text-sm hover:text-white">
+              See All
+            </button>
+          </div>
 
-          {!hasProfile && (
-            <div className="text-white/60 text-sm">
-              Create a profile to start referring users and see them here.
-            </div>
-          )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="bg-[#0A133A] rounded-xl overflow-hidden border border-white/10"
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=800&q=60"
+                  alt="event"
+                  className="w-full h-[140px] object-cover"
+                />
+                <div className="p-4 space-y-2">
+                  <p className="text-white/60 text-xs">
+                    Saturday, Nov 2 • 8:00 AM
+                  </p>
+                  <h5 className="text-white font-bold text-base">
+                    SuiRef Conference 2.0
+                  </h5>
+                  <p className="text-white/60 text-sm">
+                    By <span className="text-white">SuiRef Conference</span>
+                  </p>
+                  <p className="text-white/60 text-sm flex items-center gap-1">
+                    📍 Eronye Junction, Enugu State
+                  </p>
+                  <div className="mt-2 flex items-center gap-2">
+                    <div className="flex -space-x-2">
+                      {Array.from({ length: 5 }).map((_, idx) => (
+                        <img
+                          key={idx}
+                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${idx}`}
+                          className="w-6 h-6 rounded-full border border-[#0A133A]"
+                        />
+                      ))}
+                    </div>
+                    <span className="text-white/70 text-xs">+15</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
-          {hasProfile && (
-            <div className="w-full overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-white/10 rounded-[10px]">
-                    <th className="text-left py-3 px-4 text-white/50 text-xs lg:text-sm font-bold rounded-l-[10px]">
-                      Username
-                    </th>
-                    {/* No timestamp stored in Referral struct; show placeholder */}
-                    <th className="text-left py-3 px-4 text-white/50 text-xs lg:text-sm font-bold">
-                      Date
-                    </th>
-                    <th className="text-left py-3 px-4 text-white/50 text-xs lg:text-sm font-bold rounded-r-[10px]">
-                      Points
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {myRecentReferrals.map((r, idx) => (
-                    <tr key={`${r.referrer}-${r.referree}-${idx}`}>
-                      <td className="py-3 px-4 text-white/90 font-bold">
-                        You referred{" "}
-                        <span className="text-white/80">@{r.referree}</span>
+        {/* Recent Referrals */}
+        <div className="flex flex-col gap-4">
+          <h4 className="text-white font-bold text-lg">Recent Referrals</h4>
+          <div className="overflow-x-auto">
+            <table className="w-full border-separate border-spacing-y-2">
+              <thead>
+                <tr className="text-white/60 text-xs font-medium text-left">
+                  <th className="pb-2">Description</th>
+                  <th className="pb-2">Date</th>
+                  <th className="pb-2 text-right pr-4">Points</th>
+                </tr>
+              </thead>
+              <tbody>
+                {myRecentReferrals.length ? (
+                  myRecentReferrals.map((r, idx) => (
+                    <tr
+                      key={idx}
+                      className="bg-[#0A133A] hover:bg-[#12204F] rounded-lg"
+                    >
+                      <td className="py-3 px-4 text-white font-medium rounded-l-lg">
+                        {r.referree} Attended Workshop
                       </td>
-                      <td className="py-3 px-4 text-white/70 font-medium">
-                        —{/* No per-referral timestamp available */}
+                      <td className="py-3 px-4 text-white/80 text-sm">
+                        10/6/2025
                       </td>
-                      <td className="py-3 px-4 text-white/90 font-bold">+1</td>
+                      <td className="py-3 px-4 text-white font-bold text-right pr-4 rounded-r-lg">
+                        +1
+                      </td>
                     </tr>
-                  ))}
-
-                  {!myRecentReferrals.length && (
-                    <tr>
+                  ))
+                ) : (
+                  <>
+                    <tr className="bg-[#0A133A] rounded-lg">
                       <td
-                        className="py-4 px-4 text-white/60 text-sm"
                         colSpan={3}
+                        className="py-4 px-4 text-white/60 text-center"
                       >
                         No referrals yet.
                       </td>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-              <div className="text-white/40 text-xs mt-2">
-                Tip: To show dates, emit an event in your Move function or store
-                a timestamp per referral.
-              </div>
-            </div>
-          )}
+                    {/* Example dummy rows */}
+                    <tr className="bg-[#0A133A]">
+                      <td className="py-3 px-4 text-white font-medium">
+                        DevJohn Attended Workshop
+                      </td>
+                      <td className="py-3 px-4 text-white/80 text-sm">
+                        10/6/2025
+                      </td>
+                      <td className="py-3 px-4 text-white font-bold text-right pr-4">
+                        +1
+                      </td>
+                    </tr>
+                    <tr className="bg-[#0A133A]">
+                      <td className="py-3 px-4 text-white font-medium">
+                        CodeQueen Completed all modules
+                      </td>
+                      <td className="py-3 px-4 text-white/80 text-sm">
+                        10/6/2025
+                      </td>
+                      <td className="py-3 px-4 text-white font-bold text-right pr-4">
+                        +5
+                      </td>
+                    </tr>
+                  </>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
