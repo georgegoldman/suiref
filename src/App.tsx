@@ -14,6 +14,9 @@ import React from "react";
 import LeaderboardPage from "./components/leaderboard-page";
 import WalletConnect from "./components/wallet-connect";
 
+import { SessionDataProvider } from "./session-data";
+import { ProfileModalProvider } from "./ui/ProfileModalProvider";
+
 type RouteProps = { children: ReactNode };
 
 function ProtectedRoute({ children }: RouteProps) {
@@ -38,29 +41,33 @@ function PublicRoute({ children }: RouteProps) {
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Onboard />} />
-        <Route path="/leaderboard" element={<LeaderboardPage />} />
-        <Route
-          path="/login"
-          element={
-            <PublicRoute>
-              <WalletConnect />
-            </PublicRoute>
-          }
-        />
-        <Route path="/auth" element={<EnokiAuthCallback />} />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+    <SessionDataProvider>
+      <ProfileModalProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Onboard />} />
+          <Route path="/leaderboard" element={<LeaderboardPage />} />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <WalletConnect />
+              </PublicRoute>
+            }
+          />
+          <Route path="/auth" element={<EnokiAuthCallback />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+      </ProfileModalProvider>
+    </SessionDataProvider>
   );
 }
