@@ -7,7 +7,7 @@ const FAQS: FaqItem[] = [
   {
     id: 1,
     q: "How Do i generate my referral link?",
-    a: "Your referral link is created once you sign up, connect your wallet and login via ZK.",
+    a: "Your referral link is created once you sign up, connect your wallet.",
   },
   {
     id: 2,
@@ -170,39 +170,39 @@ const Support: React.FC = () => {
                 </label>
 
                 <label className="flex items-start gap-3 text-xs text-white/70">
-  <input
-    type="checkbox"
-    checked={agree}
-    onChange={(e) => setAgree(e.target.checked)}
-    className="
-      mt-1 h-5 w-5
-      appearance-none                       /* remove default UI */
-      rounded-md
-      bg-transparent
-      ring-1 ring-white/20                  /* subtle outline */
-      border border-transparent             /* iOS/Safari fallback */
-      hover:ring-white/30
-      transition
-      focus:outline-none focus:ring-2 focus:ring-white/40
+                  <input
+                    type="checkbox"
+                    checked={agree}
+                    onChange={(e) => setAgree(e.target.checked)}
+                    className="
+                      mt-1 h-5 w-5
+                      appearance-none                       /* remove default UI */
+                      rounded-md
+                      bg-transparent
+                      ring-1 ring-white/20                  /* subtle outline */
+                      border border-transparent             /* iOS/Safari fallback */
+                      hover:ring-white/30
+                      transition
+                      focus:outline-none focus:ring-2 focus:ring-white/40
 
-      /* checked state (blue fill + vector tick) */
-      checked:bg-[#4DA2FD]
-      checked:ring-[#4DA2FD]
-      checked:[background-image:url('data:image/svg+xml;utf8,\
-<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22>\
-<path d=%22M5 13l4 4L19 7%22 fill=%22none%22 stroke=%22%23031335%22 stroke-width=%223%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/>\
-</svg>')]
-      checked:bg-no-repeat
-      checked:bg-center
-      checked:bg-[length:14px_14px]
-    "
-  />
+                      /* checked state (blue fill + vector tick) */
+                      checked:bg-[#4DA2FD]
+                      checked:ring-[#4DA2FD]
+                      checked:[background-image:url('data:image/svg+xml;utf8,\
+                <svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22>\
+                <path d=%22M5 13l4 4L19 7%22 fill=%22none%22 stroke=%22%23031335%22 stroke-width=%223%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/>\
+                </svg>')]
+                      checked:bg-no-repeat
+                      checked:bg-center
+                      checked:bg-[length:14px_14px]
+                    "
+                  />
 
-  <span>
-    You agree to the terms of service and consent to the processing of your
-    personal data as outlined in our privacy policy.
-  </span>
-</label>
+                  <span>
+                    You agree to the terms of service and consent to the processing of your
+                    personal data as outlined in our privacy policy.
+                  </span>
+                </label>
 
 
                 <button
