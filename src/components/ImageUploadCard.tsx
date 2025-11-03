@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Search, Upload } from 'lucide-react';
+import { X, Search, Upload, Image } from 'lucide-react';
 
 // Types
 interface StockImage {
@@ -307,9 +307,10 @@ export const ImageUploadCard: React.FC<ImageUploadCardProps> = ({
         )}
 
         {/* Settings button - always visible */}
-        <span className="absolute bottom-4 right-4 bg-[#0A143A] rounded-full p-2 ring-1 ring-white/10 z-10">
-          ⚙️
+        <span className="absolute bottom-4 right-4 bg-[#630000] rounded-full p-2 ring-1 ring-white/10 z-10">
+            <Image size={20} color="white" strokeWidth={2.5} />
         </span>
+
       </div>
 
       {/* Modal */}
