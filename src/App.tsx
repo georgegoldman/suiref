@@ -8,13 +8,16 @@ import {
 import Onboard from "./components/onboard";
 import Dashboard from "./components/dahboard";
 import EnokiAuthCallback from "./routes/EnokiAuthCallback";
-
 import { useEffect, type ReactNode } from "react";
 import React from "react";
 import LeaderboardPage from "./components/leaderboard-page";
 import WalletConnect from "./components/wallet-connect";
 import { SessionDataProvider } from "./session-data";
 import { ProfileModalProvider } from "./ui/ProfileModalProvider";
+
+// ===== Admin pages (make stubs if they don't exist yet) =====
+import AdminDashboard from "./admin/AdminDashboard";
+// import AdminLeaderboard from "./admin/AdminLeaderboard";
 
 type RouteProps = { children: ReactNode };
 
@@ -30,7 +33,6 @@ function ProtectedRoute({ children }: RouteProps) {
         Loading…
       </div>
     );
-
   return children;
 }
 
@@ -39,32 +41,53 @@ function PublicRoute({ children }: RouteProps) {
 }
 
 export default function App() {
+  const host =
+    typeof window !== "undefined" ? window.location.hostname : "";
+  const isAdminHost = host === "console.localhost";
+
   return (
     <SessionDataProvider>
       <ProfileModalProvider>
         <Router>
-          <Routes>
-            <Route path="/" element={<Onboard />} />
-            <Route path="/leaderboard" element={<LeaderboardPage />} />
-            <Route
-              path="/login"
-              element={
-                <PublicRoute>
-                  <WalletConnect />
-                </PublicRoute>
-              }
-            />
-            <Route path="/auth" element={<EnokiAuthCallback />} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          {isAdminHost ? (
+            // ================= ADMIN ROUTES =================
+            <Routes>
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              {/* <Route path="/leaderboard" element={<AdminLeaderboard />} /> */}
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          ) : (
+            // ================= USER ROUTES =================
+            <Routes>
+              <Route path="/" element={<Onboard />} />
+              <Route path="/leaderboard" element={<LeaderboardPage />} />
+              <Route
+                path="/login"
+                element={
+                  <PublicRoute>
+                    <WalletConnect />
+                  </PublicRoute>
+                }
+              />
+              <Route path="/auth" element={<EnokiAuthCallback />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          )}
         </Router>
       </ProfileModalProvider>
     </SessionDataProvider>

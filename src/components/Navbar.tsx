@@ -1,8 +1,8 @@
 import { HiMenu } from "react-icons/hi";
 import DashboardSearchIcon from "../assets/dashboard-search-icon";
 import { useUser } from "../session-data";
-import { CopyButton } from "./CopyButton";
 import { useProfileModal } from "../ui/ProfileModalProvider";
+import { ProfilePill } from "./ProfilePill";
 
 interface NavbarProps {
   onMobileMenuOpen: () => void;
@@ -33,6 +33,7 @@ const Navbar = ({ onMobileMenuOpen }: NavbarProps) => {
       backgroundImage: banner,
       username: username ?? undefined,
       ranking: ranking ?? 0,
+      activities: { rank: 1, won: true, event: "Sui Workshop", date: "8/20/2025" },
     });
   };
 
@@ -50,17 +51,25 @@ const Navbar = ({ onMobileMenuOpen }: NavbarProps) => {
 
         {/* Desktop User Info - Hidden on mobile */}
         <div className="hidden lg:flex flex-col">
-          <div className="hidden lg:flex items-center gap-2">
-            <span className="text-white/70 text-xs font-medium">Hey!</span>
-            <span>👋</span>
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2">
+            <button
+            onClick={() => navigator.clipboard.writeText(address || "").then(()=> alert("Text copied to clipboard!")).catch(err => {
+              alert("Failed to copy text. Please try again.")
+            })}
+            >
+              <span 
+            
+            className="text-white text-[18px] lg:text-[24px] font-bold">
+              Hi {displayName} 👋
+            </span>
+            </button>
           </div>
 
-          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2">
-            <span className="text-white text-[18px] lg:text-[24px] font-bold">
-              {displayName}
-            </span>
-            <CopyButton value={address} />
+          <div className="hidden lg:flex items-center gap-2">
+            <span className="text-white/70 text-xs font-medium">Welcome</span>
           </div>
+
+          
         </div>
       </div>
 
@@ -79,37 +88,13 @@ const Navbar = ({ onMobileMenuOpen }: NavbarProps) => {
       </div>
 
       {/* Right side */}
-      <div className="flex items-center gap-2.5">
-        {/* Mobile: Hey! and waving hand beside avatar */}
-        <div className="lg:hidden flex items-center gap-[0rem]">
-          <span className="text-white/70 text-xs font-medium">Hey!</span>
-          <span>👋</span>
-        </div>
-
-        {hasProfile && avatar ? (
-          <button onClick={onOpenProfile} className="rounded-full">
-            <img
-              src={avatar}
-              alt="avatar"
-              className="w-[40px] h-[40px] rounded-full object-cover"
-              onError={(e) => {
-                const el = e.currentTarget as HTMLImageElement;
-                if (el.src.includes("/svg"))
-                  el.src = el.src.replace("/svg", "/png");
-              }}
-              decoding="async"
-              loading="lazy"
-            />
-          </button>
-        ) : (
-          <button
-            onClick={onOpenProfile}
-            className="w-[40px] h-[40px] rounded-full bg-gradient-to-r from-[#1DA1F2] to-[#1DA1F2]/80 flex items-center justify-center"
-          >
-            <span className="text-white font-semibold text-lg">{initial}</span>
-          </button>
-        )}
-      </div>
+      <ProfilePill
+      hasProfile={hasProfile}
+      avatar={avatar}
+      initial={initial}
+      onOpenProfile={onOpenProfile}
+       />
+      
     </div>
   );
 };
