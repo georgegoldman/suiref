@@ -1,30 +1,41 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+// components/EventBannerCard.tsx
 import React, { useRef, useState, useEffect } from "react";
 
 type Props = {
-  /** optional initial URL (e.g. when editing an event) */
-  initialUrl?: string;
-  /** called when a valid file is chosen or cleared */
-  onChange?: (file: File | null) => void;
-  /** max size in MB */
+  eventId: string;
+  title: string;
+  dateText?: string;  // e.g. "Nov 28, 2025 • 5:00 PM"
+  venue?: string;
+  category?: string;  // e.g. "workshop" | "hackathon"
+  initialUrl?: string; // existing banner url if editing
+  onFileSelected?: (file: File | null) => void; // local machine file
+  onUseAutoBanner?: (autoUrl: string) => void;  // when user picks auto
   maxSizeMB?: number;
-  /** recommended dimensions text */
-  hint?: string;
 };
 
-export default function EventBannerUploader({
+export default function EventBannerCard({
+  eventId,
+  title,
+  dateText,
+  venue,
+  category,
   initialUrl,
-  onChange,
+  onFileSelected,
+  onUseAutoBanner,
   maxSizeMB = 8,
-  hint = "Recommended: 1600×900 (16:9)"
 }: Props) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<string | null>(initialUrl ?? null);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAuto, setIsAuto] = useState<boolean>(!initialUrl);
 
   useEffect(() => {
-    // keep preview in sync if initialUrl changes
-    if (initialUrl) setPreview(initialUrl);
+    if (initialUrl) {
+      setPreview(initialUrl);
+      setIsAuto(false);
+    }
   }, [initialUrl]);
 
   function openPicker() {
@@ -43,8 +54,9 @@ export default function EventBannerUploader({
       return;
     }
     const url = URL.createObjectURL(file);
+    setIsAuto(false);
     setPreview(url);
-    onChange?.(file);
+    onFileSelected?.(file);
   }
 
   function onInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -68,14 +80,58 @@ export default function EventBannerUploader({
 
   function clearImage() {
     setPreview(null);
-    onChange?.(null);
-    // reset the input so selecting the same file again triggers onChange
+    setIsAuto(true);
+    onFileSelected?.(null);
     if (inputRef.current) inputRef.current.value = "";
+    useAutoBanner(); // immediately switch to auto image
+  }
+
+  function autoBannerUrl() {
+    // Your dynamic OG route from earlier
+    const params = new URLSearchParams();
+    if (title) params.set("title", title);
+    if (dateText) params.set("date", dateText);
+    if (venue) params.set("venue", venue);
+    if (category) params.set("cat", category);
+    return `/api/event-banner/${eventId}?${params.toString()}`;
+  }
+
+  function useAutoBanner() {
+    const url = autoBannerUrl();
+    setIsAuto(true);
+    setPreview(url);
+    onUseAutoBanner?.(url);
   }
 
   return (
     <div className="w-full">
-      {/* Clickable / focusable card */}
+      {/* Header row like Luma: title + actions */}
+      <div className="mb-2 flex items-center justify-between">
+        <div className="text-sm text-slate-600">
+          Event banner (16:9). PNG/JPG/WebP, up to {maxSizeMB}MB.
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={useAutoBanner}
+            className={`px-3 py-1.5 text-sm rounded-lg ring-1 ring-slate-200 shadow-sm hover:bg-slate-50 ${
+              isAuto ? "bg-slate-100" : "bg-white"
+            }`}
+            title="Generate a default banner from your event details"
+          >
+            Use Auto Banner
+          </button>
+          <button
+            type="button"
+            onClick={openPicker}
+            className="px-3 py-1.5 text-sm rounded-lg bg-[#0A143A] text-white shadow hover:opacity-95"
+          >
+            Upload Image
+          </button>
+        </div>
+      </div>
+
+      {/* Clickable card */}
       <div
         role="button"
         tabIndex={0}
@@ -87,50 +143,42 @@ export default function EventBannerUploader({
         }}
         onDragLeave={() => setDragOver(false)}
         onDrop={onDrop}
+        aria-label="Event banner"
         className={[
-          "relative rounded-2xl shadow-sm transition overflow-hidden",
-          "aspect-[16/9] w-full bg-white",
+          "relative rounded-2xl transition overflow-hidden",
+          "aspect-[16/9] w-full",
           preview
-            ? "ring-2 ring-transparent hover:ring-[#0A143A]/30"
-            : "border-2 border-dashed border-slate-300 hover:border-[#0A143A] hover:bg-slate-50",
-          dragOver ? "ring-4 ring-[#0A143A]/40" : ""
+            ? "bg-slate-100 ring-1 ring-slate-200 hover:ring-[#0A143A]/30"
+            : "bg-white border-2 border-dashed border-slate-300 hover:border-[#0A143A] hover:bg-slate-50",
+          "shadow-sm",
+          "cursor-pointer",
+          dragOver ? "ring-4 ring-[#0A143A]/40" : "",
         ].join(" ")}
-        aria-label="Upload event banner"
       >
         {/* Empty state */}
         {!preview && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 px-4 text-center">
             <div className="text-3xl">🖼️</div>
             <p className="font-medium text-slate-800">Click to upload</p>
             <p className="text-sm text-slate-500">or drag and drop</p>
-            <p className="text-xs text-slate-400 mt-1">{hint}</p>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                openPicker();
-              }}
-              className="mt-3 px-3 py-1.5 rounded-lg bg-[#0A143A] text-white text-sm"
-            >
-              Choose Image
-            </button>
+            <p className="text-xs text-slate-400 mt-1">Recommended: 1600×900 (16:9)</p>
           </div>
         )}
 
-        {/* Preview */}
+        {/* Preview (uploaded OR auto) */}
         {preview && (
           <>
+            {/* object-cover keeps it neat like Luma */}
             <img
               src={preview}
               alt="Event banner preview"
               className="absolute inset-0 h-full w-full object-cover"
               draggable={false}
             />
-
-            {/* Gradient scrim for legibility */}
+            {/* subtle bottom gradient for legibility */}
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/35 to-transparent" />
 
-            {/* Controls */}
+            {/* Controls (Replace / Remove / Gear) */}
             <div className="absolute bottom-3 right-3 flex gap-2">
               <button
                 type="button"
@@ -152,16 +200,20 @@ export default function EventBannerUploader({
               >
                 Remove
               </button>
-
-              {/* Your original gear icon kept as a quick action */}
               <span className="bg-[#0A143A] text-white rounded-full p-2 ring-1 ring-white/10">
                 ⚙️
+              </span>
+            </div>
+
+            {/* Label badge to indicate source */}
+            <div className="absolute top-3 left-3">
+              <span className="rounded-full bg-black/40 text-white text-xs px-2 py-1 backdrop-blur">
+                {isAuto ? "Auto banner" : "Uploaded"}
               </span>
             </div>
           </>
         )}
 
-        {/* Hidden input */}
         <input
           ref={inputRef}
           type="file"
@@ -171,7 +223,6 @@ export default function EventBannerUploader({
         />
       </div>
 
-      {/* Error */}
       {error && (
         <p className="mt-2 text-sm text-red-600" role="alert">
           {error}

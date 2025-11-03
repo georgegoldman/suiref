@@ -107,7 +107,7 @@ export default function EventDateRange({
       {/* Timezone picker with card styling */}
       <div className="rounded-2xl bg-white/[0.06] ring-1 ring-white/10 p-4 w-full">
         <div className="mb-3">
-          <h3 className="text-white font-medium text-base mb-1">Event Location</h3>
+          {/* <h3 className="text-white font-medium text-base mb-1">Event Location</h3> */}
           <p className="text-white/50 text-sm">Select the timezone for your event</p>
         </div>
         <TimezoneSelect

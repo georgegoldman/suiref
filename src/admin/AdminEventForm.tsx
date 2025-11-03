@@ -7,7 +7,14 @@ import EventAccessToggle, { type EventAccess } from "../components/EventAccessTo
 import EventCapacityField, { type EventCapacity } from "../components/EventCapacityField";
 import EventDescriptionField from "../components/EventDescriptionField";
 import EventTitleInput from "../components/EventTitleInput";
-import EventBannerUploader from "../components/EventBannerUploader";
+import { ImageUploadCard } from '../components/ImageUploadCard';
+
+
+interface ImageUploadCardProps {
+  selectedImage: string | null;
+  onImageChange: (imageUrl: string) => void;
+  className?: string;
+}
 
 export default function AdminEventForm() {
   const [visibility, setVisibility] = React.useState<"Public" | "Private" | "Unlisted">("Public");
@@ -17,6 +24,8 @@ export default function AdminEventForm() {
   const [access, setAccess] = React.useState<EventAccess>({ type: "free" });
   const [capacity, setCapacity] = React.useState<EventCapacity | undefined>({ mode: "unlimited" });
   const [description, setDescription] = React.useState<string | undefined>(undefined);
+  const [eventImage, setEventImage] = React.useState<string | null>(null);
+
 
   // shared card style (matches your dark UI, compact & consistent)
   const card = "bg-[#0B183F] rounded-xl ring-1 ring-white/10 px-4 py-3";
@@ -26,30 +35,23 @@ export default function AdminEventForm() {
       {/* two columns: ~480px left, ~560px right */}
       <div className="grid gap-8 lg:grid-cols-[minmax(300px,350px)_minmax(520px,1fr)] items-start">
         {/* LEFT: canvas + theme (sticky) */}
-        
-          <aside className="space-y-4 lg:sticky lg:top-16 self-start">
-            <EventBannerUploader
-              // initialUrl={existingBannerUrl}
-              onChange={(file) => {
-                // upload to your storage (S3, Walrus, Cloudinary, etc.)
-                // or stash in form state for submit
-                console.log("picked file:", file);
-              }}
-            />
+        <aside className="space-y-4 lg:sticky lg:top-16 self-start">
+          <ImageUploadCard
+            selectedImage={eventImage}
+            onImageChange={setEventImage}
+          />
 
-
-
-            <div className={card + " flex items-center justify-between"}>
-              <div className="flex items-center gap-3">
-                <span className="h-6 w-10 rounded bg-white/15" />
-                <div className="text-sm text-white/80">
-                  <span className="mr-2">Theme</span>
-                  <span className="text-white font-medium">Minimal</span>
-                </div>
+          <div className={card + " flex items-center justify-between"}>
+            <div className="flex items-center gap-3">
+              <span className="h-6 w-10 rounded bg-white/15" />
+              <div className="text-sm text-white/80">
+                <span className="mr-2">Theme</span>
+                <span className="text-white font-medium">Minimal</span>
               </div>
-              <button className="text-white/60 hover:text-white">↻</button>
             </div>
-          </aside>
+            <button className="text-white/60 hover:text-white">↻</button>
+          </div>
+        </aside>
 
         {/* RIGHT: form stack */}
         <main className="space-y-5">
@@ -79,7 +81,7 @@ export default function AdminEventForm() {
               value={location}
               onChange={setLocation}
               onUseCurrentLocation={() => {
-                return console.log("Use current location clicked");
+                console.log("Use current location clicked");
               }}
             />
           </section>
