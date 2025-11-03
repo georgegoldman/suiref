@@ -7,6 +7,7 @@ import EventAccessToggle, { type EventAccess } from "../components/EventAccessTo
 import EventCapacityField, { type EventCapacity } from "../components/EventCapacityField";
 import EventDescriptionField from "../components/EventDescriptionField";
 import EventTitleInput from "../components/EventTitleInput";
+import EventBannerUploader from "../components/EventBannerUploader";
 
 export default function AdminEventForm() {
   const [visibility, setVisibility] = React.useState<"Public" | "Private" | "Unlisted">("Public");
@@ -23,26 +24,32 @@ export default function AdminEventForm() {
   return (
     <div className="mx-auto max-w-[1120px] px-4 lg:px-6 py-6">
       {/* two columns: ~480px left, ~560px right */}
-      <div className="grid gap-8 lg:grid-cols-[minmax(420px,480px)_minmax(520px,1fr)] items-start">
+      <div className="grid gap-8 lg:grid-cols-[minmax(300px,350px)_minmax(520px,1fr)] items-start">
         {/* LEFT: canvas + theme (sticky) */}
-        <aside className="space-y-4 lg:sticky lg:top-16 self-start">
-          <div className="rounded-2xl bg-white h-[340px] w-full shadow-sm relative">
-            <button className="absolute bottom-4 right-4 bg-[#0A143A] rounded-full p-2 ring-1 ring-white/10">
-              ⚙️
-            </button>
-          </div>
+        
+          <aside className="space-y-4 lg:sticky lg:top-16 self-start">
+            <EventBannerUploader
+              // initialUrl={existingBannerUrl}
+              onChange={(file) => {
+                // upload to your storage (S3, Walrus, Cloudinary, etc.)
+                // or stash in form state for submit
+                console.log("picked file:", file);
+              }}
+            />
 
-          <div className={card + " flex items-center justify-between"}>
-            <div className="flex items-center gap-3">
-              <span className="h-6 w-10 rounded bg-white/15" />
-              <div className="text-sm text-white/80">
-                <span className="mr-2">Theme</span>
-                <span className="text-white font-medium">Minimal</span>
+
+
+            <div className={card + " flex items-center justify-between"}>
+              <div className="flex items-center gap-3">
+                <span className="h-6 w-10 rounded bg-white/15" />
+                <div className="text-sm text-white/80">
+                  <span className="mr-2">Theme</span>
+                  <span className="text-white font-medium">Minimal</span>
+                </div>
               </div>
+              <button className="text-white/60 hover:text-white">↻</button>
             </div>
-            <button className="text-white/60 hover:text-white">↻</button>
-          </div>
-        </aside>
+          </aside>
 
         {/* RIGHT: form stack */}
         <main className="space-y-5">
@@ -72,7 +79,7 @@ export default function AdminEventForm() {
               value={location}
               onChange={setLocation}
               onUseCurrentLocation={() => {
-                console.log("Use current location clicked");
+                return console.log("Use current location clicked");
               }}
             />
           </section>
