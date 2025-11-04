@@ -91,21 +91,19 @@ async function forwardGeocodeNominatim(q: string): Promise<GeoSuggestion[]> {
 
   return rows.map((r, i) => {
     const a = r?.address || {};
-  // const venue = r.name || a.building || a.amenity || a.shop || a.leisure || (r.display_name ? String(r.display_name).split(",")[0].trim(): undefined);
+    // const venue = r.name || a.building || a.amenity || a.shop || a.leisure || (r.display_name ? String(r.display_name).split(",")[0].trim(): undefined);
     const street =
-  a.road ||
-  a.residential ||
-  a.pedestrian ||
-  a.footway ||
-  a.path ||
-  a.cycleway ||
-  a.track ||
-  a.neighbourhood ||
-  a.hamlet ||
-  undefined;
-    let line1 = [a.house_number, street]
-      .filter(Boolean)
-      .join(" ");
+      a.road ||
+      a.residential ||
+      a.pedestrian ||
+      a.footway ||
+      a.path ||
+      a.cycleway ||
+      a.track ||
+      a.neighbourhood ||
+      a.hamlet ||
+      undefined;
+    let line1 = [a.house_number, street].filter(Boolean).join(" ");
     if (!line1) {
       const city = a.city || a.town || a.village || a.municipality || a.suburb;
       if (a.surb || city) {
@@ -113,10 +111,21 @@ async function forwardGeocodeNominatim(q: string): Promise<GeoSuggestion[]> {
       }
     }
     if (!line1 && r?.display_name) {
-        line1 = String(r.display_name).split(", ").slice(0, 2).map(s => s.trim()).join(", ")
+      line1 = String(r.display_name)
+        .split(", ")
+        .slice(0, 2)
+        .map((s) => s.trim())
+        .join(", ");
     }
-    const venue = r.name || a.building || a.amenity || a.shop || a.leisure ||
-    (r.display_name ? String(r.display_name).split(", ")[0].trim() : undefined);
+    const venue =
+      r.name ||
+      a.building ||
+      a.amenity ||
+      a.shop ||
+      a.leisure ||
+      (r.display_name
+        ? String(r.display_name).split(", ")[0].trim()
+        : undefined);
     const label =
       venue ||
       line1 ||
@@ -144,7 +153,12 @@ async function forwardGeocodeNominatim(q: string): Promise<GeoSuggestion[]> {
 }
 
 function SummaryRow({ loc }: { loc?: EventLocation }) {
-  if (!loc) return <div className="text-white/50 text-[12px]">Offline location or virtual link</div>;
+  if (!loc)
+    return (
+      <div className="text-white/50 text-[12px]">
+        Offline location or virtual link
+      </div>
+    );
   if (loc.type === "virtual") {
     const host = loc.url ? new URL(loc.url).host.replace(/^www\./, "") : "";
     return (
@@ -153,8 +167,13 @@ function SummaryRow({ loc }: { loc?: EventLocation }) {
       </div>
     );
   }
-  const main = loc.venue || loc.address || [loc.city, loc.state, loc.country].filter(Boolean).join(", ");
-  return <div className="text-white/60 text-[12px]">Physical • {main || "—"}</div>
+  const main =
+    loc.venue ||
+    loc.address ||
+    [loc.city, loc.state, loc.country].filter(Boolean).join(", ");
+  return (
+    <div className="text-white/60 text-[12px]">Physical • {main || "—"}</div>
+  );
 }
 
 // ---- component ----
@@ -243,7 +262,12 @@ export default function EventLocationField({
       setError("Please enter a valid URL starting with http:// or https://");
       return;
     }
-    if (draft.type === "physical" && !draft.venue && !draft.address && !draft.city) {
+    if (
+      draft.type === "physical" &&
+      !draft.venue &&
+      !draft.address &&
+      !draft.city
+    ) {
       setError("Please choose a place or use current location.");
       return;
     }
@@ -263,7 +287,7 @@ export default function EventLocationField({
     }
     // collapse after saving
     setOpen(false);
-    setShowSug(false)
+    setShowSug(false);
   };
 
   const clear = () => {
@@ -305,7 +329,7 @@ export default function EventLocationField({
           lat: d.lat,
           lng: d.lng,
           url: undefined,
-          platform: undefined
+          platform: undefined,
         };
         onChange(trimEmpty(next));
         // seed visible query
@@ -423,7 +447,7 @@ export default function EventLocationField({
     setQuery(s.label);
     setSuggestions([]);
     setShowSug(false);
-    setOpen(false)  // collapse after pick
+    setOpen(false); // collapse after pick
   };
 
   // ------- UI -------
@@ -440,10 +464,13 @@ export default function EventLocationField({
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-white/80 text-base" aria-hidden>📍</span>
+              <span className="text-white/80 text-base" aria-hidden>
+                📍
+              </span>
               <div className="flex flex-col">
                 <span className="text-white/90 text-sm font-medium">
-                 Event Location  {/* {value ? "Event Location" : "Add Event Location"} */}
+                  Event Location{" "}
+                  {/* {value ? "Event Location" : "Add Event Location"} */}
                 </span>
                 <SummaryRow loc={value ?? draft} />
                 {!value && (
@@ -464,10 +491,16 @@ export default function EventLocationField({
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-white/80 text-base" aria-hidden>📍</span>
+              <span className="text-white/80 text-base" aria-hidden>
+                📍
+              </span>
               <div className="flex flex-col">
-                <span className="text-white/90 text-sm font-medium">Event Location</span>
-                <span className="text-white/50 text-[12px]">Paste a link, enter “lat,lng”, or search a place</span>
+                <span className="text-white/90 text-sm font-medium">
+                  Event Location
+                </span>
+                <span className="text-white/50 text-[12px]">
+                  Paste a link, enter “lat,lng”, or search a place
+                </span>
               </div>
             </div>
             <button
@@ -499,10 +532,10 @@ export default function EventLocationField({
                 ring-1 ring-white/10 focus:ring-2 focus:ring-white/30
               "
             />
-            {(showSug && suggestions.length > 0) && (
+            {showSug && suggestions.length > 0 && (
               <div
                 className="
-                  absolute z-30 mt-2 w-full rounded-xl bg-[#0A133A]
+                  absolute z-[100] mt-2 w-full rounded-xl bg-[#0A133A]
                   ring-1 ring-white/10 shadow-2xl overflow-hidden
                 "
               >
@@ -515,7 +548,9 @@ export default function EventLocationField({
                   >
                     <div className="truncate">{s.label}</div>
                     {s.subtitle && (
-                      <div className="text-white/50 text-[12px] truncate">{s.subtitle}</div>
+                      <div className="text-white/50 text-[12px] truncate">
+                        {s.subtitle}
+                      </div>
                     )}
                   </button>
                 ))}
@@ -532,7 +567,9 @@ export default function EventLocationField({
               type="button"
               onClick={() => setType("physical")}
               className={`px-3 py-1.5 rounded-md text-sm ${
-                draft.type === "physical" ? "bg-white/15 text-white" : "text-white/70 hover:text-white"
+                draft.type === "physical"
+                  ? "bg-white/15 text-white"
+                  : "text-white/70 hover:text-white"
               }`}
             >
               Physical
@@ -541,7 +578,9 @@ export default function EventLocationField({
               type="button"
               onClick={() => setType("virtual")}
               className={`px-3 py-1.5 rounded-md text-sm ${
-                draft.type === "virtual" ? "bg-white/15 text-white" : "text-white/70 hover:text-white"
+                draft.type === "virtual"
+                  ? "bg-white/15 text-white"
+                  : "text-white/70 hover:text-white"
               }`}
             >
               Virtual
@@ -564,8 +603,18 @@ export default function EventLocationField({
                 onChange={onField("address")}
               />
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <Input label="City" placeholder="City" value={draft.city ?? ""} onChange={onField("city")} />
-                <Input label="State/Region" placeholder="State" value={draft.state ?? ""} onChange={onField("state")} />
+                <Input
+                  label="City"
+                  placeholder="City"
+                  value={draft.city ?? ""}
+                  onChange={onField("city")}
+                />
+                <Input
+                  label="State/Region"
+                  placeholder="State"
+                  value={draft.state ?? ""}
+                  onChange={onField("state")}
+                />
                 <Select
                   label="Country"
                   value={draft.country ?? ""}
@@ -583,7 +632,9 @@ export default function EventLocationField({
                 >
                   {locLoading ? "Locating…" : "Use my current location"}
                 </button>
-                {locError && <span className="text-[12px] text-red-300">{locError}</span>}
+                {locError && (
+                  <span className="text-[12px] text-red-300">{locError}</span>
+                )}
               </div>
             </div>
           ) : (
@@ -606,7 +657,11 @@ export default function EventLocationField({
                     platform: detectPlatform(url) ?? d.platform,
                   }));
                 }}
-                error={draft.url && !URL_RE.test(draft.url) ? "Start with http:// or https://" : ""}
+                error={
+                  draft.url && !URL_RE.test(draft.url)
+                    ? "Start with http:// or https://"
+                    : ""
+                }
               />
             </div>
           )}
@@ -666,7 +721,9 @@ function Input({
           ring-1 ring-white/10 focus:ring-2 focus:ring-white/30
         "
       />
-      {error ? <div className="mt-1 text-[12px] text-red-300">{error}</div> : null}
+      {error ? (
+        <div className="mt-1 text-[12px] text-red-300">{error}</div>
+      ) : null}
     </label>
   );
 }

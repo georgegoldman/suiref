@@ -74,10 +74,25 @@ export default function VisibilitySelect({
         aria-expanded={open}
         aria-label="Visibility"
       >
-        <span role="img" aria-hidden className="text-base">🌍</span>
+        <span role="img" aria-hidden className="text-base">
+          🌍
+        </span>
         <span className="min-w-[60px] text-left">{value}</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" className="opacity-90">
-          <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          className="opacity-90"
+        >
+          <path
+            d="M6 9l6 6 6-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </button>
 
@@ -88,7 +103,7 @@ export default function VisibilitySelect({
           tabIndex={-1}
           onKeyDown={onListKeyDown}
           className="
-            absolute z-20 mt-2 w-40 right-0
+            absolute z-[100] mt-2 w-40 right-0
             rounded-xl bg-[#0A133A]
             ring-1 ring-white/10 shadow-xl overflow-hidden
             focus:outline-none
@@ -109,7 +124,11 @@ export default function VisibilitySelect({
                   }}
                   className={`
                     w-full text-left px-4 py-2 text-sm
-                    ${selected ? "bg-white/10 text-white" : "text-white/90 hover:bg-white/10"}
+                    ${
+                      selected
+                        ? "bg-white/10 text-white"
+                        : "text-white/90 hover:bg-white/10"
+                    }
                   `}
                 >
                   {opt}

@@ -1,17 +1,23 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-// components/EventBannerCard.tsx
-import React, { useRef, useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import ImagePickerModal from "./ImagePickerModal";
+import ThemeCustomizer from "./ThemeCustomizer";
+import {
+  getRandomImage,
+  type ThemeConfig,
+  type PresetImage,
+} from "../lib/eventThemes";
 
 type Props = {
-  eventId: string;
-  title: string;
-  dateText?: string;  // e.g. "Nov 28, 2025 • 5:00 PM"
-  venue?: string;
-  category?: string;  // e.g. "workshop" | "hackathon"
-  initialUrl?: string; // existing banner url if editing
-  onFileSelected?: (file: File | null) => void; // local machine file
-  onUseAutoBanner?: (autoUrl: string) => void;  // when user picks auto
-  maxSizeMB?: number;
+  /** optional initial URL (e.g. when editing an event) */
+  initialUrl?: string;
+  /** called when image changes */
+  onChange?: (data: {
+    file?: File;
+    preset?: PresetImage;
+    theme: ThemeConfig;
+  }) => void;
+  /** initial theme config */
+  initialTheme?: ThemeConfig;
 };
 
 export default function EventBannerCard({
@@ -21,213 +27,206 @@ export default function EventBannerCard({
   venue,
   category,
   initialUrl,
-  onFileSelected,
-  onUseAutoBanner,
-  maxSizeMB = 8,
+  onChange,
+  initialTheme = {
+    type: "minimal",
+    color: "#4DA2FD",
+    font: "geist-mono",
+    display: "auto",
+  },
 }: Props) {
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const [preview, setPreview] = useState<string | null>(initialUrl ?? null);
-  const [dragOver, setDragOver] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isAuto, setIsAuto] = useState<boolean>(!initialUrl);
+  const [theme, setTheme] = useState<ThemeConfig>(initialTheme);
+  const [presetImage, setPresetImage] = useState<PresetImage | null>(() =>
+    getRandomImage()
+  );
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploadedPreview, setUploadedPreview] = useState<string | null>(
+    initialUrl ?? null
+  );
+  const [showModal, setShowModal] = useState(false);
+  const [showCustomizer, setShowCustomizer] = useState(false);
 
   useEffect(() => {
-    if (initialUrl) {
-      setPreview(initialUrl);
-      setIsAuto(false);
-    }
+    if (initialUrl) setUploadedPreview(initialUrl);
   }, [initialUrl]);
 
-  function openPicker() {
-    inputRef.current?.click();
-  }
+  // Notify parent of changes
+  const notifyChange = useCallback(() => {
+    onChange?.({
+      file: uploadedFile || undefined,
+      preset: presetImage || undefined,
+      theme,
+    });
+  }, [onChange, uploadedFile, presetImage, theme]);
 
-  function validateAndSet(file: File) {
-    setError(null);
-    if (!file.type.startsWith("image/")) {
-      setError("Please select an image file.");
-      return;
+  useEffect(() => {
+    notifyChange();
+  }, [notifyChange]);
+
+  const handleShuffle = () => {
+    setPresetImage(getRandomImage());
+  };
+
+  const handleImageSelect = (image: PresetImage | File) => {
+    if (image instanceof File) {
+      // User uploaded a file
+      setUploadedFile(image);
+      setUploadedPreview(URL.createObjectURL(image));
+      setPresetImage(null);
+    } else {
+      // User selected a preset
+      setPresetImage(image);
+      setUploadedFile(null);
+      setUploadedPreview(null);
     }
-    const bytesLimit = maxSizeMB * 1024 * 1024;
-    if (file.size > bytesLimit) {
-      setError(`Image is larger than ${maxSizeMB}MB.`);
-      return;
-    }
-    const url = URL.createObjectURL(file);
-    setIsAuto(false);
-    setPreview(url);
-    onFileSelected?.(file);
-  }
+  };
 
-  function onInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) validateAndSet(file);
-  }
-
-  function onDrop(e: React.DragEvent) {
-    e.preventDefault();
-    setDragOver(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) validateAndSet(file);
-  }
-
-  function onKeyDown(e: React.KeyboardEvent) {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      openPicker();
-    }
-  }
-
-  function clearImage() {
-    setPreview(null);
-    setIsAuto(true);
-    onFileSelected?.(null);
-    if (inputRef.current) inputRef.current.value = "";
-    useAutoBanner(); // immediately switch to auto image
-  }
-
-  function autoBannerUrl() {
-    // Your dynamic OG route from earlier
-    const params = new URLSearchParams();
-    if (title) params.set("title", title);
-    if (dateText) params.set("date", dateText);
-    if (venue) params.set("venue", venue);
-    if (category) params.set("cat", category);
-    return `/api/event-banner/${eventId}?${params.toString()}`;
-  }
-
-  function useAutoBanner() {
-    const url = autoBannerUrl();
-    setIsAuto(true);
-    setPreview(url);
-    onUseAutoBanner?.(url);
-  }
+  const handleThemeChange = (newTheme: ThemeConfig) => {
+    setTheme(newTheme);
+  };
 
   return (
-    <div className="w-full">
-      {/* Header row like Luma: title + actions */}
-      <div className="mb-2 flex items-center justify-between">
-        <div className="text-sm text-slate-600">
-          Event banner (16:9). PNG/JPG/WebP, up to {maxSizeMB}MB.
-        </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={useAutoBanner}
-            className={`px-3 py-1.5 text-sm rounded-lg ring-1 ring-slate-200 shadow-sm hover:bg-slate-50 ${
-              isAuto ? "bg-slate-100" : "bg-white"
-            }`}
-            title="Generate a default banner from your event details"
-          >
-            Use Auto Banner
-          </button>
-          <button
-            type="button"
-            onClick={openPicker}
-            className="px-3 py-1.5 text-sm rounded-lg bg-[#0A143A] text-white shadow hover:opacity-95"
-          >
-            Upload Image
-          </button>
-        </div>
-      </div>
-
-      {/* Clickable card */}
+    <div className="w-full space-y-4">
+      {/* Main banner/canvas */}
       <div
-        role="button"
-        tabIndex={0}
-        onClick={openPicker}
-        onKeyDown={onKeyDown}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragOver(true);
-        }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={onDrop}
-        aria-label="Event banner"
-        className={[
-          "relative rounded-2xl transition overflow-hidden",
-          "aspect-[16/9] w-full",
-          preview
-            ? "bg-slate-100 ring-1 ring-slate-200 hover:ring-[#0A143A]/30"
-            : "bg-white border-2 border-dashed border-slate-300 hover:border-[#0A143A] hover:bg-slate-50",
-          "shadow-sm",
-          "cursor-pointer",
-          dragOver ? "ring-4 ring-[#0A143A]/40" : "",
-        ].join(" ")}
+        onClick={() => setShowModal(true)}
+        className="relative rounded-2xl overflow-hidden cursor-pointer aspect-[16/9] w-full group transition-all hover:ring-2 hover:ring-blue-500/50"
       >
-        {/* Empty state */}
-        {!preview && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 px-4 text-center">
-            <div className="text-3xl">🖼️</div>
-            <p className="font-medium text-slate-800">Click to upload</p>
-            <p className="text-sm text-slate-500">or drag and drop</p>
-            <p className="text-xs text-slate-400 mt-1">Recommended: 1600×900 (16:9)</p>
+        {/* Image or generated theme background */}
+        {uploadedPreview ? (
+          <img
+            src={uploadedPreview}
+            alt="Event banner"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : (
+          <div
+            className="absolute inset-0 w-full h-full"
+            style={{
+              background:
+                theme.type === "minimal"
+                  ? `linear-gradient(135deg, ${
+                      theme.color || "#4DA2FD"
+                    } 0%, ${adjustColor(theme.color || "#4DA2FD", -30)} 100%)`
+                  : theme.type === "quantum"
+                  ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                  : theme.type === "warp"
+                  ? "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+                  : theme.type === "confetti"
+                  ? "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+                  : theme.type === "pattern"
+                  ? `repeating-linear-gradient(45deg, ${
+                      theme.color || "#4DA2FD"
+                    }, ${
+                      theme.color || "#4DA2FD"
+                    } 10px, transparent 10px, transparent 20px)`
+                  : `linear-gradient(135deg, ${
+                      theme.color || "#4DA2FD"
+                    } 0%, ${adjustColor(theme.color || "#4DA2FD", -30)} 100%)`,
+            }}
+          >
+            {/* Placeholder emoji/icon for preset */}
+            {presetImage && (
+              <div className="w-full h-full flex items-center justify-center text-8xl">
+                🖼️
+              </div>
+            )}
+
+            {/* Event title overlay (sample) */}
+            <div
+              className="absolute inset-0 flex items-center justify-center"
+              style={{
+                fontFamily:
+                  theme.font === "geist-mono" ? "monospace" : "sans-serif",
+              }}
+            >
+              <span className="text-white text-4xl font-bold drop-shadow-lg">
+                Event Name
+              </span>
+            </div>
           </div>
         )}
 
-        {/* Preview (uploaded OR auto) */}
-        {preview && (
-          <>
-            {/* object-cover keeps it neat like Luma */}
-            <img
-              src={preview}
-              alt="Event banner preview"
-              className="absolute inset-0 h-full w-full object-cover"
-              draggable={false}
-            />
-            {/* subtle bottom gradient for legibility */}
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/35 to-transparent" />
-
-            {/* Controls (Replace / Remove / Gear) */}
-            <div className="absolute bottom-3 right-3 flex gap-2">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openPicker();
-                }}
-                className="rounded-full bg-white/90 backdrop-blur px-3 py-1.5 text-sm shadow ring-1 ring-black/10 hover:bg-white"
-              >
-                Replace
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  clearImage();
-                }}
-                className="rounded-full bg-white/90 backdrop-blur px-3 py-1.5 text-sm shadow ring-1 ring-black/10 hover:bg-white"
-              >
-                Remove
-              </button>
-              <span className="bg-[#0A143A] text-white rounded-full p-2 ring-1 ring-white/10">
-                ⚙️
-              </span>
-            </div>
-
-            {/* Label badge to indicate source */}
-            <div className="absolute top-3 left-3">
-              <span className="rounded-full bg-black/40 text-white text-xs px-2 py-1 backdrop-blur">
-                {isAuto ? "Auto banner" : "Uploaded"}
-              </span>
-            </div>
-          </>
-        )}
-
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={onInputChange}
-        />
+        {/* Camera icon overlay on hover */}
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+          <div className="bg-white/90 rounded-full p-3">
+            <svg
+              className="w-6 h-6 text-gray-800"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+          </div>
+        </div>
       </div>
 
-      {error && (
-        <p className="mt-2 text-sm text-red-600" role="alert">
-          {error}
-        </p>
+      {/* Theme selector and shuffle */}
+      <div className="bg-[#0B183F] rounded-xl ring-1 ring-white/10 px-4 py-3 flex items-center justify-between">
+        <button
+          onClick={() => setShowCustomizer(!showCustomizer)}
+          className="flex items-center gap-3 flex-1 hover:opacity-80 transition-opacity"
+        >
+          <div
+            className="h-8 w-12 rounded"
+            style={{
+              background: theme.color || "#4DA2FD",
+            }}
+          />
+          <div className="text-sm text-white/80">
+            <span className="mr-2">Theme</span>
+            <span className="text-white font-medium capitalize">
+              {theme.type}
+            </span>
+          </div>
+        </button>
+
+        <button
+          onClick={handleShuffle}
+          className="text-white/60 hover:text-white text-xl transition-colors"
+          title="Shuffle theme"
+        >
+          ↻
+        </button>
+      </div>
+
+      {/* Theme customizer panel */}
+      {showCustomizer && (
+        <div className="bg-[#0B183F] rounded-xl ring-1 ring-white/10 px-4 py-4">
+          <ThemeCustomizer value={theme} onChange={handleThemeChange} />
+        </div>
       )}
+
+      {/* Image picker modal */}
+      <ImagePickerModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSelectImage={handleImageSelect}
+      />
     </div>
   );
+}
+
+// Helper function to adjust color brightness
+function adjustColor(color: string, amount: number): string {
+  const clamp = (num: number) => Math.min(Math.max(num, 0), 255);
+
+  const num = parseInt(color.replace("#", ""), 16);
+  const r = clamp((num >> 16) + amount);
+  const g = clamp(((num >> 8) & 0x00ff) + amount);
+  const b = clamp((num & 0x0000ff) + amount);
+
+  return "#" + (0x1000000 + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }

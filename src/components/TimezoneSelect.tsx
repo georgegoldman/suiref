@@ -3,17 +3,30 @@
 import React from "react";
 
 type Props = {
-  value: string;                   // IANA TZ, e.g. "Africa/Lagos"
+  value: string; // IANA TZ, e.g. "Africa/Lagos"
   onChange: (tz: string) => void;
-  className?: string;              // to style the pill itself
+  className?: string; // to style the pill itself
 };
 
 const FALLBACK_ZONES = [
-  "Africa/Lagos","Africa/Cairo","Africa/Johannesburg",
-  "Europe/London","Europe/Paris","Europe/Berlin","Europe/Madrid","Europe/Warsaw",
-  "America/New_York","America/Chicago","America/Denver","America/Los_Angeles",
-  "Asia/Dubai","Asia/Kolkata","Asia/Singapore","Asia/Shanghai","Asia/Tokyo",
-  "Australia/Sydney"
+  "Africa/Lagos",
+  "Africa/Cairo",
+  "Africa/Johannesburg",
+  "Europe/London",
+  "Europe/Paris",
+  "Europe/Berlin",
+  "Europe/Madrid",
+  "Europe/Warsaw",
+  "America/New_York",
+  "America/Chicago",
+  "America/Denver",
+  "America/Los_Angeles",
+  "Asia/Dubai",
+  "Asia/Kolkata",
+  "Asia/Singapore",
+  "Asia/Shanghai",
+  "Asia/Tokyo",
+  "Australia/Sydney",
 ];
 
 function getAllTimeZones(): string[] {
@@ -75,7 +88,8 @@ export default function TimezoneSelect({ value, onChange, className }: Props) {
       if (
         !btnRef.current?.contains(e.target as Node) &&
         !listRef.current?.contains(e.target as Node)
-      ) setOpen(false);
+      )
+        setOpen(false);
     };
     if (open) document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
@@ -83,7 +97,9 @@ export default function TimezoneSelect({ value, onChange, className }: Props) {
 
   // esc to close
   React.useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
     if (open) window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
@@ -100,13 +116,15 @@ export default function TimezoneSelect({ value, onChange, className }: Props) {
           "bg-white/[0.06] ring-1 ring-white/10",
           "flex flex-col justify-center text-left min-w-[180px]",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
-          className || ""
+          className || "",
         ].join(" ")}
         aria-haspopup="dialog"
         aria-expanded={open}
       >
         <div className="flex items-center gap-2 text-white/90">
-          <span role="img" aria-label="globe">🌍</span>
+          <span role="img" aria-label="globe">
+            🌍
+          </span>
           <span className="text-sm">{offset}</span>
         </div>
         <div className="text-white/60 text-[12px]">{city}</div>
@@ -116,7 +134,7 @@ export default function TimezoneSelect({ value, onChange, className }: Props) {
       {open && (
         <div
           ref={listRef}
-          className="absolute z-30 mt-2 w-[360px] max-h-[320px] right-0
+          className="absolute z-[100] mt-2 w-[360px] max-h-[320px] right-0
                      rounded-xl bg-[#0A133A] ring-1 ring-white/10 shadow-2xl overflow-hidden"
           role="dialog"
           aria-label="Choose time zone"
@@ -141,20 +159,28 @@ export default function TimezoneSelect({ value, onChange, className }: Props) {
                 <button
                   key={tz}
                   type="button"
-                  onClick={() => { onChange(tz); setOpen(false); btnRef.current?.focus(); }}
+                  onClick={() => {
+                    onChange(tz);
+                    setOpen(false);
+                    btnRef.current?.focus();
+                  }}
                   className={[
                     "w-full px-3 py-2 text-left text-sm flex items-center justify-between",
-                    selected ? "bg-white/10 text-white" : "text-white/90 hover:bg-white/10"
+                    selected
+                      ? "bg-white/10 text-white"
+                      : "text-white/90 hover:bg-white/10",
                   ].join(" ")}
                 >
-                  <span className="truncate">{city} <span className="text-white/50">— {tz}</span></span>
+                  <span className="truncate">
+                    {city} <span className="text-white/50">— {tz}</span>
+                  </span>
                   <span className="ml-3 shrink-0 text-white/70">{off}</span>
                 </button>
               );
             })}
             {!filtered.length && (
               <div className="px-3 py-6 text-center text-white/50 text-sm">
-                No matches. Try “Africa/Lagos”, “Europe/London”, “Asia/Tokyo”… 
+                No matches. Try “Africa/Lagos”, “Europe/London”, “Asia/Tokyo”…
               </div>
             )}
           </div>

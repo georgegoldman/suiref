@@ -11,7 +11,7 @@ type Props = {
 export default function EventTitleInput({
   value,
   onChange,
-  placeholder = "Event  Name", // spaced like your mock
+  placeholder = "Event Name", // spaced like your mock
   max = 120,
 }: Props) {
   const [count, setCount] = React.useState(value.length);
