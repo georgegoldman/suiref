@@ -1,12 +1,36 @@
 // src/admin/AdminHeader.tsx
 import React from "react";
 
-const AdminHeader: React.FC = () => {
+type AdminView = "create" | "history";
+
+interface AdminHeaderProps {
+  activeView: AdminView;
+  onViewChange: (view: AdminView) => void;
+}
+
+const AdminHeader: React.FC<AdminHeaderProps> = ({
+  activeView,
+  onViewChange,
+}) => {
   return (
     <div className="flex justify-between items-center">
-      <div className="flex gap-6 text-sm font-medium text-white/90">
-        <button className="hover:text-white">📅 Create Event</button>
-        <button className="hover:text-white">📜 History</button>
+      <div className="flex gap-6 text-sm font-medium">
+        <button
+          className={`hover:text-white ${
+            activeView === "create" ? "text-white" : "text-white/60"
+          }`}
+          onClick={() => onViewChange("create")}
+        >
+          📅 Create Event
+        </button>
+        <button
+          className={`hover:text-white ${
+            activeView === "history" ? "text-white" : "text-white/60"
+          }`}
+          onClick={() => onViewChange("history")}
+        >
+          📜 History
+        </button>
       </div>
 
       <div className="flex items-center gap-4">
