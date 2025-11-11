@@ -3,9 +3,9 @@
 import React from "react";
 
 type Props = {
-  value: string;                   // IANA TZ, e.g. "Africa/Lagos"
+  value: string; // IANA TZ, e.g. "Africa/Lagos"
   onChange: (tz: string) => void;
-  className?: string;              // to style the pill itself
+  className?: string;
 };
 
 const FALLBACK_ZONES = [
@@ -36,7 +36,6 @@ function getOffsetLabel(tz: string, d = new Date()) {
     });
     const parts = dtf.formatToParts(d);
     const off = parts.find((p) => p.type === "timeZoneName")?.value ?? "GMT";
-    // Normalize like "GMT+01:00"
     return off.replace("UTC", "GMT");
   } catch {
     const mins = -d.getTimezoneOffset();
@@ -62,7 +61,7 @@ export default function TimezoneSelect({ value, onChange, className }: Props) {
   const zones = React.useMemo(() => getAllTimeZones(), []);
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return zones.slice(0, 300); // safety cap
+    if (!q) return zones.slice(0, 300);
     return zones.filter((z) => z.toLowerCase().includes(q)).slice(0, 300);
   }, [query, zones]);
 
@@ -90,26 +89,39 @@ export default function TimezoneSelect({ value, onChange, className }: Props) {
 
   return (
     <div className="relative">
-      {/* Pill button */}
+      {/* Blue timezone card matching other sections */}
       <button
         ref={btnRef}
         type="button"
         onClick={() => setOpen((o) => !o)}
         className={[
-          "h-[84px] px-3 py-2.5 rounded-2xl",
-          "bg-white/[0.06] ring-1 ring-white/10",
-          "flex flex-col justify-center text-left min-w-[180px]",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
-          className || ""
+          "h-[90px] min-w-[180px] px-4 py-3 rounded-xl",
+          "bg-[#1e3a5f] border border-[#2e4a6f] shadow-sm hover:border-[#3e5a7f]",
+          "flex flex-col items-start justify-center text-left space-y-1",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50",
+          className || "",
         ].join(" ")}
         aria-haspopup="dialog"
         aria-expanded={open}
       >
-        <div className="flex items-center gap-2 text-white/90">
-          <span role="img" aria-label="globe">🌍</span>
-          <span className="text-sm">{offset}</span>
-        </div>
-        <div className="text-white/60 text-[12px]">{city}</div>
+        {/* Globe icon (line 1) */}
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          className="h-4 w-4 text-blue-400"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+        >
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18" />
+        </svg>
+
+        {/* GMT line (line 2) */}
+        <span className="text-slate-300 text-sm font-medium">{offset}</span>
+
+        {/* City line (line 3) */}
+        <span className="text-slate-500 text-xs">{city}</span>
       </button>
 
       {/* Dropdown */}
@@ -117,25 +129,26 @@ export default function TimezoneSelect({ value, onChange, className }: Props) {
         <div
           ref={listRef}
           className="absolute z-30 mt-2 w-[360px] max-h-[320px] right-0
-                     rounded-xl bg-[#0A133A] ring-1 ring-white/10 shadow-2xl overflow-hidden"
+                     rounded-xl bg-[#1e3a5f] border border-[#2e4a6f] shadow-2xl overflow-hidden"
           role="dialog"
           aria-label="Choose time zone"
         >
-          <div className="p-2 border-b border-white/10">
+          <div className="p-2 border-b border-[#2e4a6f] bg-[#163250]">
             <input
               autoFocus
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search city or region… (e.g., Lagos, London)"
-              className="w-full bg-white/10 text-white placeholder:text-white/50
-                         rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-white/30"
+              className="w-full bg-[#2a4a75] text-slate-300 placeholder:text-slate-500
+                         rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400/50
+                         border border-[#3e5a7f]"
             />
           </div>
 
           <div className="max-h-[270px] overflow-y-auto">
             {filtered.map((tz) => {
               const off = getOffsetLabel(tz);
-              const city = niceCity(tz);
+              const cityName = niceCity(tz);
               const selected = tz === value;
               return (
                 <button
@@ -144,17 +157,19 @@ export default function TimezoneSelect({ value, onChange, className }: Props) {
                   onClick={() => { onChange(tz); setOpen(false); btnRef.current?.focus(); }}
                   className={[
                     "w-full px-3 py-2 text-left text-sm flex items-center justify-between",
-                    selected ? "bg-white/10 text-white" : "text-white/90 hover:bg-white/10"
+                    selected ? "bg-blue-400/20 text-slate-200" : "hover:bg-[#2a4a75] text-slate-400",
                   ].join(" ")}
                 >
-                  <span className="truncate">{city} <span className="text-white/50">— {tz}</span></span>
-                  <span className="ml-3 shrink-0 text-white/70">{off}</span>
+                  <span className="truncate">
+                    {cityName} <span className="text-slate-500">— {tz}</span>
+                  </span>
+                  <span className="ml-3 shrink-0 text-slate-400">{off}</span>
                 </button>
               );
             })}
             {!filtered.length && (
-              <div className="px-3 py-6 text-center text-white/50 text-sm">
-                No matches. Try “Africa/Lagos”, “Europe/London”, “Asia/Tokyo”… 
+              <div className="px-3 py-6 text-center text-slate-500 text-sm">
+                No matches. Try "Africa/Lagos", "Europe/London", "Asia/Tokyo"…
               </div>
             )}
           </div>
