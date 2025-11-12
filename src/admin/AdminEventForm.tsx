@@ -66,8 +66,8 @@ export default function AdminEventForm() {
 
   return (
     <div className="mx-auto max-w-[1120px] px-4 lg:px-6 py-6">
-      {/* two columns: ~480px left, ~560px right */}
-      <div className="grid gap-8 lg:grid-cols-[minmax(300px,350px)_minmax(520px,1fr)] items-start">
+      {/* Make the grid fill viewport height on large screens for proper scrolling math */}
+      <div className="grid gap-8 lg:grid-cols-[minmax(300px,350px)_minmax(520px,1fr)] lg:min-h-[calc(100vh-4rem)] items-start">
         {/* LEFT: canvas + theme (sticky) */}
         <aside className="space-y-4 lg:sticky lg:top-16 self-start">
           {/* Event Preview with Theme - wrapped in ImageUploadCard to handle clicks */}
@@ -140,30 +140,29 @@ export default function AdminEventForm() {
           </div>
 
           {/* Tickets / Access */}
-          <div className={card + " flex items-center justify-between"}>
+          <div className={`${card} flex items-center justify-between`}>
             <span className="text-white/90">Tickets</span>
             {/* Keep the control small; avoid nesting full-width sections here */}
             <div className="shrink-0">
               <EventAccessToggle value={access} onChange={setAccess} />
             </div>
-          </div>
 
-          {/* Required approval */}
-          <div className={card + " flex items-center justify-between"}>
-            <span className="text-white/90">Required Approval</span>
-            <input type="checkbox" className="h-4 w-4 accent-[#4DA2FD]" />
-          </div>
+            {/* Capacity */}
+            <div className={card}>
+              <EventCapacityField value={capacity} onChange={setCapacity} />
+            </div>
 
-          {/* Capacity */}
-          <div className={card}>
-            <EventCapacityField value={capacity} onChange={setCapacity} />
-          </div>
-
-          {/* Submit */}
-          <div className="pt-2">
-            <button className="w-full h-12 rounded-xl bg-[#4DA2FD] hover:bg-[#66B2FF] text-[#031335] font-semibold shadow-[0_8px_28px_rgba(77,162,253,0.35)]">
-              Create Event
-            </button>
+            {/* Submit */}
+            <div className="pt-2">
+              <button 
+                onClick={() => {
+                  console.log("Create event clicked");
+                }}
+                className="w-full h-12 rounded-xl bg-[#4DA2FD] hover:bg-[#66B2FF] text-[#031335] font-semibold shadow-[0_8px_28px_rgba(77,162,253,0.35)]"
+              >
+                Create Event
+              </button>
+            </div>
           </div>
         </main>
       </div>

@@ -12,6 +12,7 @@ import Support from "./Support";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDisconnectWallet } from "@mysten/dapp-kit";
+import { useEffect } from "react";
 import DashboardLeaderboard from "./dashboard-leaderboard";
 
 export default function DashboardMain() {
@@ -19,6 +20,13 @@ export default function DashboardMain() {
   const { mutateAsync: disconnectAsync } = useDisconnectWallet();
   const [activePage, setActivePage] = useState("dashboard");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const codeParam = urlParams.get("code")
+    console.log(codeParam);
+  }, [])
 
   const handleLogout = async () => {
     try {

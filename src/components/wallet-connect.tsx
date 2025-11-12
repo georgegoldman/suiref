@@ -4,11 +4,17 @@ import {  ConnectModal, useCurrentAccount } from "@mysten/dapp-kit";
 import OnboardImage from "../assets/about-our-team (1).svg";
 import '@mysten/dapp-kit/dist/index.css';
 
+const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
+
 
 const WalletConnect = () => {
   const navigate = useNavigate();
   const currentAccount = useCurrentAccount();
   const [open, setOpen] = useState(false);
+
+  function loginWithGithub(){
+    window.location.assign(`https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}`);
+  }
 
 
   useEffect(() => {
@@ -37,7 +43,7 @@ const WalletConnect = () => {
         <div className="flex flex-col items-center gap-4 w-full">
           {/* <ConnectButton className="bg-[#4DA2FD] w-full h-[72px] rounded-[20px] font-bold text-2xl text-white hover:bg-[#3d8ae6] active:bg-[#2d7acc] disabled:opacity-75 transition-all" /> */}
           {/* Mount the modal ONCE, with no props → stays UNcontrolled */}
-          <ConnectModal
+          {/* <ConnectModal
             open={open}
             onOpenChange={setOpen}
             trigger={
@@ -48,7 +54,13 @@ const WalletConnect = () => {
                 Connect wallet
               </button>
             }
-          />
+          /> */}
+          <button
+                onClick={loginWithGithub}
+                className="bg-[#4DA2FD] w-full h-[72px] rounded-[20px] font-bold text-2xl text-white"
+              >
+                Login with Git
+          </button>
         </div>
       </div>
     </div>
