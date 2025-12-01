@@ -14,6 +14,7 @@ interface EventCardProps {
     name: string;
     avatar: string;
   };
+  onManageEvent?: () => void;
 }
 
 export const EventCard: React.FC<EventCardProps> = ({
@@ -24,6 +25,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   location,
   guests,
   organizer,
+  onManageEvent,
 }) => {
   return (
     <div className="bg-white/5 border border-[#4DA2FD80] rounded-[20px] py-5 px-4 shadow-sm flex gap-6 relative overflow-hidden">
@@ -59,7 +61,13 @@ export const EventCard: React.FC<EventCardProps> = ({
         {/* Bottom Section */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <button className="bg-white/20 hover:bg-[#5a6578] text-white p-2.5 rounded-full text-xs font-medium transition-colors">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onManageEvent?.();
+              }}
+              className="bg-white/20 hover:bg-[#5a6578] text-white p-2.5 rounded-full text-xs font-medium transition-colors"
+            >
               Manage Event
             </button>
 

@@ -13,6 +13,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({
   activeView,
   onViewChange,
 }) => {
+  const { avatar } = useUser();
   return (
     <div className="flex justify-between items-center">
       <div className="flex gap-6 text-sm font-medium">

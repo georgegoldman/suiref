@@ -17,12 +17,10 @@ import ShareArrowIcon from "../assets/share-arrow";
 import ProgressBar from "../assets/progress-bar";
 
 interface EventDetailProps {
-  eventId: string;
   onBack: () => void;
 }
 
 export const EventDetail: React.FC<EventDetailProps> = ({
-  eventId,
   onBack,
 }) => {
   const EventDetailsTabs = [
