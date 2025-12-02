@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useDisconnectWallet } from "@mysten/dapp-kit";
 import { useEffect } from "react";
 import DashboardLeaderboard from "./dashboard-leaderboard";
+import Ecosystem from "./Ecosystem";
 
 export default function DashboardMain() {
   const navigate = useNavigate();
@@ -69,6 +70,8 @@ export default function DashboardMain() {
         return <Settings />;
       case "support":
         return <Support />;
+      case "ecosystem":
+        return <Ecosystem />;
       default:
         return <Dashboard />;
     }

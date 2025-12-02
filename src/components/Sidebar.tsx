@@ -14,6 +14,7 @@ import SidebarLogoutIcon from "../assets/sidebar-logout-icon";
 import { CopyButton } from "./CopyButton";
 import { useUser } from "../session-data";
 import Logo from "../assets/suiref-logo.png";
+import SidebarReferralToolIcon from "../assets/sidebar-referral-tool-icon";
 
 interface SidebarProps {
   activePage: string;
@@ -38,7 +39,7 @@ const Sidebar = ({
     (address ? `${address.slice(0, 6)}…${address.slice(-4)}` : "User");
 
   const mainMenuItems = [
-    { id: "dashboard", label: "Dashboard", icon: SidebarDashboardIcon },
+    // { id: "dashboard", label: "Dashboard", icon: SidebarDashboardIcon },
     // {
     //   id: "referral-tools",
     //   label: "Referral Tools",
@@ -46,13 +47,14 @@ const Sidebar = ({
     // },
     // { id: "my-referrals", label: "My Referrals", icon: SidebarMyReferralIcon },
     // { id: "workshop", label: "Workshop", icon: SidebarWorkshopIcon },
-    { id: "rewards", label: "Rewards", icon: SidebarRewardsIcon },
-    {
-      id: "leaderboards",
-      label: "Leaderboards",
-      icon: SidebarLeaderboardsIcon,
-    },
-    { id: "wallets", label: "Wallets", icon: SidebarWalletIcon },
+    // { id: "rewards", label: "Rewards", icon: SidebarRewardsIcon },
+    // {
+    //   id: "leaderboards",
+    //   label: "Leaderboards",
+    //   icon: SidebarLeaderboardsIcon,
+    // },
+    // { id: "wallets", label: "Wallets", icon: SidebarWalletIcon },
+    { id: "ecosystem", label: "Ecosystem", icon: SidebarReferralToolIcon },
   ];
 
   const otherMenuItems = [

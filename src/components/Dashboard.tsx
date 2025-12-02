@@ -6,6 +6,7 @@ import { useCreateProfile } from "../mutations/useCreateProfile";
 import { AvatarPicker } from "./AvatarPicker";
 import DashboardReferralIcon from "../assets/dashboard-referral-icon";
 import DashboardPointEarned from "../assets/dashboard-point-earned";
+import { EventDetailModal } from "../admin/EventDetailModal";
 
 function getMoveFields(obj: any) {
   const content = obj?.data?.content;
@@ -130,14 +131,12 @@ const CreateReferralButton: React.FC<{
   );
 };
 
-
 const Dashboard: React.FC = () => {
   const { loading, error, refresh, referralObject } = useSessionData();
   const { username, ranking, hasProfile } = useUser();
   const currentAccount = useCurrentAccount();
   const createProfile = useCreateProfile();
   const [eventFilter, setEventFilter] = React.useState("All Events");
-
 
   const referralList: any[] = React.useMemo(() => {
     const fields = getMoveFields(referralObject);
@@ -161,6 +160,9 @@ const Dashboard: React.FC = () => {
   const [avatarUrl, setAvatarUrl] = React.useState("");
   const [submitting, setSubmitting] = React.useState(false);
   const [submitError, setSubmitError] = React.useState<string>();
+  const [selectedEventId, setSelectedEventId] = React.useState<string | null>(
+    null
+  );
 
   const onCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -189,21 +191,25 @@ const Dashboard: React.FC = () => {
         {/* Header + Top-right controls */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-white text-[24px] font-bold">Welcome to SuiHub dashboard</h1>
+            <h1 className="text-white text-[24px] font-bold">
+              Welcome to SuiHub dashboard
+            </h1>
             <p className="text-white/60 text-sm">
               Start by sharing your referral link, and your rewards grows
             </p>
           </div>
 
           <div className="flex items-center gap-3">
-            <EventFilterDropdown value={eventFilter} onChange={setEventFilter} />
+            <EventFilterDropdown
+              value={eventFilter}
+              onChange={setEventFilter}
+            />
             <CreateReferralButton
               username={username}
               address={currentAccount?.address ?? null}
             />
           </div>
         </div>
-
 
         {/* Stats row */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -251,7 +257,8 @@ const Dashboard: React.FC = () => {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="bg-[#0A133A] rounded-xl overflow-hidden border border-white/10"
+                onClick={() => setSelectedEventId(`event-${i}`)}
+                className="bg-[#0A133A] rounded-xl overflow-hidden border border-white/10 cursor-pointer hover:border-white/20 transition-colors"
               >
                 <img
                   src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=800&q=60"
@@ -336,6 +343,41 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Event Detail Modal */}
+      <EventDetailModal
+        eventId={selectedEventId || ""}
+        isOpen={!!selectedEventId}
+        onClose={() => setSelectedEventId(null)}
+        event={
+          selectedEventId
+            ? {
+                title: "SUIREF CONCERT NIGHT",
+                date: "Wednesday October, 2022",
+                time: "5:00 PM - 6:00 PM",
+                location: "Awka",
+                locationDetail: "Awka, Anambra",
+                category: "SUIREF CONCERT NIGHT",
+                status: "private",
+                image:
+                  "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=800&q=60",
+                host: {
+                  name: "John Deo",
+                  avatar:
+                    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+                },
+                attendeeCount: 2,
+                attendees: [
+                  {
+                    name: "John deo",
+                    avatar:
+                      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+                  },
+                ],
+              }
+            : undefined
+        }
+      />
     </div>
   );
 };
