@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Shuffle } from "lucide-react";
 
 export interface Theme {
   id: string;

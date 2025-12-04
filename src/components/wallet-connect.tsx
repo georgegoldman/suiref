@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect} from "react";
 import { useNavigate } from "react-router-dom";
-import {  ConnectModal, useCurrentAccount } from "@mysten/dapp-kit";
+import {  useCurrentAccount } from "@mysten/dapp-kit";
 import OnboardImage from "../assets/about-our-team (1).svg";
 import '@mysten/dapp-kit/dist/index.css';
 
@@ -10,7 +10,6 @@ const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
 const WalletConnect = () => {
   const navigate = useNavigate();
   const currentAccount = useCurrentAccount();
-  const [open, setOpen] = useState(false);
 
   function loginWithGithub(){
     window.location.assign(`https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}`);
