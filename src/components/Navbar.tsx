@@ -33,7 +33,7 @@ const Navbar = ({ onMobileMenuOpen }: NavbarProps) => {
       backgroundImage: banner,
       username: username ?? undefined,
       ranking: ranking ?? 0,
-      activities: { rank: 1, won: true, event: "Sui Workshop", date: "8/20/2025" },
+      // activities: { rank: 1, won: true, event: "Sui Workshop", date: "8/20/2025" },
     });
   };
 
@@ -55,6 +55,7 @@ const Navbar = ({ onMobileMenuOpen }: NavbarProps) => {
             <button
             onClick={() => navigator.clipboard.writeText(address || "").then(()=> alert("Text copied to clipboard!")).catch(err => {
               alert("Failed to copy text. Please try again.")
+              console.log(err);
             })}
             >
               <span 

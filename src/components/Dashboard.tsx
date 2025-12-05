@@ -2,8 +2,7 @@
 import React from "react";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useSessionData, useUser } from "../session-data";
-import { useCreateProfile } from "../mutations/useCreateProfile";
-import { AvatarPicker } from "./AvatarPicker";
+// import { useCreateProfile } from "../mutations/useCreateProfile";
 import DashboardReferralIcon from "../assets/dashboard-referral-icon";
 import DashboardPointEarned from "../assets/dashboard-point-earned";
 import { EventDetailModal } from "../admin/EventDetailModal";
@@ -132,10 +131,10 @@ const CreateReferralButton: React.FC<{
 };
 
 const Dashboard: React.FC = () => {
-  const { loading, error, refresh, referralObject } = useSessionData();
-  const { username, ranking, hasProfile } = useUser();
+  const { loading, error, referralObject } = useSessionData();
+  const { username, ranking} = useUser();
   const currentAccount = useCurrentAccount();
-  const createProfile = useCreateProfile();
+  // const createProfile = useCreateProfile();
   const [eventFilter, setEventFilter] = React.useState("All Events");
 
   const referralList: any[] = React.useMemo(() => {
@@ -156,30 +155,30 @@ const Dashboard: React.FC = () => {
     return mine.slice(0, 10);
   }, [referralList, username]);
 
-  const [usernameInput, setUsernameInput] = React.useState("");
-  const [avatarUrl, setAvatarUrl] = React.useState("");
-  const [submitting, setSubmitting] = React.useState(false);
-  const [submitError, setSubmitError] = React.useState<string>();
+  // const [usernameInput, setUsernameInput] = React.useState("");
+  // const [avatarUrl, setAvatarUrl] = React.useState("");
+  // const [submitting, setSubmitting] = React.useState(false);
+  // const [submitError, setSubmitError] = React.useState<string>();
   const [selectedEventId, setSelectedEventId] = React.useState<string | null>(
     null
   );
 
-  const onCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!avatarUrl) return setSubmitError("Please select an avatar.");
-    setSubmitting(true);
-    setSubmitError(undefined);
-    try {
-      await createProfile(usernameInput.trim(), avatarUrl.trim());
-      await refresh();
-      setUsernameInput("");
-      setAvatarUrl("");
-    } catch (err: any) {
-      setSubmitError(err?.message ?? "Failed to create profile");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  // const onCreate = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (!avatarUrl) return setSubmitError("Please select an avatar.");
+  //   setSubmitting(true);
+  //   setSubmitError(undefined);
+  //   try {
+  //     await createProfile(usernameInput.trim(), avatarUrl.trim());
+  //     await refresh();
+  //     setUsernameInput("");
+  //     setAvatarUrl("");
+  //   } catch (err: any) {
+  //     setSubmitError(err?.message ?? "Failed to create profile");
+  //   } finally {
+  //     setSubmitting(false);
+  //   }
+  // };
 
   if (loading) return <div className="text-white">Loading…</div>;
   if (error) return <div className="text-red-400">Error: {error}</div>;
