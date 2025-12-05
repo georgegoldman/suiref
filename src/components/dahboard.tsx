@@ -19,15 +19,15 @@ import Ecosystem from "./Ecosystem";
 export default function DashboardMain() {
   const navigate = useNavigate();
   const { mutateAsync: disconnectAsync } = useDisconnectWallet();
-  const [activePage, setActivePage] = useState("dashboard");
+  const [activePage, setActivePage] = useState("ecosystem");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const codeParam = urlParams.get("code")
+    const codeParam = urlParams.get("code");
     console.log(codeParam);
-  }, [])
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -73,7 +73,7 @@ export default function DashboardMain() {
       case "ecosystem":
         return <Ecosystem />;
       default:
-        return <Dashboard />;
+        return <Ecosystem />;
     }
   };
 
