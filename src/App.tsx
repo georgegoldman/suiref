@@ -5,15 +5,16 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import Onboard from "./components/onboard";
+// import Onboard from "./components/onboard"; // Commented out - root now shows Ecosystem
 import Dashboard from "./components/dahboard";
 import EnokiAuthCallback from "./routes/EnokiAuthCallback";
 import { useEffect, type ReactNode } from "react";
 import React from "react";
 import LeaderboardPage from "./components/leaderboard-page";
-import WalletConnect from "./components/wallet-connect";
+// import WalletConnect from "./components/wallet-connect"; // Commented out - not needed for root
 import { SessionDataProvider } from "./session-data";
 import { ProfileModalProvider } from "./ui/ProfileModalProvider";
+import Ecosystem from "./components/Ecosystem";
 
 // ===== Admin pages (make stubs if they don't exist yet) =====
 import AdminDashboard from "./admin/AdminDashboard";
@@ -36,13 +37,13 @@ function ProtectedRoute({ children }: RouteProps) {
   return children;
 }
 
-function PublicRoute({ children }: RouteProps) {
-  return children;
-}
+// Commented out - not currently used since root shows Ecosystem directly
+// function PublicRoute({ children }: RouteProps) {
+//   return children;
+// }
 
 export default function App() {
-  const host =
-    typeof window !== "undefined" ? window.location.hostname : "";
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
   const isAdminHost = host === "console.localhost";
 
   return (
@@ -66,16 +67,19 @@ export default function App() {
           ) : (
             // ================= USER ROUTES =================
             <Routes>
-              <Route path="/" element={<Onboard />} />
+              {/* Root URL now shows Ecosystem directly - no onboarding/login required */}
+              <Route path="/" element={<Ecosystem />} />
+              {/* <Route path="/" element={<Onboard />} /> */}
               <Route path="/leaderboard" element={<LeaderboardPage />} />
-              <Route
+              {/* Login route commented out - not needed for root access */}
+              {/* <Route
                 path="/login"
                 element={
                   <PublicRoute>
                     <WalletConnect />
                   </PublicRoute>
                 }
-              />
+              /> */}
               <Route path="/auth" element={<EnokiAuthCallback />} />
               <Route
                 path="/dashboard"
