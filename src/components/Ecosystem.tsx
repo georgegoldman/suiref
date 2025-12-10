@@ -1,9 +1,8 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import ReactECharts from "echarts-for-react";
 import {
   fetchSuiEcosystemData,
   type EcosystemData,
-  type GraphNode,
 } from "../services/githubService";
 import suirefLogo from "../assets/suiref-logo.png";
 
@@ -11,13 +10,17 @@ const Ecosystem = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [graphData, setGraphData] = useState<EcosystemData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); // The actual active search filter
+  const [inputValue, setInputValue] = useState(""); // The input field value
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage] = useState(20);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         setIsLoading(true);
-        const data = await fetchSuiEcosystemData();
+        // Pass searchQuery to service
+        const data = await fetchSuiEcosystemData(currentPage, perPage, searchQuery);
         console.log(data);
         setGraphData(data);
         setError(null);
@@ -30,77 +33,30 @@ const Ecosystem = () => {
     };
 
     loadData();
-  }, []);
+  }, [currentPage, perPage, searchQuery]); // Re-fetch when search query changes
 
-  // Filter and highlight nodes based on search query
-  const filteredData = useMemo(() => {
-    if (!graphData) {
-      return { data: null, matchingCount: 0 };
+  // Handle search submission
+  const handleSearch = () => {
+    if (inputValue.trim() !== searchQuery) {
+      setSearchQuery(inputValue.trim());
+      setCurrentPage(1); // Reset to page 1 for new search
     }
+  };
 
-    if (!searchQuery.trim()) {
-      return { data: graphData, matchingCount: 0 };
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
     }
+  };
 
-    const query = searchQuery.toLowerCase().trim();
-    const matchingNodeIds = new Set<string>();
-    const matchingNodes: GraphNode[] = [];
-    const allNodes: (GraphNode & {
-      itemStyle?: Record<string, unknown>;
-      label?: Record<string, unknown>;
-    })[] = [];
-
-    // Find matching nodes
-    graphData.nodes.forEach((node) => {
-      const matches = node.name.toLowerCase().includes(query);
-      allNodes.push({
-        ...node,
-        itemStyle: matches
-          ? {
-              borderColor: "#4da2ff",
-              borderWidth: 3,
-              shadowBlur: 20,
-              shadowColor: "#4da2ff",
-            }
-          : {
-              opacity: 0.3,
-            },
-        label: {
-          show: matches || node.symbolSize > 10,
-          color: matches ? "#4da2ff" : "#eee",
-          fontSize: matches ? 14 : 12,
-          fontWeight: matches ? "bold" : "normal",
-        },
-      });
-
-      if (matches) {
-        matchingNodeIds.add(node.id);
-        matchingNodes.push(node);
-      }
-    });
-
-    // Filter links to only show connections involving matching nodes
-    const filteredLinks = graphData.links.filter(
-      (link) =>
-        matchingNodeIds.has(link.source) || matchingNodeIds.has(link.target)
-    );
-
-    return {
-      data: {
-        nodes: allNodes,
-        links: searchQuery.trim() ? filteredLinks : graphData.links,
-        categories: graphData.categories,
-      },
-      matchingCount: matchingNodes.length,
-    };
-  }, [graphData, searchQuery]);
-
-  const option = filteredData.data
+  const option = graphData
     ? {
         backgroundColor: "transparent",
         title: {
           text: "Sui Move Ecosystem",
-          subtext: "GitHub Contributions",
+          subtext: searchQuery 
+            ? `Search: "${searchQuery}" - Page ${currentPage}` 
+            : `Page ${currentPage} (Showing ${graphData?.nodes.length} nodes)`,
           top: "top",
           left: "left",
           textStyle: {
@@ -115,7 +71,7 @@ const Ecosystem = () => {
           formatter: "{b}: {c}",
         },
         legend: {
-          data: filteredData.data.categories.map((a) => a.name),
+          data: graphData.categories.map((a) => a.name),
           textStyle: {
             color: "#ccc",
           },
@@ -130,9 +86,9 @@ const Ecosystem = () => {
             circular: {
               rotateLabel: true,
             },
-            data: filteredData.data.nodes,
-            links: filteredData.data.links,
-            categories: filteredData.data.categories.map((cat, index) => ({
+            data: graphData.nodes,
+            links: graphData.links,
+            categories: graphData.categories.map((cat, index) => ({
               ...cat,
               itemStyle: {
                 color: index === 0 ? "#4da2ff" : "#ff79c6",
@@ -173,14 +129,14 @@ const Ecosystem = () => {
       </div>
 
       {/* Search Bar - Top Center */}
-      {!isLoading && !error && graphData && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 w-full max-w-md px-4">
-          <div className="relative">
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 w-full max-w-md px-4 flex flex-col items-center gap-4">
+          <div className="relative w-full">
             <input
               type="text"
-              placeholder="Search for a contributor or repository owner..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search repositories (Press Enter)..."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
               className="w-full px-4 py-3 pl-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[#4da2ff] focus:border-transparent"
             />
             <svg
@@ -196,10 +152,49 @@ const Ecosystem = () => {
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-            {searchQuery && (
+            <button
+              onClick={handleSearch}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 hover:bg-white/10 rounded-full transition-colors"
+            >
+              {inputValue && inputValue === searchQuery ? (
+                 <svg
+                 className="w-5 h-5 text-[#4da2ff]"
+                 fill="none"
+                 stroke="currentColor"
+                 viewBox="0 0 24 24"
+               >
+                 <path
+                   strokeLinecap="round"
+                   strokeLinejoin="round"
+                   strokeWidth={2}
+                   d="M5 13l4 4L19 7"
+                 />
+               </svg>
+              ) : (
+                <svg
+                  className="w-5 h-5 text-white/50 hover:text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                   <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              )}
+            </button>
+            
+            {inputValue && (
               <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white transition-colors"
+                onClick={() => {
+                  setInputValue("");
+                  setSearchQuery("");
+                  setCurrentPage(1);
+                }}
+                className="absolute right-12 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white transition-colors"
               >
                 <svg
                   className="w-5 h-5"
@@ -217,23 +212,60 @@ const Ecosystem = () => {
               </button>
             )}
           </div>
-          {searchQuery && (
-            <div className="mt-2 text-center">
+          {searchQuery && graphData && (
+            <div className="text-center">
               <p className="text-white/70 text-sm">
-                {filteredData.matchingCount > 0 ? (
+                {graphData.totalItems > 0 ? (
                   <>
                     Found{" "}
                     <span className="text-[#4da2ff] font-semibold">
-                      {filteredData.matchingCount}
+                      {graphData.totalItems}
                     </span>{" "}
-                    {filteredData.matchingCount === 1 ? "match" : "matches"}
+                    results for "{searchQuery}"
                   </>
                 ) : (
-                  <span className="text-red-400">No matches found</span>
+                  <span className="text-red-400">No results found for "{searchQuery}"</span>
                 )}
               </p>
             </div>
           )}
+        </div>
+
+      {/* Pagination Controls - Bottom Center */}
+      {!isLoading && !error && graphData && (
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex items-center gap-4 bg-white/5 backdrop-blur-md rounded-full px-6 py-3 border border-white/10">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className={`p-2 rounded-full transition-colors ${
+              currentPage === 1
+                ? "text-white/20 cursor-not-allowed"
+                : "text-white/80 hover:bg-white/10 hover:text-white"
+            }`}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          
+          <div className="flex flex-col items-center">
+            <span className="text-white font-medium">Page {currentPage}</span>
+            <span className="text-white/50 text-xs">of {graphData.totalPages}</span>
+          </div>
+
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(graphData.totalPages, p + 1))}
+            disabled={currentPage === graphData.totalPages}
+            className={`p-2 rounded-full transition-colors ${
+              currentPage === graphData.totalPages
+                ? "text-white/20 cursor-not-allowed"
+                : "text-white/80 hover:bg-white/10 hover:text-white"
+            }`}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
       )}
 
@@ -241,11 +273,10 @@ const Ecosystem = () => {
         <div className="w-full h-full flex flex-col items-center justify-center gap-4">
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
           <p className="text-slate-400 animate-pulse text-center">
-            Fetching all pages from GitHub...
+            {searchQuery ? `Searching for "${searchQuery}"...` : `Fetching Page ${currentPage}...`}
             <br />
             <span className="text-sm text-slate-500 mt-2 block">
-              This may take a moment as we gather all repositories and
-              contributors
+              Gathering repositories and contributors
             </span>
           </p>
         </div>
@@ -259,7 +290,7 @@ const Ecosystem = () => {
             Retry
           </button>
         </div>
-      ) : (
+      ) : graphData && (
         <ReactECharts
           option={option}
           style={{ height: "100%", width: "100%" }}
