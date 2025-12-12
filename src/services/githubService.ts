@@ -77,7 +77,7 @@ export const fetchSuiEcosystemData = async (
       
       try {
         const response = await axios.get<CustomDeveloperResponse>(
-          `/api/check-sui-developer`,
+          `https://sui-contributors.onrender.com/check-sui-developer`,
           {
             params: {
               username: searchQuery,

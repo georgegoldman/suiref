@@ -7,13 +7,6 @@ export default defineConfig({
   plugins: [react(), tailwindcss(),],
   server: {
     host: true,
-    port: 5173,
-    proxy: {
-      '/api': {
-        target: 'https://sui-contributors.onrender.com',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-    }
+    port: 5173
   }
 })
