@@ -40,6 +40,20 @@ interface GitHubRepo {
   contributors_url: string;
 }
 
+// Custom API Interface
+interface CustomDeveloperResponse {
+  username: string;
+  has_move_files: boolean;
+  total_repositories: number;
+  total_commits: number;
+  repositories: {
+    repo_name: string;
+    repo_url: string;
+    commit_count: number;
+    description?: string;
+  }[];
+}
+
 export const fetchSuiEcosystemData = async (
   page: number = 1,
   perPage: number = 20,
@@ -58,177 +72,220 @@ export const fetchSuiEcosystemData = async (
   }
 
   try {
-    // 1. Prepare Parallel Requests
-    const baseRepoQuery = "language:move sui";
-    const repoQuery = searchQuery 
-      ? `${baseRepoQuery} ${searchQuery}`
-      : baseRepoQuery;
+    if (searchQuery) {
+      console.log(`Searching Custom API for Developer: "${searchQuery}"...`);
+      
+      try {
+        const response = await axios.get<CustomDeveloperResponse>(
+          `/api/check-sui-developer`,
+          {
+            params: {
+              username: searchQuery,
+            },
+          }
+        );
+
+        const data = response.data;
+        console.log("✅ Custom API Response:", data);
+
+        const nodes: GraphNode[] = [];
+        const links: GraphLink[] = [];
+        const categories: GraphCategory[] = [
+          { name: "Developer" },
+          { name: "Repository" },
+        ];
+
+        // Central Node: Developer
+        const developerId = `dev-${data.username}`;
+        nodes.push({
+          id: developerId,
+          name: data.username,
+          symbolSize: Math.min(data.total_commits / 2 + 40, 100), // Scale size by commits
+          category: 0, // Developer
+          value: data.total_commits,
+          draggable: true,
+        });
+
+        // Child Nodes: Repositories
+        // Since the API returns all repos, we might want to paginate locally if needed, 
+        // but for now we'll show them all (or the slice for the current page if we wanted, 
+        // but the current request asked for the bubble map logic).
+        // Let's implement simple client-side pagination for consistency with the UI controls
+        const startIndex = (page - 1) * perPage;
+        const endIndex = startIndex + perPage;
+        const paginatedRepos = data.repositories.slice(startIndex, endIndex);
+
+        paginatedRepos.forEach((repo) => {
+          const repoId = `repo-${repo.repo_name}`;
+          
+          nodes.push({
+            id: repoId,
+            name: repo.repo_name.split("/")[1] || repo.repo_name, // Show only repo name part
+            symbolSize: Math.min(Math.max(repo.commit_count * 2, 20), 60), // Scale by commits, min 20
+            category: 1, // Repository
+            value: repo.commit_count,
+            draggable: true,
+          });
+
+          // Link Developer -> Repo
+          links.push({
+            source: developerId,
+            target: repoId,
+          });
+        });
+
+        const ecosystemData: EcosystemData = {
+          nodes,
+          links,
+          categories,
+          totalItems: data.repositories.length,
+          totalPages: Math.ceil(data.repositories.length / perPage),
+        };
+
+        // Cache the result
+        localStorage.setItem(
+          cacheKey,
+          JSON.stringify({
+            data: ecosystemData,
+            timestamp: Date.now(),
+          })
+        );
+
+        return ecosystemData;
+
+      } catch (err) {
+        console.error("Custom API failed or user not found", err);
+        // Fallback or empty result if not found
+        return {
+          nodes: [],
+          links: [],
+          categories: [{ name: "Developer" }, { name: "Repository" }],
+          totalItems: 0,
+          totalPages: 0,
+        };
+      }
+    } 
     
-    // User query: Search for users matching the term. 
-    // We try to prioritize those related to 'sui' or 'move' if possible, but strict filtering might exclude people.
-    // Let's search broadly for the name but sort by followers to get prominent users.
-    const userQuery = searchQuery;
-
-    console.log(`Searching Repos: "${repoQuery}" | Searching Users: "${userQuery}"`);
-
-    const requests = [
-      axios.get(`${GITHUB_API_BASE}/search/repositories`, {
+    // DEFAULT BEHAVIOUR (No search query): Keep existing GitHub API logic for general browsing
+    else {
+      // 1. Prepare Parallel Requests
+      console.log(`Fetching repositories page ${page} (Default View)...`);
+      const baseRepoQuery = "language:move sui";
+      
+      const response = await axios.get(`${GITHUB_API_BASE}/search/repositories`, {
         params: {
-          q: repoQuery,
+          q: baseRepoQuery,
           sort: "stars",
           order: "desc",
           page: page,
-          per_page: Math.ceil(perPage / 2),
+          per_page: perPage,
         },
-      }),
-    ];
+      });
 
-    if (searchQuery) {
-      requests.push(
-        axios.get(`${GITHUB_API_BASE}/search/users`, {
-          params: {
-            q: userQuery,
-            sort: "followers",
-            order: "desc",
-            page: page,
-            per_page: Math.ceil(perPage / 2),
-          },
-        })
-      );
-    }
+      const repos = response.data.items as GitHubRepo[];
+      const totalCount = response.data.total_count;
 
-    const responses = await Promise.all(requests);
-    const repoResponse = responses[0];
-    const userResponse = searchQuery ? responses[1] : null;
+      console.log(`✅ Fetched Page ${page}: ${repos.length} Repos`);
 
-    const repos = repoResponse.data.items as GitHubRepo[];
-    const users = userResponse ? (userResponse.data.items as any[]) : [];
-    
-    const totalRepoCount = repoResponse.data.total_count;
-    const totalUserCount = userResponse ? userResponse.data.total_count : 0;
-    const totalCount = totalRepoCount + totalUserCount;
+      const nodes: GraphNode[] = [];
+      const links: GraphLink[] = [];
+      const categories: GraphCategory[] = [
+        { name: "Owner" },
+        { name: "Contributor" },
+      ];
 
-    console.log(`✅ Fetched Page ${page}: ${repos.length} Repos, ${users.length} Users`);
+      const nodeIds = new Set<string>();
 
-    const nodes: GraphNode[] = [];
-    const links: GraphLink[] = [];
-    const categories: GraphCategory[] = [
-      { name: "Owner" },
-      { name: "Contributor" },
-    ];
-
-    const nodeIds = new Set<string>();
-
-    // 2. Process Users (SearchResults)
-    for (const user of users) {
-      const userId = `user-${user.id}`;
-      if (!nodeIds.has(userId)) {
-        nodes.push({
-          id: userId,
-          name: user.login,
-          symbolSize: 30,
-          category: 1, // Treat as Contributor/User
-          value: 0,
-          draggable: true,
-        });
-        nodeIds.add(userId);
-      }
-    }
-
-    // 3. Process Repositories
-    for (const repo of repos) {
-      // Create node for Repo Owner
-      const ownerId = `user-${repo.owner.id}`;
-      if (!nodeIds.has(ownerId)) {
-        nodes.push({
-          id: ownerId,
-          name: repo.owner.login,
-          symbolSize: Math.min(repo.stargazers_count / 2 + 20, 60), 
-          category: 0, // Owner
-          value: repo.stargazers_count,
-          draggable: true,
-        });
-        nodeIds.add(ownerId);
-      }
-
-      // 4. Fetch contributors for each repo
-      try {
-        console.log(`Fetching contributors for ${repo.name}...`);
-        interface GitHubContributor {
-          id: number;
-          login: string;
-          contributions: number;
+      // Process Repositories
+      for (const repo of repos) {
+        // Create node for Repo Owner
+        const ownerId = `user-${repo.owner.id}`;
+        if (!nodeIds.has(ownerId)) {
+          nodes.push({
+            id: ownerId,
+            name: repo.owner.login,
+            symbolSize: Math.min(repo.stargazers_count / 2 + 20, 60), 
+            category: 0, // Owner
+            value: repo.stargazers_count,
+            draggable: true,
+          });
+          nodeIds.add(ownerId);
         }
 
-        const contribResponse = await axios.get(repo.contributors_url, {
-          params: {
-            per_page: 5,
-          },
-        });
-        
-        const contributors = contribResponse.data as GitHubContributor[];
-
-        for (const contributor of contributors) {
-          const contributorId = `user-${contributor.id}`;
-
-          if (!nodeIds.has(contributorId)) {
-            nodes.push({
-              id: contributorId,
-              name: contributor.login,
-              symbolSize: 20 + contributor.contributions / 10,
-              category: 1, // Contributor
-              value: contributor.contributions,
-              draggable: true,
-            });
-            nodeIds.add(contributorId);
+        // Fetch contributors for each repo
+        try {
+          // console.log(`Fetching contributors for ${repo.name}...`);
+          interface GitHubContributor {
+            id: number;
+            login: string;
+            contributions: number;
           }
 
-          if (contributorId !== ownerId) {
-            const linkExists = links.some(
-              (l) =>
-                (l.source === contributorId && l.target === ownerId) ||
-                (l.source === ownerId && l.target === contributorId)
-            );
+          const contribResponse = await axios.get(repo.contributors_url, {
+            params: {
+              per_page: 5,
+            },
+          });
+          
+          const contributors = contribResponse.data as GitHubContributor[];
 
-            if (!linkExists) {
-              links.push({
-                source: contributorId,
-                target: ownerId,
+          for (const contributor of contributors) {
+            const contributorId = `user-${contributor.id}`;
+
+            if (!nodeIds.has(contributorId)) {
+              nodes.push({
+                id: contributorId,
+                name: contributor.login,
+                symbolSize: 20 + contributor.contributions / 10,
+                category: 1, // Contributor
+                value: contributor.contributions,
+                draggable: true,
               });
+              nodeIds.add(contributorId);
+            }
+
+            if (contributorId !== ownerId) {
+              const linkExists = links.some(
+                (l) =>
+                  (l.source === contributorId && l.target === ownerId) ||
+                  (l.source === ownerId && l.target === contributorId)
+              );
+
+              if (!linkExists) {
+                links.push({
+                  source: contributorId,
+                  target: ownerId,
+                });
+              }
             }
           }
+        } catch (err) {
+          // console.warn(`Failed to fetch contributors for ${repo.name}`, err);
         }
-      } catch (err) {
-        console.warn(`Failed to fetch contributors for ${repo.name}`, err);
       }
+
+      const ecosystemData: EcosystemData = { 
+        nodes, 
+        links, 
+        categories,
+        totalItems: totalCount,
+        totalPages: Math.ceil(totalCount / perPage)
+      };
+
+      // Cache the result
+      localStorage.setItem(
+        cacheKey,
+        JSON.stringify({
+          data: ecosystemData,
+          timestamp: Date.now(),
+        })
+      );
+
+      return ecosystemData;
     }
 
-    const ecosystemData: EcosystemData = { 
-      nodes, 
-      links, 
-      categories,
-      totalItems: totalCount,
-      totalPages: Math.ceil(totalCount / perPage)
-    };
-
-    console.log("🎯 Page Data Summary:", {
-      page,
-      totalNodes: nodes.length,
-      totalLinks: links.length,
-    });
-
-    // Cache the result
-    localStorage.setItem(
-      cacheKey,
-      JSON.stringify({
-        data: ecosystemData,
-        timestamp: Date.now(),
-      })
-    );
-
-    return ecosystemData;
   } catch (error) {
-    console.error("Error fetching GitHub data:", error);
+    console.error("Error fetching data:", error);
     throw error;
   }
 };
