@@ -11,6 +11,8 @@ import SidebarCollapseIcon from "../assets/sidebar-collapse-icon";
 // import SidebarSettingsIcon from "../assets/sidebar-settings-icon";
 import SidebarSupportIcon from "../assets/sidebar-support-icon";
 import SidebarLogoutIcon from "../assets/sidebar-logout-icon";
+import DashboardReferralIcon from "../assets/dashboard-referral-icon";
+import DashboardPointEarned from "../assets/dashboard-point-earned";
 import { CopyButton } from "./CopyButton";
 import { useUser } from "../session-data";
 import Logo from "../assets/suiref-logo.png";
@@ -32,7 +34,7 @@ const Sidebar = ({
   onMobileClose,
 }: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { username, address } = useUser();
+  const { username, address, ranking } = useUser();
 
   const displayName =
     username ??
@@ -76,28 +78,28 @@ const Sidebar = ({
 
   const sidebarContent = (
     <div
-      className={`flex flex-col gap-[2rem] border-r border-white/10 bg-[#040c33] transition-all duration-300 ${
+      className={`flex flex-col gap-[2rem] border-r border-black/10 bg-white transition-all duration-300 ${
         isCollapsed ? "w-16" : "w-64"
       } min-h-screen p-4`}
     >
       {/* Top Section - Logo and Collapse Icon */}
       <div className="flex items-center justify-between mb-6">
         {!isCollapsed && (
-          <div className="text-white font-bold text-xl">
+          <div className="text-black font-bold text-xl">
             <img src={Logo} alt="SuiRef" className="w-10 h-10" />
           </div>
         )}
         <button
           onClick={toggleCollapse}
-          className="text-white/70 hover:text-white transition-colors"
+          className="text-black/70 hover:text-black transition-colors"
         >
           <SidebarCollapseIcon />
         </button>
       </div>
 
       {/* Main Menu Section */}
-      <div className="flex flex-col gap-5 border-b border-white/5 pb-4">
-        <h3 className="text-white/70 text-[10px] uppercase tracking-wider">
+      <div className="flex flex-col gap-5 border-b border-black/5 pb-4">
+        <h3 className="text-black/70 text-[10px] uppercase tracking-wider">
           {!isCollapsed && "Main Menu"}
         </h3>
 
@@ -112,8 +114,8 @@ const Sidebar = ({
                 onClick={() => handlePageChange(item.id)}
                 className={`flex items-center gap-2 px-3 py-2 rounded-[30px] transition-all duration-200 ${
                   isActive
-                    ? "bg-[#1DA1F2] text-white"
-                    : "text-white/70 hover:bg-white/5"
+                    ? "bg-black text-white"
+                    : "text-black/70 hover:bg-black/5"
                 }`}
               >
                 <IconComponent />
@@ -125,8 +127,8 @@ const Sidebar = ({
       </div>
 
       {/* Other Section */}
-      <div className="flex flex-col gap-2 border-b border-white/5 pb-4">
-        <h3 className="text-white/70 text-[10px] uppercase tracking-wider">
+      <div className="flex flex-col gap-2 border-b border-black/5 pb-4">
+        <h3 className="text-black/70 text-[10px] uppercase tracking-wider">
           {!isCollapsed && "Other"}
         </h3>
 
@@ -141,8 +143,8 @@ const Sidebar = ({
                 onClick={() => handlePageChange(item.id)}
                 className={`flex items-center gap-2 px-3 py-2 rounded-[30px] transition-all duration-200 ${
                   isActive
-                    ? "bg-[#1DA1F2] text-white"
-                    : "text-white/70 hover:bg-white/5"
+                    ? "bg-black text-white"
+                    : "text-black/70 hover:bg-black/5"
                 }`}
               >
                 <IconComponent />
@@ -156,7 +158,7 @@ const Sidebar = ({
       {/* Logout Button */}
       <button
         onClick={onLogout}
-        className="flex items-center gap-2 px-3 py-2 text-white hover:bg-white/5 transition-colors"
+        className="flex items-center gap-2 px-3 py-2 text-black hover:bg-black/5 transition-colors"
       >
         <SidebarLogoutIcon />
         {!isCollapsed && <span className="text-xs">Logout</span>}
@@ -179,15 +181,15 @@ const Sidebar = ({
           />
 
           {/* Sidebar */}
-          <div className="fixed left-0 top-0 h-full w-64 bg-[#040c33] border-r border-white/10 shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col">
+          <div className="fixed left-0 top-0 h-full w-64 bg-white border-r border-black/10 shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col">
             {/* Mobile Header with Close Button */}
-            <div className="flex items-center justify-between p-4 border-b border-white/10 flex-shrink-0">
-              <div className="text-white font-bold text-xl">
+            <div className="flex items-center justify-between p-4 border-b border-black/10 flex-shrink-0">
+              <div className="text-black font-bold text-xl">
                 <img src={Logo} alt="SuiRef" className="w-10 h-10" />
               </div>
               <button
                 onClick={onMobileClose}
-                className="text-white/70 hover:text-white transition-colors p-2"
+                className="text-black/70 hover:text-black transition-colors p-2"
               >
                 <HiX size={24} />
               </button>
@@ -197,8 +199,8 @@ const Sidebar = ({
             <div className="flex-1 overflow-y-auto p-4 scrollbar-hide">
               <div className="flex flex-col gap-[2rem]">
                 {/* Main Menu Section */}
-                <div className="flex flex-col gap-5 border-b border-white/5 pb-4">
-                  <h3 className="text-white/70 text-[10px] uppercase tracking-wider">
+                <div className="flex flex-col gap-5 border-b border-black/5 pb-4">
+                  <h3 className="text-black/70 text-[10px] uppercase tracking-wider">
                     Main Menu
                   </h3>
 
@@ -213,8 +215,8 @@ const Sidebar = ({
                           onClick={() => handlePageChange(item.id)}
                           className={`flex items-center gap-2 px-3 py-2 rounded-[30px] transition-all duration-200 ${
                             isActive
-                              ? "bg-[#1DA1F2] text-white"
-                              : "text-white/70 hover:bg-white/5"
+                              ? "bg-black text-white"
+                              : "text-black/70 hover:bg-black/5"
                           }`}
                         >
                           <IconComponent />
@@ -226,8 +228,8 @@ const Sidebar = ({
                 </div>
 
                 {/* Other Section */}
-                <div className="flex flex-col gap-2 border-b border-white/5 pb-4">
-                  <h3 className="text-white/70 text-[10px] uppercase tracking-wider">
+                <div className="flex flex-col gap-2 border-b border-black/5 pb-4">
+                  <h3 className="text-black/70 text-[10px] uppercase tracking-wider">
                     Other
                   </h3>
 
@@ -242,8 +244,8 @@ const Sidebar = ({
                           onClick={() => handlePageChange(item.id)}
                           className={`flex items-center gap-2 px-3 py-2 rounded-[30px] transition-all duration-200 ${
                             isActive
-                              ? "bg-[#1DA1F2] text-white"
-                              : "text-white/70 hover:bg-white/5"
+                              ? "bg-black text-white"
+                              : "text-black/70 hover:bg-black/5"
                           }`}
                         >
                           <IconComponent />
@@ -255,19 +257,52 @@ const Sidebar = ({
                 </div>
 
                 {/* User Info Section - Before Logout */}
-                <div className="flex flex-col gap-2 border-b border-white/5 pb-4">
+                <div className="flex flex-col gap-2 border-b border-black/5 pb-4">
                   <div className="flex flex-col gap-2">
-                    <span className="text-white text-sm font-medium">
+                    <span className="text-black text-sm font-medium">
                       {displayName}
                     </span>
                     <CopyButton value={address} />
                   </div>
                 </div>
 
+                {/* Dashboard Style Updates - Added as a new section */}
+                <div className="flex flex-col gap-4">
+                  <div className="bg-gray-50 border border-black/5 p-4 rounded-xl flex flex-col justify-between">
+                    <div className="flex items-center gap-2">
+                      <DashboardReferralIcon />
+                      <span className="text-black/70 font-semibold text-sm">
+                        Total Referral:
+                      </span>
+                    </div>
+                    <p className="text-black text-3xl font-bold mt-2">{ranking ?? 0}</p>
+                  </div>
+
+                  <div className="bg-gray-50 border border-black/5 p-4 rounded-xl flex flex-col justify-between">
+                    <div className="flex items-center gap-2">
+                      <DashboardReferralIcon />
+                      <span className="text-black/70 font-semibold text-sm">
+                        Workshop Attendees:
+                      </span>
+                    </div>
+                    <p className="text-black text-3xl font-bold mt-2">0</p>
+                  </div>
+
+                  <div className="bg-gray-50 border border-black/5 p-4 rounded-xl flex flex-col justify-between">
+                    <div className="flex items-center gap-2">
+                      <DashboardPointEarned />
+                      <span className="text-black/70 font-semibold text-sm">
+                        Points Earned:
+                      </span>
+                    </div>
+                    <p className="text-black text-3xl font-bold mt-2">0</p>
+                  </div>
+                </div>
+
                 {/* Logout Button */}
                 <button
                   onClick={onLogout}
-                  className="flex items-center gap-2 px-3 py-2 text-white hover:bg-white/5 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 text-black hover:bg-black/5 transition-colors"
                 >
                   <SidebarLogoutIcon />
                   <span className="text-xs">Logout</span>

@@ -38,13 +38,13 @@ const Navbar = ({ onMobileMenuOpen }: NavbarProps) => {
   };
 
   return (
-    <div className="flex justify-between items-center py-5 px-4 sm:px-6 lg:px-8 bg-[#040c33] border-b border-white/10">
+    <div className="flex justify-between items-center py-5 px-4 sm:px-6 lg:px-8 bg-white border-b border-black/10">
       {/* Left side - Mobile Menu Button and User Info */}
       <div className="flex items-center gap-4">
         {/* Mobile Menu Button - Only visible on mobile */}
         <button
           onClick={onMobileMenuOpen}
-          className="lg:hidden text-white/70 hover:text-white transition-colors p-2"
+          className="lg:hidden text-black/70 hover:text-black transition-colors p-2"
         >
           <HiMenu size={24} />
         </button>
@@ -60,14 +60,14 @@ const Navbar = ({ onMobileMenuOpen }: NavbarProps) => {
             >
               <span 
             
-            className="text-white text-[18px] lg:text-[24px] font-bold">
+            className="text-black text-[18px] lg:text-[24px] font-bold">
               Hi {displayName} 👋
             </span>
             </button>
           </div>
 
           <div className="hidden lg:flex items-center gap-2">
-            <span className="text-white/70 text-xs font-medium">Welcome</span>
+            <span className="text-black/70 text-xs font-medium">Welcome</span>
           </div>
 
           
@@ -80,7 +80,7 @@ const Navbar = ({ onMobileMenuOpen }: NavbarProps) => {
           <input
             type="text"
             placeholder="Search"
-            className="w-full bg-white/10 py-2.5 px-5 h-[52px] pl-12 rounded-[40px] text-white text-xs placeholder-white/70"
+            className="w-full bg-black/5 py-2.5 px-5 h-[52px] pl-12 rounded-[40px] text-black text-xs placeholder-black/70"
           />
           <div className="absolute left-4 top-1/2 -translate-y-1/2">
             <DashboardSearchIcon />
