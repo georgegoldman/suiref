@@ -126,24 +126,8 @@ const Ecosystem = () => {
       {/* Top Navigation Bar */}
       <div className="absolute top-0 left-0 w-full z-30 px-8 py-6 flex justify-between items-center bg-white/50 backdrop-blur-sm border-b border-black/5">
          <div className="text-xl font-bold tracking-tighter">SUIREF ECOSYSTEM</div>
-         <div className="flex gap-6 text-sm font-medium">
-             <a href="/" className="hover:opacity-60">Home</a>
-             <a href="/dashboard" className="hover:opacity-60">Community</a>
-         </div>
-      </div>
 
-
-      {/* SuiRef Logo - Top Right (Removed or Updated) */}
-      {/* <div className="absolute top-4 right-4 z-20 flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/20">
-        <img src={suirefLogo} alt="SuiRef Logo" className="h-8 w-auto invert" />
-        <span className="text-black/80 text-sm font-medium">
-          Powered by SuiRef
-        </span>
-      </div> */}
-
-      {/* Search Bar - Top Center */}
-      {/* Search Bar - Top Center - Moved down to avoid navbar overlap */}
-      <div className="absolute top-24 left-1/2 transform -translate-x-1/2 z-20 w-full max-w-md px-4 flex flex-col items-center gap-4">
+         <div className="absolute  left-1/2 transform -translate-x-1/2 z-20 w-full max-w-md px-4 flex flex-col items-center gap-4">
           <div className="relative w-full">
             <input
               type="text"
@@ -151,7 +135,7 @@ const Ecosystem = () => {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full px-4 py-3 pl-12 bg-white border border-black/10 rounded-lg text-black placeholder:text-black/50 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent shadow-sm"
+              className="w-full px-4 py-2 pl-12 bg-white border border-black/10 rounded-lg text-black placeholder:text-black/50 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent shadow-sm"
             />
             <svg
               className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-black/50"
@@ -244,6 +228,25 @@ const Ecosystem = () => {
             </div>
           )}
         </div>
+
+         <div className="flex gap-6 text-sm font-medium">
+             <a href="/" className="hover:opacity-60">Home</a>
+             <a href="/dashboard" className="hover:opacity-60">Community</a>
+         </div>
+      </div>
+
+
+      {/* SuiRef Logo - Top Right (Removed or Updated) */}
+      {/* <div className="absolute top-4 right-4 z-20 flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/20">
+        <img src={suirefLogo} alt="SuiRef Logo" className="h-8 w-auto invert" />
+        <span className="text-black/80 text-sm font-medium">
+          Powered by SuiRef
+        </span>
+      </div> */}
+
+      {/* Search Bar - Top Center */}
+      {/* Search Bar - Top Center - Moved down to avoid navbar overlap */}
+      
 
       {/* Pagination Controls - Bottom Center */}
       {!isLoading && !error && graphData && (

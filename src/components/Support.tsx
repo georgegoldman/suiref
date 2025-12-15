@@ -61,24 +61,24 @@ const Support: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 p-4 sm:p-6">
+    <div className="flex-1 p-4 sm:p-6 text-black">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Top header */}
         <div className="space-y-1">
-          <h1 className="text-white text-2xl sm:text-[28px] font-extrabold">
+          <h1 className="text-black text-2xl sm:text-[28px] font-extrabold">
             Need Help? We got you covered.
           </h1>
-          <p className="text-white/70 text-sm">
+          <p className="text-black/70 text-sm">
             Find answers, explore guides, or reach out directly for assistance with the SuiHub Referral System.
           </p>
         </div>
 
         {/* Frame */}
-        <div className="rounded-2xl border border-white/10 p-4 sm:p-6 bg-[#070F2C]/40">
+        <div className="rounded-2xl border border-black/10 p-4 sm:p-6 bg-white shadow-sm">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* FAQ */}
             <section>
-              <h2 className="text-white font-bold text-lg mb-4">FAQ</h2>
+              <h2 className="text-black font-bold text-lg mb-4">FAQ</h2>
 
               <div className="space-y-3">
                 {FAQS.map((f) => {
@@ -86,8 +86,8 @@ const Support: React.FC = () => {
                   return (
                     <div
                       key={f.id}
-                      className={`rounded-xl ring-1 ${
-                        isOpen ? "bg-[#4DA2FD]/25 ring-[#4DA2FD]/40" : "bg-white/[0.06] ring-white/10"
+                      className={`rounded-xl ring-1 transition-colors ${
+                        isOpen ? "bg-black/5 ring-black/10" : "bg-white ring-black/10 hover:bg-gray-50"
                       }`}
                     >
                       <button
@@ -98,7 +98,7 @@ const Support: React.FC = () => {
                       >
                         <span
                           className={`text-sm sm:text-[15px] font-semibold ${
-                            isOpen ? "text-white" : "text-white/85"
+                            isOpen ? "text-black" : "text-black/85"
                           }`}
                         >
                           {f.q}
@@ -106,8 +106,8 @@ const Support: React.FC = () => {
 
                         {/* plus / close pill */}
                         <span
-                          className={`inline-flex h-7 w-7 items-center justify-center rounded-full ${
-                            isOpen ? "bg-[#8CC6FF] text-[#031335]" : "bg-white/15 text-white"
+                          className={`inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors ${
+                            isOpen ? "bg-black text-white" : "bg-black/5 text-black"
                           }`}
                           aria-hidden="true"
                         >
@@ -117,7 +117,7 @@ const Support: React.FC = () => {
 
                       {isOpen && (
                         <div className="px-4 pb-4 -mt-1">
-                          <p className="text-white/85 text-sm leading-relaxed">
+                          <p className="text-black/85 text-sm leading-relaxed">
                             {f.a}
                           </p>
                         </div>
@@ -130,9 +130,9 @@ const Support: React.FC = () => {
 
             {/* Contact us */}
             <section>
-              <h2 className="text-white font-bold text-lg mb-1">Contact us</h2>
-              <p className="text-white/70 text-sm mb-6">
-                Oure team is here to help, Send us a message.
+              <h2 className="text-black font-bold text-lg mb-1">Contact us</h2>
+              <p className="text-black/70 text-sm mb-6">
+                Our team is here to help, Send us a message.
               </p>
 
               <form onSubmit={onSubmit} className="space-y-4">
@@ -142,7 +142,7 @@ const Support: React.FC = () => {
                     placeholder="Enter your name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full rounded-xl bg-white/[0.08] ring-1 ring-white/10 px-4 py-3 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
+                    className="w-full rounded-xl bg-white ring-1 ring-black/10 px-4 py-3 text-black placeholder:text-black/50 focus:outline-none focus:ring-2 focus:ring-black/20"
                     required
                   />
                 </label>
@@ -153,7 +153,7 @@ const Support: React.FC = () => {
                     placeholder="Enter your phone number"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full rounded-xl bg-white/[0.08] ring-1 ring-white/10 px-4 py-3 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
+                    className="w-full rounded-xl bg-white ring-1 ring-black/10 px-4 py-3 text-black placeholder:text-black/50 focus:outline-none focus:ring-2 focus:ring-black/20"
                     required
                   />
                 </label>
@@ -164,12 +164,12 @@ const Support: React.FC = () => {
                     rows={5}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    className="w-full resize-y rounded-xl bg-white/[0.08] ring-1 ring-white/10 px-4 py-3 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
+                    className="w-full resize-y rounded-xl bg-white ring-1 ring-black/10 px-4 py-3 text-black placeholder:text-black/50 focus:outline-none focus:ring-2 focus:ring-black/20"
                     required
                   />
                 </label>
 
-                <label className="flex items-start gap-3 text-xs text-white/70">
+                <label className="flex items-start gap-3 text-xs text-black/70">
                   <input
                     type="checkbox"
                     checked={agree}
@@ -179,18 +179,18 @@ const Support: React.FC = () => {
                       appearance-none                       /* remove default UI */
                       rounded-md
                       bg-transparent
-                      ring-1 ring-white/20                  /* subtle outline */
+                      ring-1 ring-black/20                  /* subtle outline */
                       border border-transparent             /* iOS/Safari fallback */
-                      hover:ring-white/30
+                      hover:ring-black/30
                       transition
-                      focus:outline-none focus:ring-2 focus:ring-white/40
+                      focus:outline-none focus:ring-2 focus:ring-black/40
 
-                      /* checked state (blue fill + vector tick) */
-                      checked:bg-[#4DA2FD]
-                      checked:ring-[#4DA2FD]
+                      /* checked state (black fill + white vector tick) */
+                      checked:bg-black
+                      checked:ring-black
                       checked:[background-image:url('data:image/svg+xml;utf8,\
                 <svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22>\
-                <path d=%22M5 13l4 4L19 7%22 fill=%22none%22 stroke=%22%23031335%22 stroke-width=%223%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/>\
+                <path d=%22M5 13l4 4L19 7%22 fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%223%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/>\
                 </svg>')]
                       checked:bg-no-repeat
                       checked:bg-center
@@ -210,10 +210,11 @@ const Support: React.FC = () => {
                   disabled={sending}
                   className="
                     w-full h-12 rounded-xl
-                    bg-[#4DA2FD] hover:bg-[#66B2FF]
-                    text-[#031335] font-semibold
-                    shadow-[0_8px_28px_rgba(77,162,253,0.35)]
+                    bg-black hover:bg-black/80
+                    text-white font-semibold
+                    shadow-sm
                     disabled:opacity-70 disabled:cursor-not-allowed
+                    transition-colors
                   "
                 >
                   {sending ? "Sending…" : sent ? "Sent ✓" : "Send"}
@@ -225,7 +226,7 @@ const Support: React.FC = () => {
                     href="https://x.com/SuiHubAfrica"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#8CC6FF] hover:underline text-sm"
+                    className="text-black/70 hover:underline text-sm hover:text-black"
                   >
                     @SuiHubAfrica on X
                   </a>
