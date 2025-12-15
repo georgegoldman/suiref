@@ -4,7 +4,7 @@ import {
   fetchSuiEcosystemData,
   type EcosystemData,
 } from "../services/githubService";
-import suirefLogo from "../assets/suiref-logo.png";
+// import suirefLogo from "../assets/suiref-logo.png";
 
 const Ecosystem = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -52,28 +52,31 @@ const Ecosystem = () => {
   const option = graphData
     ? {
         backgroundColor: "transparent",
-        title: {
-          text: "Sui Move Ecosystem",
-          subtext: searchQuery 
-            ? `Search: "${searchQuery}" - Page ${currentPage}` 
-            : `Page ${currentPage} (Showing ${graphData?.nodes.length} nodes)`,
-          top: "top",
-          left: "left",
-          textStyle: {
-            color: "#fff",
-          },
-          subtextStyle: {
-            color: "#aaa",
-          },
-        },
+        // title prop restored and moved down
+        // title: {
+        //   text: "Sui Move Ecosystem",
+        //   subtext: searchQuery 
+        //     ? `Search: "${searchQuery}" - Page ${currentPage}` 
+        //     : `Page ${currentPage} (Showing ${graphData?.nodes.length} nodes)`,
+        //   top: 120, // Moved down to clear navbar
+        //   left: "left",
+        //   textStyle: {
+        //     color: "#000",
+        //   },
+        //   subtextStyle: {
+        //     color: "#666",
+        //   },
+        // },
         tooltip: {
           trigger: "item",
           formatter: "{b}: {c}",
         },
         legend: {
           data: graphData.categories.map((a) => a.name),
+          bottom: 30, // Moved to bottom right to avoid pagination
+          right: 30,
           textStyle: {
-            color: "#ccc",
+            color: "#000", // Changed to black for visibility
           },
         },
         animationDurationUpdate: 1500,
@@ -98,7 +101,7 @@ const Ecosystem = () => {
             label: {
               position: "right",
               formatter: "{b}",
-              color: "#eee",
+              color: "#333",
             },
             lineStyle: {
               color: "source",
@@ -117,19 +120,30 @@ const Ecosystem = () => {
     : {};
 
   return (
-    <div className="w-full h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black opacity-80 pointer-events-none"></div>
-
-      {/* SuiRef Logo - Top Right */}
-      <div className="absolute top-4 right-4 z-20 flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/20">
-        <img src={suirefLogo} alt="SuiRef Logo" className="h-8 w-auto" />
-        <span className="text-white/80 text-sm font-medium">
-          Powered by SuiRef
-        </span>
+    <div className="w-full h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden bg-white text-black">
+      {/* <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black opacity-80 pointer-events-none"></div> */}\
+      
+      {/* Top Navigation Bar */}
+      <div className="absolute top-0 left-0 w-full z-30 px-8 py-6 flex justify-between items-center bg-white/50 backdrop-blur-sm border-b border-black/5">
+         <div className="text-xl font-bold tracking-tighter">SUIREF ECOSYSTEM</div>
+         <div className="flex gap-6 text-sm font-medium">
+             <a href="/" className="hover:opacity-60">Home</a>
+             <a href="/dashboard" className="hover:opacity-60">Community</a>
+         </div>
       </div>
 
+
+      {/* SuiRef Logo - Top Right (Removed or Updated) */}
+      {/* <div className="absolute top-4 right-4 z-20 flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/20">
+        <img src={suirefLogo} alt="SuiRef Logo" className="h-8 w-auto invert" />
+        <span className="text-black/80 text-sm font-medium">
+          Powered by SuiRef
+        </span>
+      </div> */}
+
       {/* Search Bar - Top Center */}
-      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 w-full max-w-md px-4 flex flex-col items-center gap-4">
+      {/* Search Bar - Top Center - Moved down to avoid navbar overlap */}
+      <div className="absolute top-24 left-1/2 transform -translate-x-1/2 z-20 w-full max-w-md px-4 flex flex-col items-center gap-4">
           <div className="relative w-full">
             <input
               type="text"
@@ -137,10 +151,10 @@ const Ecosystem = () => {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full px-4 py-3 pl-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[#4da2ff] focus:border-transparent"
+              className="w-full px-4 py-3 pl-12 bg-white border border-black/10 rounded-lg text-black placeholder:text-black/50 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent shadow-sm"
             />
             <svg
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/50"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-black/50"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -172,7 +186,7 @@ const Ecosystem = () => {
                </svg>
               ) : (
                 <svg
-                  className="w-5 h-5 text-white/50 hover:text-white"
+                  className="w-5 h-5 text-black/50 hover:text-black"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -194,7 +208,7 @@ const Ecosystem = () => {
                   setSearchQuery("");
                   setCurrentPage(1);
                 }}
-                className="absolute right-12 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white transition-colors"
+                className="absolute right-12 top-1/2 transform -translate-y-1/2 text-black/50 hover:text-black transition-colors"
               >
                 <svg
                   className="w-5 h-5"
@@ -212,7 +226,7 @@ const Ecosystem = () => {
               </button>
             )}
           </div>
-          {searchQuery && graphData && (
+          {!isLoading && searchQuery && graphData && (
             <div className="text-center">
               <p className="text-white/70 text-sm">
                 {graphData.totalItems > 0 ? (
@@ -233,14 +247,14 @@ const Ecosystem = () => {
 
       {/* Pagination Controls - Bottom Center */}
       {!isLoading && !error && graphData && (
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex items-center gap-4 bg-white/5 backdrop-blur-md rounded-full px-6 py-3 border border-white/10">
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex items-center gap-4 bg-black/5 backdrop-blur-md rounded-full px-6 py-3 border border-black/10">
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
             className={`p-2 rounded-full transition-colors ${
               currentPage === 1
-                ? "text-white/20 cursor-not-allowed"
-                : "text-white/80 hover:bg-white/10 hover:text-white"
+                ? "text-black/20 cursor-not-allowed"
+                : "text-black/80 hover:bg-black/10 hover:text-black"
             }`}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -249,8 +263,8 @@ const Ecosystem = () => {
           </button>
           
           <div className="flex flex-col items-center">
-            <span className="text-white font-medium">Page {currentPage}</span>
-            <span className="text-white/50 text-xs">of {graphData.totalPages}</span>
+            <span className="text-black font-medium">Page {currentPage}</span>
+            <span className="text-black/50 text-xs">of {graphData.totalPages}</span>
           </div>
 
           <button
@@ -258,8 +272,8 @@ const Ecosystem = () => {
             disabled={currentPage === graphData.totalPages}
             className={`p-2 rounded-full transition-colors ${
               currentPage === graphData.totalPages
-                ? "text-white/20 cursor-not-allowed"
-                : "text-white/80 hover:bg-white/10 hover:text-white"
+                ? "text-black/20 cursor-not-allowed"
+                : "text-black/80 hover:bg-black/5 hover:text-black"
             }`}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

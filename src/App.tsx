@@ -15,6 +15,7 @@ import LeaderboardPage from "./components/leaderboard-page";
 import { SessionDataProvider } from "./session-data";
 import { ProfileModalProvider } from "./ui/ProfileModalProvider";
 import Ecosystem from "./components/Ecosystem";
+import LandingPage from "./components/LandingPage";
 
 // ===== Admin pages (make stubs if they don't exist yet) =====
 import AdminDashboard from "./admin/AdminDashboard";
@@ -67,8 +68,9 @@ export default function App() {
           ) : (
             // ================= USER ROUTES =================
             <Routes>
-              {/* Root URL now shows Ecosystem directly - no onboarding/login required */}
-              <Route path="/" element={<Ecosystem />} />
+              {/* Root URL now shows LandingPage */}
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/ecosystem" element={<Ecosystem />} />
               {/* <Route path="/" element={<Onboard />} /> */}
               <Route path="/leaderboard" element={<LeaderboardPage />} />
               {/* Login route commented out - not needed for root access */}
