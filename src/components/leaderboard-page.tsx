@@ -18,12 +18,12 @@ const LeaderboardPage: React.FC = () => {
           onClick={handleBack}
           className="flex items-center gap-[10px]"
         >
-          <div className="w-[45px] h-[45px] rounded-[10px] bg-[#4DA2FD] flex items-center justify-center">
+          <div className="w-[45px] h-[45px] rounded-[10px] bg-black flex items-center justify-center transition-opacity hover:opacity-80">
             <AiOutlineArrowLeft color="white" />
           </div>
-          <p className="text-white text-base font-rubik font-semibold">Back</p>
+          <p className="text-black text-base font-rubik font-semibold">Back</p>
         </button>
-        <div className="mt-6 sm:mt-4 bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6">
+        <div className="mt-6 sm:mt-4 bg-white border border-black/10 rounded-2xl p-4 sm:p-6 shadow-sm">
           <LeaderboardTable />
         </div>
       </section>

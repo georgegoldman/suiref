@@ -14,12 +14,12 @@ import { useNavigate } from "react-router-dom";
 import { useDisconnectWallet } from "@mysten/dapp-kit";
 import { useEffect } from "react";
 import DashboardLeaderboard from "./dashboard-leaderboard";
-import Ecosystem from "./Ecosystem";
+// import Ecosystem from "./Ecosystem"; // Removed
 
 export default function DashboardMain() {
   const navigate = useNavigate();
   const { mutateAsync: disconnectAsync } = useDisconnectWallet();
-  const [activePage, setActivePage] = useState("ecosystem");
+  const [activePage, setActivePage] = useState("dashboard");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -70,15 +70,15 @@ export default function DashboardMain() {
         return <Settings />;
       case "support":
         return <Support />;
-      case "ecosystem":
-        return <Ecosystem />;
+      /* case "ecosystem":
+        return <Ecosystem />; */
       default:
-        return <Ecosystem />;
+        return <Dashboard />;
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-[#040c33] text-white">
+    <div className="flex min-h-screen bg-white text-black">
       <Sidebar
         activePage={activePage}
         onPageChange={handlePageChange}

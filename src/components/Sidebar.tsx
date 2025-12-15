@@ -1,22 +1,23 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { HiX } from "react-icons/hi";
 import SidebarCollapseIcon from "../assets/sidebar-collapse-icon";
-// import SidebarDashboardIcon from "../assets/sidebar-dashboard-icon";
-// import SidebarReferralToolIcon from "../assets/sidebar-referral-tool-icon";
-// import SidebarMyReferralIcon from "../assets/sidebar-my-referral-icon";
-// import SidebarWorkshopIcon from "../assets/sidebar-workshop";
-// import SidebarRewardsIcon from "../assets/sidebar-rewards-icon";
-// import SidebarLeaderboardsIcon from "../assets/sidebar-leaderboards-icon";
-// import SidebarWalletIcon from "../assets/sidebar-wallet-icon";
-// import SidebarSettingsIcon from "../assets/sidebar-settings-icon";
+import SidebarDashboardIcon from "../assets/sidebar-dashboard-icon";
+import SidebarReferralToolIcon from "../assets/sidebar-referral-tool-icon";
+import SidebarMyReferralIcon from "../assets/sidebar-my-referral-icon";
+import SidebarWorkshopIcon from "../assets/sidebar-workshop";
+import SidebarRewardsIcon from "../assets/sidebar-rewards-icon";
+import SidebarLeaderboardsIcon from "../assets/sidebar-leaderboards-icon";
+import SidebarWalletIcon from "../assets/sidebar-wallet-icon";
+import SidebarSettingsIcon from "../assets/sidebar-settings-icon";
 import SidebarSupportIcon from "../assets/sidebar-support-icon";
 import SidebarLogoutIcon from "../assets/sidebar-logout-icon";
 import DashboardReferralIcon from "../assets/dashboard-referral-icon";
 import DashboardPointEarned from "../assets/dashboard-point-earned";
 import { CopyButton } from "./CopyButton";
 import { useUser } from "../session-data";
-import Logo from "../assets/suiref-logo.png";
-import SidebarReferralToolIcon from "../assets/sidebar-referral-tool-icon";
+
+
 
 interface SidebarProps {
   activePage: string;
@@ -41,7 +42,7 @@ const Sidebar = ({
     (address ? `${address.slice(0, 6)}…${address.slice(-4)}` : "User");
 
   const mainMenuItems = [
-    // { id: "dashboard", label: "Dashboard", icon: SidebarDashboardIcon },
+    { id: "dashboard", label: "Dashboard", icon: SidebarDashboardIcon },
     // {
     //   id: "referral-tools",
     //   label: "Referral Tools",
@@ -50,17 +51,17 @@ const Sidebar = ({
     // { id: "my-referrals", label: "My Referrals", icon: SidebarMyReferralIcon },
     // { id: "workshop", label: "Workshop", icon: SidebarWorkshopIcon },
     // { id: "rewards", label: "Rewards", icon: SidebarRewardsIcon },
-    // {
-    //   id: "leaderboards",
-    //   label: "Leaderboards",
-    //   icon: SidebarLeaderboardsIcon,
-    // },
+    {
+      id: "leaderboards",
+      label: "Leaderboards",
+      icon: SidebarLeaderboardsIcon,
+    },
     // { id: "wallets", label: "Wallets", icon: SidebarWalletIcon },
-    { id: "ecosystem", label: "Ecosystem", icon: SidebarReferralToolIcon },
+    // { id: "ecosystem", label: "Ecosystem", icon: SidebarReferralToolIcon }, // Removed from sidebar
   ];
 
   const otherMenuItems = [
-    // { id: "settings", label: "Settings", icon: SidebarSettingsIcon },
+    { id: "settings", label: "Settings", icon: SidebarSettingsIcon },
     { id: "support", label: "Support", icon: SidebarSupportIcon },
   ];
 
@@ -86,7 +87,9 @@ const Sidebar = ({
       <div className="flex items-center justify-between mb-6">
         {!isCollapsed && (
           <div className="text-black font-bold text-xl">
-            <img src={Logo} alt="SuiRef" className="w-10 h-10" />
+            <Link to="/">
+              <span className="text-2xl font-bold tracking-tighter">SUIREF</span>
+            </Link>
           </div>
         )}
         <button
@@ -185,7 +188,9 @@ const Sidebar = ({
             {/* Mobile Header with Close Button */}
             <div className="flex items-center justify-between p-4 border-b border-black/10 flex-shrink-0">
               <div className="text-black font-bold text-xl">
-                <img src={Logo} alt="SuiRef" className="w-10 h-10" />
+                <Link to="/">
+                  <span className="text-2xl font-bold tracking-tighter">SUIREF</span>
+                </Link>
               </div>
               <button
                 onClick={onMobileClose}
