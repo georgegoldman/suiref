@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 // Importing all hero-home images
-import HeroHome from "../assets/hero-home.svg";
+// import HeroHome from "../assets/hero-home.svg";
 import HeroHome1 from "../assets/hero-home-1.svg";
 import HeroHome2 from "../assets/hero-home-2.svg";
 import HeroHome3 from "../assets/hero-home-3.svg";
