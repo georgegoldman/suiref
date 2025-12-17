@@ -15,6 +15,7 @@ interface EventCardProps {
     avatar: string;
   };
   onManageEvent?: () => void;
+  variant?: "default" | "light";
 }
 
 export const EventCard: React.FC<EventCardProps> = ({
@@ -26,9 +27,21 @@ export const EventCard: React.FC<EventCardProps> = ({
   guests,
   organizer,
   onManageEvent,
+  variant = "default",
 }) => {
+  const isLight = variant === "light";
+
   return (
-    <div className="bg-white/5 border border-[#4DA2FD80] rounded-[20px] py-5 px-4 shadow-sm flex gap-6 relative overflow-hidden">
+    <div
+      className={`
+      border rounded-[20px] py-5 px-4 shadow-sm flex gap-6 relative overflow-hidden transition-colors
+      ${
+        isLight
+          ? "bg-white border-black/10 hover:border-black/20"
+          : "bg-white/5 border-[#4DA2FD80]"
+      }
+    `}
+    >
       {/* Event Image */}
       <div className="w-[200px] h-[200px] rounded-[15px] overflow-hidden flex-shrink-0">
         <img src={image} alt={title} className="w-full h-full object-cover" />
@@ -37,21 +50,39 @@ export const EventCard: React.FC<EventCardProps> = ({
       {/* Event Details */}
       <div className="flex-1 flex flex-col justify-between">
         {/* Top Section */}
-        <p className="text-white/50 text-sm font-medium mb-2 flex items-center gap-2.5">
+        <p
+          className={`text-sm font-medium mb-2 flex items-center gap-2.5 ${
+            isLight ? "text-black/60" : "text-white/50"
+          }`}
+        >
           <span>{date}</span>
           <span>•</span>
           <span>{time}</span>
         </p>
-        <h3 className="text-white text-2xl font-medium">{title}</h3>
+        <h3
+          className={`text-2xl font-medium ${
+            isLight ? "text-black" : "text-white"
+          }`}
+        >
+          {title}
+        </h3>
 
         {/* Location */}
-        <div className="flex items-center gap-2 text-white/50">
+        <div
+          className={`flex items-center gap-2 ${
+            isLight ? "text-black/60" : "text-white/50"
+          }`}
+        >
           <MapPin size={15} />
           <span className="text-sm">{location}</span>
         </div>
 
         {/* Guests */}
-        <div className="flex items-center gap-2 text-white/50">
+        <div
+          className={`flex items-center gap-2 ${
+            isLight ? "text-black/60" : "text-white/50"
+          }`}
+        >
           <UserCircle size={15} />
           <span className="text-sm font-medium">
             {guests} Guest{guests !== 1 ? "s" : ""}
@@ -61,27 +92,39 @@ export const EventCard: React.FC<EventCardProps> = ({
         {/* Bottom Section */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onManageEvent?.();
-              }}
-              className="bg-white/20 hover:bg-[#5a6578] text-white p-2.5 rounded-full text-xs font-medium transition-colors"
-            >
-              Manage Event
-            </button>
+            {onManageEvent && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onManageEvent();
+                }}
+                className={`p-2.5 rounded-full text-xs font-medium transition-colors ${
+                  isLight
+                    ? "bg-black/5 hover:bg-black/10 text-black"
+                    : "bg-white/20 hover:bg-[#5a6578] text-white"
+                }`}
+              >
+                Manage Event
+              </button>
+            )}
 
-            {/* Organizer Avatar */}
-            <div className="w-6 h-6 rounded-full overflow-hidden">
-              <img
-                src={organizer.avatar}
-                alt={organizer.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
+            {/* Organizer Avatar - Only show in default (dark/admin) mode */}
+            {!isLight && (
+              <div className="w-6 h-6 rounded-full overflow-hidden">
+                <img
+                  src={organizer.avatar}
+                  alt={organizer.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
           </div>
 
-          <button className="cursor-pointer">
+          <button
+            className={`cursor-pointer ${
+              isLight ? "text-black/40 hover:text-black/60" : ""
+            }`}
+          >
             <ShareIcon />
           </button>
         </div>
