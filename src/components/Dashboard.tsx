@@ -1,84 +1,74 @@
 // src/components/Dashboard.tsx
-import React from "react";
+import React, { useState } from "react";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useSessionData, useUser } from "../session-data";
 // import { useCreateProfile } from "../mutations/useCreateProfile";
 import DashboardReferralIcon from "../assets/dashboard-referral-icon";
 import DashboardPointEarned from "../assets/dashboard-point-earned";
 import { EventDetailModal } from "../admin/EventDetailModal";
+import { EventCard } from "../admin/EventCard";
 
-function getMoveFields(obj: any) {
-  const content = obj?.data?.content;
-  if (!content || content.dataType !== "moveObject") return undefined;
-  return content.fields;
-}
+// Sample data for different tabs (Mock data for now, similar to AdminHistory)
+const upcomingEvents = [
+  {
+    id: "1",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87",
+    date: "Saturday, Nov 2",
+    time: "8:00 AM",
+    title: "SuiRef Conference 2.0",
+    location: "Eronye Junction, Enugu State",
+    guests: 1,
+    organizer: {
+      name: "Admin",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+    },
+  },
+  {
+    id: "2",
+    image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678",
+    date: "Sunday, Nov 3",
+    time: "10:00 AM",
+    title: "SuiRef Conference 2.0",
+    location: "Eronye Junction, Enugu State",
+    guests: 1,
+    organizer: {
+      name: "Admin",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+    },
+  },
+];
 
-const EventFilterDropdown: React.FC<{
-  value: string;
-  onChange: (v: string) => void;
-}> = ({ value, onChange }) => {
-  const [open, setOpen] = React.useState(false);
-  const items = ["All Events", "Upcoming", "Past"];
+const ongoingEvents = [
+  {
+    id: "1",
+    image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30",
+    date: "Today",
+    time: "Now",
+    title: "Live Workshop Session",
+    location: "Tech Hub, Lagos",
+    guests: 45,
+    organizer: {
+      name: "Admin",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+    },
+  },
+];
 
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="
-          h-10 px-4 rounded-full
-          bg-black/5 hover:bg-black/10 ring-1 ring-black/10
-          text-black/90 text-sm inline-flex items-center gap-2
-          focus:outline-none focus-visible:ring-2 focus-visible:ring-black/40
-        "
-        aria-haspopup="listbox"
-        aria-expanded={open}
-      >
-        <span className="truncate">{value}</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            d="M6 9l6 6 6-6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.8}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
-
-      {open && (
-        <ul
-          role="listbox"
-          className="
-            absolute right-0 mt-2 w-44 overflow-hidden
-            rounded-xl bg-white ring-1 ring-black/10 shadow-xl z-10
-          "
-        >
-          {items.map((it) => (
-            <li key={it}>
-              <button
-                type="button"
-                onClick={() => {
-                  onChange(it);
-                  setOpen(false);
-                }}
-                className="
-                  w-full text-left px-4 py-2 text-sm
-                  text-black/90 hover:bg-black/5
-                "
-                role="option"
-                aria-selected={it === value}
-              >
-                {it}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-};
+const pastEvents = [
+  {
+    id: "1",
+    image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
+    date: "Friday, Oct 25",
+    time: "6:00 PM",
+    title: "Web3 Meetup",
+    location: "Innovation Center",
+    guests: 32,
+    organizer: {
+      name: "Admin",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+    },
+  },
+];
 
 const CreateReferralButton: React.FC<{
   username?: string | null;
@@ -131,54 +121,45 @@ const CreateReferralButton: React.FC<{
 };
 
 const Dashboard: React.FC = () => {
-  const { loading, error, referralObject } = useSessionData();
-  const { username, ranking} = useUser();
+  const { loading, error } = useSessionData();
+  const { username, ranking } = useUser();
   const currentAccount = useCurrentAccount();
-  // const createProfile = useCreateProfile();
-  const [eventFilter, setEventFilter] = React.useState("All Events");
-
-  const referralList: any[] = React.useMemo(() => {
-    const fields = getMoveFields(referralObject);
-    const list = fields?.referal_list;
-    return Array.isArray(list) ? list : [];
-  }, [referralObject]);
-
-  const myRecentReferrals = React.useMemo(() => {
-    if (!username) return [];
-    const mine = referralList
-      .filter((it: any) => it?.fields?.referrer === username)
-      .map((it: any) => ({
-        referrer: String(it.fields.referrer),
-        referree: String(it.fields.referree),
-      }))
-      .reverse();
-    return mine.slice(0, 10);
-  }, [referralList, username]);
-
-  // const [usernameInput, setUsernameInput] = React.useState("");
-  // const [avatarUrl, setAvatarUrl] = React.useState("");
-  // const [submitting, setSubmitting] = React.useState(false);
-  // const [submitError, setSubmitError] = React.useState<string>();
-  const [selectedEventId, setSelectedEventId] = React.useState<string | null>(
-    null
+  const [activeTab, setActiveTab] = useState<"upcoming" | "ongoing" | "past">(
+    "upcoming"
   );
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
-  // const onCreate = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (!avatarUrl) return setSubmitError("Please select an avatar.");
-  //   setSubmitting(true);
-  //   setSubmitError(undefined);
-  //   try {
-  //     await createProfile(usernameInput.trim(), avatarUrl.trim());
-  //     await refresh();
-  //     setUsernameInput("");
-  //     setAvatarUrl("");
-  //   } catch (err: any) {
-  //     setSubmitError(err?.message ?? "Failed to create profile");
-  //   } finally {
-  //     setSubmitting(false);
-  //   }
-  // };
+  const getEvents = () => {
+    switch (activeTab) {
+      case "upcoming":
+        return upcomingEvents;
+      case "ongoing":
+        return ongoingEvents;
+      case "past":
+        return pastEvents;
+      default:
+        return [];
+    }
+  };
+
+  const events = getEvents();
+  const selectedEvent = events.find((e) => e.id === selectedEventId);
+  const selectedIndex = selectedEventId
+    ? events.findIndex((e) => e.id === selectedEventId)
+    : -1;
+  const canPrev = selectedIndex > 0;
+  const canNext = selectedIndex >= 0 && selectedIndex < events.length - 1;
+  const goPrev = () => {
+    if (!canPrev) return;
+    const prev = events[selectedIndex - 1];
+    setSelectedEventId(prev?.id ?? null);
+  };
+  const goNext = () => {
+    if (!canNext) return;
+    const next = events[selectedIndex + 1];
+    setSelectedEventId(next?.id ?? null);
+  };
+
 
   if (loading) return <div className="text-black">Loading…</div>;
   if (error) return <div className="text-red-400">Error: {error}</div>;
@@ -187,7 +168,6 @@ const Dashboard: React.FC = () => {
     <div className="flex-1 p-4 sm:p-6">
       <div className="max-w-6xl mx-auto flex flex-col gap-10">
         {/* Header */}
-        {/* Header + Top-right controls */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-black text-[24px] font-bold">
@@ -199,10 +179,6 @@ const Dashboard: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <EventFilterDropdown
-              value={eventFilter}
-              onChange={setEventFilter}
-            />
             <CreateReferralButton
               username={username}
               address={currentAccount?.address ?? null}
@@ -243,104 +219,83 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Ongoing Events */}
-        <div className="flex flex-col gap-4">
+        {/* Event Timeline Section */}
+        <div className="flex flex-col gap-6">
           <div className="flex items-center justify-between">
-            <h4 className="text-black font-bold text-lg">Ongoing Events</h4>
-            <button className="text-black/70 text-sm hover:text-black">
-              See All
-            </button>
+            <h4 className="text-black font-bold text-lg">Events</h4>
+            
+            <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
+              {(["upcoming", "ongoing", "past"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`
+                    px-4 py-2 rounded-md text-sm font-medium transition-colors capitalize
+                    ${
+                      activeTab === tab
+                        ? "bg-white shadow-sm text-black"
+                        : "text-black/50 hover:text-black/70"
+                    }
+                  `}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                onClick={() => setSelectedEventId(`event-${i}`)}
-                className="bg-white rounded-xl overflow-hidden border border-black/10 cursor-pointer hover:border-black/20 transition-colors"
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=800&q=60"
-                  alt="event"
-                  className="w-full h-[140px] object-cover"
-                />
-                <div className="p-4 space-y-2">
-                  <p className="text-black/60 text-xs">
-                    Saturday, Nov 2 • 8:00 AM
-                  </p>
-                  <h5 className="text-black font-bold text-base">
-                    SuiRef Conference 2.0
-                  </h5>
-                  <p className="text-black/60 text-sm">
-                    By <span className="text-white">SuiRef Conference</span>
-                  </p>
-                  <p className="text-black/60 text-sm flex items-center gap-1">
-                    📍 Eronye Junction, Enugu State
-                  </p>
-                  <div className="mt-2 flex items-center gap-2">
-                    <div className="flex -space-x-2">
-                      {Array.from({ length: 5 }).map((_, idx) => (
-                        <img
-                          key={idx}
-                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${idx}`}
-                          className="w-6 h-6 rounded-full border border-white"
-                        />
-                      ))}
-                    </div>
-                    <span className="text-black/70 text-xs">+15</span>
+          <div className="relative">
+             {/* Timeline Layout */}
+             {events.length > 0 ? (
+                <>
+                  {/* Timeline Line */}
+                  <div className="absolute left-[80px] sm:left-[100px] top-0 bottom-0 w-0 border-l-[2px] border-dashed border-black/10" />
+
+                  <div className="flex flex-col">
+                    {events.map((event) => {
+                      const dateMatch = event.date.match(/(\w+),\s*(\w+)\s*(\d+)/);
+                      const dayOfWeek = dateMatch ? dateMatch[1] : "";
+                      const month = dateMatch ? dateMatch[2] : "";
+                      const day = dateMatch ? dateMatch[3] : "";
+
+                      return (
+                        <div key={event.id} className="relative mb-10 last:mb-0">
+                          {/* Date Group */}
+                          <div className="absolute left-0 top-[90px] w-[60px] sm:w-[70px] text-right pr-4 sm:pr-0 sm:text-left">
+                            <p className="text-black text-base font-bold">
+                              {month} {day}
+                            </p>
+                            <p className="text-black/40 text-sm sm:text-base font-bold">
+                              {dayOfWeek}
+                            </p>
+                          </div>
+
+                          {/* Timeline Dot */}
+                          <div className="absolute left-[72px] sm:left-[92px] top-[100px] w-[18px] h-[18px] rounded-full bg-black/5 border-[3px] border-white ring-1 ring-black/10 z-10" />
+
+                          {/* Event Card */}
+                          <div
+                            className="ml-[100px] sm:ml-[140px] cursor-pointer"
+                            onClick={() => setSelectedEventId(event.id)}
+                          >
+                            <EventCard
+                              {...event}
+                              variant="light"
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                </div>
+                </>
+             ) : (
+              <div className="text-center py-20 bg-gray-50 rounded-xl border border-dashed border-black/10">
+                <p className="text-black/40 text-lg">No {activeTab} events</p>
               </div>
-            ))}
+             )}
           </div>
         </div>
 
-        {/* Recent Referrals */}
-        <div className="flex flex-col gap-4">
-          <h4 className="text-black font-bold text-lg">Recent Referrals</h4>
-          <div className="overflow-x-auto">
-            <table className="w-full border-separate border-spacing-y-2">
-              <thead>
-                <tr className="text-black/60 text-xs font-medium text-left">
-                  <th className="pb-2">Description</th>
-                  <th className="pb-2">Date</th>
-                  <th className="pb-2 text-right pr-4">Points</th>
-                </tr>
-              </thead>
-              <tbody>
-                {myRecentReferrals.length ? (
-                  myRecentReferrals.map((r, idx) => (
-                    <tr
-                      key={idx}
-                      className="bg-white hover:bg-gray-50 rounded-lg border-b border-black/5"
-                    >
-                      <td className="py-3 px-4 text-black font-medium rounded-l-lg">
-                        {r.referree} Attended Workshop
-                      </td>
-                      <td className="py-3 px-4 text-black/80 text-sm">
-                        10/6/2025
-                      </td>
-                      <td className="py-3 px-4 text-black font-bold text-right pr-4 rounded-r-lg">
-                        +1
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <>
-                    <tr className="bg-white rounded-lg">
-                      <td
-                        colSpan={3}
-                        className="py-4 px-4 text-black/60 text-center"
-                      >
-                        No referrals yet.
-                      </td>
-                    </tr>
-                  </>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
       </div>
 
       {/* Event Detail Modal */}
@@ -348,29 +303,28 @@ const Dashboard: React.FC = () => {
         eventId={selectedEventId || ""}
         isOpen={!!selectedEventId}
         onClose={() => setSelectedEventId(null)}
+        onPrev={canPrev ? goPrev : undefined}
+        onNext={canNext ? goNext : undefined}
+        canPrev={canPrev}
+        canNext={canNext}
         event={
-          selectedEventId
+          selectedEvent
             ? {
-                title: "SUIREF CONCERT NIGHT",
-                date: "Wednesday October, 2022",
-                time: "5:00 PM - 6:00 PM",
-                location: "Awka",
-                locationDetail: "Awka, Anambra",
-                category: "SUIREF CONCERT NIGHT",
+                title: selectedEvent.title,
+                date: selectedEvent.date,
+                time: selectedEvent.time,
+                location: selectedEvent.location,
                 status: "private",
-                image:
-                  "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=800&q=60",
+                image: selectedEvent.image,
                 host: {
-                  name: "John Deo",
-                  avatar:
-                    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+                  name: selectedEvent.organizer.name,
+                  avatar: selectedEvent.organizer.avatar,
                 },
-                attendeeCount: 2,
+                attendeeCount: selectedEvent.guests,
                 attendees: [
                   {
-                    name: "John deo",
-                    avatar:
-                      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+                    name: selectedEvent.organizer.name,
+                    avatar: selectedEvent.organizer.avatar,
                   },
                 ],
               }

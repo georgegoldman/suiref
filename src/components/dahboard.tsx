@@ -1,6 +1,7 @@
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import Dashboard from "./Dashboard";
+import Profile from "./Profile";
 import ReferralTools from "./ReferralTools";
 import MyReferrals from "./MyReferrals";
 import Workshop from "./Workshop";
@@ -54,6 +55,8 @@ export default function DashboardMain() {
     switch (activePage) {
       case "dashboard":
         return <Dashboard />;
+      case "profile":
+        return <Profile />;
       case "referral-tools":
         return <ReferralTools />;
       case "my-referrals":
@@ -88,7 +91,11 @@ export default function DashboardMain() {
       />
 
       <div className="flex-1 flex flex-col">
-        <Navbar onMobileMenuOpen={handleMobileMenuOpen} />
+        <Navbar
+          onMobileMenuOpen={handleMobileMenuOpen}
+          onLogout={handleLogout}
+          onPageChange={handlePageChange}
+        />
 
         {renderContent()}
       </div>

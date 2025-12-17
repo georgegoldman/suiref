@@ -1,40 +1,47 @@
+import { useState, useRef, useEffect } from "react";
 import { HiMenu } from "react-icons/hi";
 import DashboardSearchIcon from "../assets/dashboard-search-icon";
 import { useUser } from "../session-data";
-import { useProfileModal } from "../ui/ProfileModalProvider";
+// import { useProfileModal } from "../ui/ProfileModalProvider"; // Removed
 import { ProfilePill } from "./ProfilePill";
 
 interface NavbarProps {
   onMobileMenuOpen: () => void;
+  onLogout: () => void;
+  onPageChange: (page: string) => void;
 }
 
 function shortAddr(addr?: string | null) {
   return addr ? `${addr.slice(0, 6)}…${addr.slice(-4)}` : "";
 }
 
-const Navbar = ({ onMobileMenuOpen }: NavbarProps) => {
-  const { username, avatar, address, hasProfile, ranking } = useUser(); // add ranking to useUser in session-data if not present
-  const { open } = useProfileModal();
+const Navbar = ({ onMobileMenuOpen, onLogout, onPageChange }: NavbarProps) => {
+  const { username, avatar, address, hasProfile } = useUser();
+  // const { open } = useProfileModal(); // Removed local modal
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const displayName = username ?? shortAddr(address);
   const initial = (username ?? address ?? "?").slice(0, 1).toUpperCase();
-  const banner =
-    "https://images.unsplash.com/photo-1517816428104-797678c7cf0d?q=80&w=1200&auto=format&fit=crop"; // placeholder banner
 
-  const onOpenProfile = () => {
-    open({
-      name: displayName,
-      avatar:
-        hasProfile && avatar
-          ? avatar
-          : `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(
-              initial
-            )}&size=128&radius=50`,
-      backgroundImage: banner,
-      username: username ?? undefined,
-      ranking: ranking ?? 0,
-      // activities: { rank: 1, won: true, event: "Sui Workshop", date: "8/20/2025" },
-    });
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const onToggleProfile = () => {
+    setIsProfileOpen(!isProfileOpen);
   };
 
   return (
@@ -53,24 +60,25 @@ const Navbar = ({ onMobileMenuOpen }: NavbarProps) => {
         <div className="hidden lg:flex flex-col">
           <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2">
             <button
-            onClick={() => navigator.clipboard.writeText(address || "").then(()=> alert("Text copied to clipboard!")).catch(err => {
-              alert("Failed to copy text. Please try again.")
-              console.log(err);
-            })}
+              onClick={() =>
+                navigator.clipboard
+                  .writeText(address || "")
+                  .then(() => alert("Text copied to clipboard!"))
+                  .catch((err) => {
+                    alert("Failed to copy text. Please try again.");
+                    console.log(err);
+                  })
+              }
             >
-              <span 
-            
-            className="text-black text-[18px] lg:text-[24px] font-bold">
-              Hi {displayName} 👋
-            </span>
+              <span className="text-black text-[18px] lg:text-[24px] font-bold">
+                Hi {displayName} 👋
+              </span>
             </button>
           </div>
 
           <div className="hidden lg:flex items-center gap-2">
             <span className="text-black/70 text-xs font-medium">Welcome</span>
           </div>
-
-          
         </div>
       </div>
 
@@ -88,14 +96,50 @@ const Navbar = ({ onMobileMenuOpen }: NavbarProps) => {
         </div>
       </div>
 
-      {/* Right side */}
-      <ProfilePill
-      hasProfile={hasProfile}
-      avatar={avatar}
-      initial={initial}
-      onOpenProfile={onOpenProfile}
-       />
-      
+      {/* Right side - Profile Dropdown */}
+      <div className="relative" ref={dropdownRef}>
+        <ProfilePill
+          hasProfile={hasProfile}
+          avatar={avatar}
+          initial={initial}
+          onOpenProfile={onToggleProfile}
+          isMenuOpen={isProfileOpen}
+        />
+
+        {/* Dropdown Menu */}
+        {isProfileOpen && (
+          <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-black/10 py-2 z-50">
+            {/* User Name Header */}
+            <div className="px-4 py-2 border-b border-black/5">
+              <p className="text-sm font-bold text-black truncate">
+                {displayName}
+              </p>
+            </div>
+
+            {/* Profile Link */}
+            <button
+              onClick={() => {
+                setIsProfileOpen(false);
+                onPageChange("profile");
+              }}
+              className="w-full text-left px-4 py-2 text-sm text-black/70 hover:bg-black/5 hover:text-black transition-colors font-medium"
+            >
+              Profile
+            </button>
+
+            {/* Sign Out Button */}
+            <button
+              onClick={() => {
+                setIsProfileOpen(false);
+                onLogout();
+              }}
+              className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-black/5 transition-colors font-medium"
+            >
+              Sign out
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
