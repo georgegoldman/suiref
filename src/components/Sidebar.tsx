@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { HiX } from "react-icons/hi";
+import { HiX } from "react-icons/hi"; // HiUser unused
 import SidebarCollapseIcon from "../assets/sidebar-collapse-icon";
 import SidebarDashboardIcon from "../assets/sidebar-dashboard-icon";
 // import SidebarReferralToolIcon from "../assets/sidebar-referral-tool-icon";
@@ -9,13 +9,13 @@ import SidebarDashboardIcon from "../assets/sidebar-dashboard-icon";
 // import SidebarRewardsIcon from "../assets/sidebar-rewards-icon";
 import SidebarLeaderboardsIcon from "../assets/sidebar-leaderboards-icon";
 // import SidebarWalletIcon from "../assets/sidebar-wallet-icon";
-import SidebarSettingsIcon from "../assets/sidebar-settings-icon";
+// import SidebarSettingsIcon from "../assets/sidebar-settings-icon";
 import SidebarSupportIcon from "../assets/sidebar-support-icon";
-import SidebarLogoutIcon from "../assets/sidebar-logout-icon";
-import DashboardReferralIcon from "../assets/dashboard-referral-icon";
-import DashboardPointEarned from "../assets/dashboard-point-earned";
-import { CopyButton } from "./CopyButton";
-import { useUser } from "../session-data";
+// import SidebarLogoutIcon from "../assets/sidebar-logout-icon";
+// import DashboardReferralIcon from "../assets/dashboard-referral-icon";
+// import DashboardPointEarned from "../assets/dashboard-point-earned";
+// import { CopyButton } from "./CopyButton";
+// import { useUser } from "../session-data";
 
 
 
@@ -30,17 +30,16 @@ interface SidebarProps {
 const Sidebar = ({
   activePage,
   onPageChange,
-  onLogout,
+  // onLogout,
   isMobileOpen,
   onMobileClose,
 }: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { username, address, ranking } = useUser();
+  // const { username, address } = useUser(); // ranking removed
 
-  const displayName =
-    username ??
-    (address ? `${address.slice(0, 6)}…${address.slice(-4)}` : "User");
-
+  // const displayName =
+  //   username ??
+  //   (address ? `${address.slice(0, 6)}…${address.slice(-4)}` : "User");
   const mainMenuItems = [
     { id: "dashboard", label: "Dashboard", icon: SidebarDashboardIcon },
     // {
@@ -60,14 +59,20 @@ const Sidebar = ({
     // { id: "ecosystem", label: "Ecosystem", icon: SidebarReferralToolIcon }, // Removed from sidebar
   ];
 
-  const otherMenuItems = [
-    { id: "settings", label: "Settings", icon: SidebarSettingsIcon },
+  const desktopOtherMenuItems = [
     { id: "support", label: "Support", icon: SidebarSupportIcon },
+  ];
+
+  const mobileOtherMenuItems = [
+    // { id: "profile", label: "Profile", icon: HiUser },
+    { id: "support", label: "Support", icon: SidebarSupportIcon },
+    // { id: "settings", label: "Settings", icon: SidebarSettingsIcon },
   ];
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
   };
+
 
   const handlePageChange = (page: string) => {
     onPageChange(page);
@@ -136,7 +141,7 @@ const Sidebar = ({
         </h3>
 
         <nav className="flex flex-col gap-2">
-          {otherMenuItems.map((item) => {
+          {desktopOtherMenuItems.map((item) => {
             const IconComponent = item.icon;
             const isActive = activePage === item.id;
 
@@ -158,14 +163,9 @@ const Sidebar = ({
         </nav>
       </div>
 
-      {/* Logout Button */}
-      <button
-        onClick={onLogout}
-        className="flex items-center gap-2 px-3 py-2 text-black hover:bg-black/5 transition-colors"
-      >
-        <SidebarLogoutIcon />
-        {!isCollapsed && <span className="text-xs">Logout</span>}
-      </button>
+
+
+
     </div>
   );
 
@@ -239,7 +239,7 @@ const Sidebar = ({
                   </h3>
 
                   <nav className="flex flex-col gap-2">
-                    {otherMenuItems.map((item) => {
+                    {mobileOtherMenuItems.map((item) => {
                       const IconComponent = item.icon;
                       const isActive = activePage === item.id;
 
@@ -261,57 +261,31 @@ const Sidebar = ({
                   </nav>
                 </div>
 
-                {/* User Info Section - Before Logout */}
-                <div className="flex flex-col gap-2 border-b border-black/5 pb-4">
+
+
+                {/* User Info Section */}
+                {/* <div className="flex flex-col gap-2 border-b border-black/5 pb-4 mt-auto">
                   <div className="flex flex-col gap-2">
                     <span className="text-black text-sm font-medium">
                       {displayName}
                     </span>
                     <CopyButton value={address} />
                   </div>
-                </div>
-
-                {/* Dashboard Style Updates - Added as a new section */}
-                <div className="flex flex-col gap-4">
-                  <div className="bg-gray-50 border border-black/5 p-4 rounded-xl flex flex-col justify-between">
-                    <div className="flex items-center gap-2">
-                      <DashboardReferralIcon />
-                      <span className="text-black/70 font-semibold text-sm">
-                        Total Referral:
-                      </span>
-                    </div>
-                    <p className="text-black text-3xl font-bold mt-2">{ranking ?? 0}</p>
-                  </div>
-
-                  <div className="bg-gray-50 border border-black/5 p-4 rounded-xl flex flex-col justify-between">
-                    <div className="flex items-center gap-2">
-                      <DashboardReferralIcon />
-                      <span className="text-black/70 font-semibold text-sm">
-                        Workshop Attendees:
-                      </span>
-                    </div>
-                    <p className="text-black text-3xl font-bold mt-2">0</p>
-                  </div>
-
-                  <div className="bg-gray-50 border border-black/5 p-4 rounded-xl flex flex-col justify-between">
-                    <div className="flex items-center gap-2">
-                      <DashboardPointEarned />
-                      <span className="text-black/70 font-semibold text-sm">
-                        Points Earned:
-                      </span>
-                    </div>
-                    <p className="text-black text-3xl font-bold mt-2">0</p>
-                  </div>
-                </div>
+                </div> */}
 
                 {/* Logout Button */}
-                <button
-                  onClick={onLogout}
-                  className="flex items-center gap-2 px-3 py-2 text-black hover:bg-black/5 transition-colors"
+                {/* <button
+                  onClick={() => {
+                     onLogout();
+                     onMobileClose();
+                  }}
+                  className="flex items-center gap-2 px-3 py-2 rounded-[30px] transition-all duration-200 text-red-500 hover:bg-black/5 mt-4"
                 >
                   <SidebarLogoutIcon />
-                  <span className="text-xs">Logout</span>
-                </button>
+                  <span className="text-sm">Sign Out</span>
+                </button> */}
+
+
               </div>
             </div>
           </div>

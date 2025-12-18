@@ -1,6 +1,7 @@
 // src/components/LeaderboardTable.tsx
 import React from "react";
 import { HiX } from "react-icons/hi";
+import { Copy } from "lucide-react";
 import {
   useLeaderboard,
   useSessionData,
@@ -8,14 +9,7 @@ import {
 } from "../session-data";
 
 function shortAddr(addr?: string | null) {
-  return addr ? `${addr.slice(0, 6)}…${addr.slice(-4)}` : "";
-}
-
-function medal(rank: number) {
-  if (rank === 1) return "🥇";
-  if (rank === 2) return "🥈";
-  if (rank === 3) return "🥉";
-  return null;
+  return addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : "";
 }
 
 function dicebear(seed: string, size = 80) {
@@ -36,12 +30,45 @@ interface LeaderboardTableProps {
   onRowClick?: (selected: Selected) => void;
 }
 
+const RankBadge = ({ rank }: { rank: number }) => {
+  const badgeBase =
+    "inline-flex items-center justify-center w-10 h-8 rounded-lg font-bold border";
+  
+  if (rank === 1) {
+    return (
+      <span className={`${badgeBase} bg-[#FFD700]/10 text-[#B8860B] border-[#FFD700]/50`}>
+        1st
+      </span>
+    );
+  }
+  if (rank === 2) {
+    return (
+      <span className={`${badgeBase} bg-[#C0C0C0]/10 text-[#707070] border-[#C0C0C0]/50`}>
+        2nd
+      </span>
+    );
+  }
+  if (rank === 3) {
+    return (
+      <span className={`${badgeBase} bg-[#CD7F32]/10 text-[#A0522D] border-[#CD7F32]/50`}>
+        3rd
+      </span>
+    );
+  }
+  return <span className="inline-flex items-center justify-center w-10 h-8 text-black/50 font-medium">{rank}</span>;
+};
+
 export default function LeaderboardTable({
   showModal = false,
   onRowClick,
 }: LeaderboardTableProps) {
   const { loading, error } = useSessionData();
   const leaderboard = useLeaderboard();
+
+  // Sort leaderboard by score descending
+  const sortedLeaderboard = React.useMemo(() => {
+    return [...leaderboard].sort((a, b) => b.score - a.score);
+  }, [leaderboard]);
 
   const [selected, setSelected] = React.useState<Selected | null>(null);
   const [mounted, setMounted] = React.useState(false);
@@ -84,97 +111,65 @@ export default function LeaderboardTable({
   return (
     <>
       <div className="w-full overflow-x-auto">
-        <table className="w-full min-w-[600px]">
+        <table className="w-full min-w-[600px] border-separate border-spacing-y-2">
           <thead>
-            <tr className="bg-black/5">
-              <th className="text-left py-3 px-4 text-black/80 font-medium text-sm rounded-l-[10px] w-16">
-                #
-              </th>
-              <th className="text-left py-3 px-4 text-black/80 font-medium text-sm min-w-[150px] sm:min-w-[200px]">
-                User
-              </th>
-              <th className="text-left py-3 px-4 text-black/80 font-medium text-sm w-20">
-                Score
-              </th>
-              <th className="text-left py-3 px-4 text-black/80 font-medium text-sm rounded-r-[10px] min-w-[120px]">
-                Address
-              </th>
+            <tr className="text-sm text-black/60">
+              <th className="font-medium text-left py-2 pl-4 w-16"></th>
+              <th className="font-medium text-left py-2">User</th>
+              <th className="font-medium text-center py-2">Score</th>
+              <th className="font-medium text-right py-2 pr-8">Address</th>
             </tr>
           </thead>
           <tbody>
-            {leaderboard.map((row, idx) => {
+            {sortedLeaderboard.map((row, idx) => {
               const rank = idx + 1;
-              const name = row.username || shortAddr(row.address);
+              const name = row.username || shortAddr(row.address) || "Unknown";
+              const key = `${row.username ?? ""}-${row.address ?? idx}`;
               const avatarSm =
                 row.avatar ||
                 dicebear(row.username || row.address || `user-${idx}`, 40);
-              const key = `${row.username ?? ""}-${row.address ?? idx}`;
-              const sortedLeaderBoard : LeaderEntry[] = leaderboard.sort((x1, x2) => (x2.score - x1.score));
-              console.log("printing the sorted list base on score",sortedLeaderBoard);
-              
+
               return (
                 <tr
                   key={key}
-                  className={`border-b border-black/5 ${
-                    showModal
-                      ? "hover:bg-black/5 transition-colors cursor-pointer"
-                      : ""
+                  className={`group transition-colors ${
+                    showModal ? "cursor-pointer hover:bg-black/5" : ""
                   }`}
-                  role={showModal ? "button" : undefined}
-                  aria-label={
-                    showModal ? `Open profile for ${name}` : undefined
-                  }
-                  tabIndex={showModal ? 0 : undefined}
                   onClick={
                     showModal ? () => handleRowClick(row, idx) : undefined
                   }
-                  onKeyDown={
-                    showModal
-                      ? (e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            handleRowClick(row, idx);
-                          }
-                        }
-                      : undefined
-                  }
                 >
-                  <td className="py-3 px-4 text-black/90 font-semibold w-16">
-                    <span className="inline-block w-6 text-center">
-                      { row.score === 0 ? ("") : (medal(rank) ?? rank)}
-                    </span>
+                  <td className="py-3 pl-4 align-middle">
+                    <RankBadge rank={rank} />
                   </td>
-                  <td className="py-3 px-4 min-w-[150px] sm:min-w-[200px]">
+                  <td className="py-3 align-middle">
                     <div className="flex items-center gap-3">
                       <img
                         src={avatarSm}
                         alt={name}
                         className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                        onError={(e) => {
-                          const el = e.currentTarget as HTMLImageElement;
-                          if (el.src.includes("/svg"))
-                            el.src = el.src.replace("/svg", "/png");
-                        }}
                         loading="lazy"
-                        decoding="async"
                       />
-                      <div className="flex flex-col min-w-0 flex-1">
-                        <span className="text-black/90 font-medium truncate">
-                          {name}
-                        </span>
-                        {/* {row.username && row.address && (
-                          <span className="text-white/50 text-xs truncate">
-                            {shortAddr(row.address)}
-                          </span>
-                        )} */}
-                      </div>
+                      <span className="text-black/80 font-medium truncate max-w-[150px] sm:max-w-[200px]">
+                        {name}
+                      </span>
                     </div>
                   </td>
-                  <td className="py-3 px-4 text-black/90 font-semibold w-20">
+                  <td className="py-3 text-center align-middle font-bold text-black">
                     {row.score}
                   </td>
-                  <td className="py-3 px-4 text-black/70 text-sm min-w-[120px]">
-                    <button onClick={()=> navigator.clipboard.writeText(row.address || "")} >{shortAddr(row.address)}</button>
+                  <td className="py-3 pr-8 text-right align-middle font-medium text-black/60 text-sm">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigator.clipboard.writeText(row.address || "");
+                      }}
+                      className="hover:text-black transition-colors flex items-center justify-end gap-2 ml-auto"
+                      title="Copy Address"
+                    >
+                      {shortAddr(row.address)}
+                      <Copy size={14} />
+                    </button>
                   </td>
                 </tr>
               );
@@ -183,7 +178,7 @@ export default function LeaderboardTable({
         </table>
 
         {!leaderboard.length && (
-          <div className="text-black/60 text-sm mt-4">No data available.</div>
+          <div className="text-black/60 text-sm mt-4 text-center">No standing data available.</div>
         )}
       </div>
 
