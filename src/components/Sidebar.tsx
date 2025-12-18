@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { HiX, HiUser } from "react-icons/hi";
+import { HiX } from "react-icons/hi"; // HiUser unused
 import SidebarCollapseIcon from "../assets/sidebar-collapse-icon";
 import SidebarDashboardIcon from "../assets/sidebar-dashboard-icon";
 // import SidebarReferralToolIcon from "../assets/sidebar-referral-tool-icon";
@@ -9,13 +9,13 @@ import SidebarDashboardIcon from "../assets/sidebar-dashboard-icon";
 // import SidebarRewardsIcon from "../assets/sidebar-rewards-icon";
 import SidebarLeaderboardsIcon from "../assets/sidebar-leaderboards-icon";
 // import SidebarWalletIcon from "../assets/sidebar-wallet-icon";
-import SidebarSettingsIcon from "../assets/sidebar-settings-icon";
+// import SidebarSettingsIcon from "../assets/sidebar-settings-icon";
 import SidebarSupportIcon from "../assets/sidebar-support-icon";
-import SidebarLogoutIcon from "../assets/sidebar-logout-icon";
-import DashboardReferralIcon from "../assets/dashboard-referral-icon";
-import DashboardPointEarned from "../assets/dashboard-point-earned";
-import { CopyButton } from "./CopyButton";
-import { useUser } from "../session-data";
+// import SidebarLogoutIcon from "../assets/sidebar-logout-icon";
+// import DashboardReferralIcon from "../assets/dashboard-referral-icon";
+// import DashboardPointEarned from "../assets/dashboard-point-earned";
+// import { CopyButton } from "./CopyButton";
+// import { useUser } from "../session-data";
 
 
 
@@ -30,17 +30,16 @@ interface SidebarProps {
 const Sidebar = ({
   activePage,
   onPageChange,
-  onLogout,
+  // onLogout,
   isMobileOpen,
   onMobileClose,
 }: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { username, address, ranking } = useUser();
+  // const { username, address } = useUser(); // ranking removed
 
-  const displayName =
-    username ??
-    (address ? `${address.slice(0, 6)}…${address.slice(-4)}` : "User");
-
+  // const displayName =
+  //   username ??
+  //   (address ? `${address.slice(0, 6)}…${address.slice(-4)}` : "User");
   const mainMenuItems = [
     { id: "dashboard", label: "Dashboard", icon: SidebarDashboardIcon },
     // {
