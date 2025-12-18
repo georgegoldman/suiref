@@ -127,6 +127,17 @@ const Navbar = ({ onMobileMenuOpen, onLogout, onPageChange }: NavbarProps) => {
               Profile
             </button>
 
+            {/* Settings Link */}
+            <button
+              onClick={() => {
+                setIsProfileOpen(false);
+                onPageChange("settings");
+              }}
+              className="w-full text-left px-4 py-2 text-sm text-black/70 hover:bg-black/5 hover:text-black transition-colors font-medium"
+            >
+              Settings
+            </button>
+
             {/* Sign Out Button */}
             <button
               onClick={() => {
